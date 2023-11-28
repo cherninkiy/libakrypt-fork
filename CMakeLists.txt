@@ -189,12 +189,13 @@ set( BASE_EXAMPLES_LIST
      ini
      file
      mmap
-     realpath
+     #realpath
    )
 
 # определяем перечень примеров из FAQ
 set( EXAMPLES_LIST
      g01n01
+     curves1
    )
 
 if( AK_EXAMPLES )
