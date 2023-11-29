@@ -1,0 +1,232 @@
+Performing C SOURCE FILE Test AK_HAVE_WINDOWS_H failed with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i0H7qv
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_8f56d/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_8f56d.dir/build.make CMakeFiles/cmTC_8f56d.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i0H7qv'
+Building C object CMakeFiles/cmTC_8f56d.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_WINDOWS_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_8f56d.dir/src.c.o -MF CMakeFiles/cmTC_8f56d.dir/src.c.o.d -o CMakeFiles/cmTC_8f56d.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i0H7qv/src.c
+/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i0H7qv/src.c:2:12: fatal error: 'windows.h' file not found
+  #include <windows.h>
+           ^~~~~~~~~~~
+1 error generated.
+gmake[1]: *** [CMakeFiles/cmTC_8f56d.dir/build.make:79: CMakeFiles/cmTC_8f56d.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i0H7qv'
+gmake: *** [Makefile:127: cmTC_8f56d/fast] Error 2
+
+
+Source file was:
+
+  #include <windows.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_BUILTIN_MULQ_GCC failed with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-syaQi3
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_05607/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_05607.dir/build.make CMakeFiles/cmTC_05607.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-syaQi3'
+Building C object CMakeFiles/cmTC_05607.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_BUILTIN_MULQ_GCC  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_05607.dir/src.c.o -MF CMakeFiles/cmTC_05607.dir/src.c.o.d -o CMakeFiles/cmTC_05607.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-syaQi3/src.c
+/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-syaQi3/src.c:9:8: error: Unsupported architecture
+      #error Unsupported architecture
+       ^
+1 error generated.
+gmake[1]: *** [CMakeFiles/cmTC_05607.dir/build.make:79: CMakeFiles/cmTC_05607.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-syaQi3'
+gmake: *** [Makefile:127: cmTC_05607/fast] Error 2
+
+
+Source file was:
+
+  #include <sys/types.h>
+  int main( void ) {
+    #if defined( __x86_64__ )
+      u_int64_t w1, w0, u = 1, v = 2;
+      __asm__ ("mulq %3" : "=a,a" (w0), "=d,d" (w1) : "%0,0" (u), "r,m" (v));
+      return 0;
+    #else
+      #error Unsupported architecture
+    #endif
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_BUILTIN_CLMULEPI64 failed with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_4f6d9/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_4f6d9.dir/build.make CMakeFiles/cmTC_4f6d9.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4'
+Building C object CMakeFiles/cmTC_4f6d9.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_BUILTIN_CLMULEPI64  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_4f6d9.dir/src.c.o -MF CMakeFiles/cmTC_4f6d9.dir/src.c.o.d -o CMakeFiles/cmTC_4f6d9.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4/src.c
+In file included from /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4/src.c:2:
+/usr/lib/llvm-14/lib/clang/14.0.6/include/wmmintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+#error "This header is only meant to be used on x86 and x64 architecture"
+ ^
+In file included from /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4/src.c:2:
+In file included from /usr/lib/llvm-14/lib/clang/14.0.6/include/wmmintrin.h:17:
+/usr/lib/llvm-14/lib/clang/14.0.6/include/emmintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+#error "This header is only meant to be used on x86 and x64 architecture"
+ ^
+In file included from /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4/src.c:2:
+In file included from /usr/lib/llvm-14/lib/clang/14.0.6/include/wmmintrin.h:17:
+In file included from /usr/lib/llvm-14/lib/clang/14.0.6/include/emmintrin.h:17:
+/usr/lib/llvm-14/lib/clang/14.0.6/include/xmmintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+#error "This header is only meant to be used on x86 and x64 architecture"
+ ^
+In file included from /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4/src.c:2:
+In file included from /usr/lib/llvm-14/lib/clang/14.0.6/include/wmmintrin.h:17:
+In file included from /usr/lib/llvm-14/lib/clang/14.0.6/include/emmintrin.h:17:
+In file included from /usr/lib/llvm-14/lib/clang/14.0.6/include/xmmintrin.h:17:
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+#error "This header is only meant to be used on x86 and x64 architecture"
+ ^
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:54:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_vec_init_v2si(__i, 0);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:133:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_packsswb((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:163:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_packssdw((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:193:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_packuswb((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:220:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckhbw((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:243:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckhwd((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:264:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckhdq((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:291:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpcklbw((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:314:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpcklwd((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:335:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckldq((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:356:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddb((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:377:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddw((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:398:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddd((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:420:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddsb((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:443:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddsw((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+gmake[1]: *** [CMakeFiles/cmTC_4f6d9.dir/build.make:79: CMakeFiles/cmTC_4f6d9.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cbibw4'
+gmake: *** [Makefile:127: cmTC_4f6d9/fast] Error 2
+
+
+Source file was:
+
+  #include <wmmintrin.h>
+  int main( void ) {
+
+   __m128i a, b, c;
+   c = _mm_clmulepi64_si128( a, b, 0x00 );
+
+  return 0;
+ }
+
+Performing C SOURCE FILE Test AK_HAVE_BUILTIN_MM256_SLL failed with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0ALt38
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_2e944/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_2e944.dir/build.make CMakeFiles/cmTC_2e944.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0ALt38'
+Building C object CMakeFiles/cmTC_2e944.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_BUILTIN_MM256_SLL  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_2e944.dir/src.c.o -MF CMakeFiles/cmTC_2e944.dir/src.c.o.d -o CMakeFiles/cmTC_2e944.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0ALt38/src.c
+In file included from /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0ALt38/src.c:2:
+/usr/lib/llvm-14/lib/clang/14.0.6/include/immintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+#error "This header is only meant to be used on x86 and x64 architecture"
+ ^
+In file included from /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0ALt38/src.c:2:
+In file included from /usr/lib/llvm-14/lib/clang/14.0.6/include/immintrin.h:21:
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+#error "This header is only meant to be used on x86 and x64 architecture"
+ ^
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:54:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_vec_init_v2si(__i, 0);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:133:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_packsswb((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:163:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_packssdw((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:193:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_packuswb((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:220:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckhbw((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:243:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckhwd((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:264:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckhdq((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:291:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpcklbw((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:314:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpcklwd((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:335:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_punpckldq((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:356:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddb((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:377:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddw((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:398:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddd((__v2si)__m1, (__v2si)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:420:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddsb((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:443:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddsw((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:465:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddusb((__v8qi)__m1, (__v8qi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-14/lib/clang/14.0.6/include/mmintrin.h:487:12: error: invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+    return (__m64)__builtin_ia32_paddusw((__v4hi)__m1, (__v4hi)__m2);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+gmake[1]: *** [CMakeFiles/cmTC_2e944.dir/build.make:79: CMakeFiles/cmTC_2e944.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0ALt38'
+gmake: *** [Makefile:127: cmTC_2e944/fast] Error 2
+
+
+Source file was:
+
+  #include <immintrin.h>
+  int main( void ) {
+
+   __m256i theta = _mm256_setr_epi64x( 0x425, 0, 0, 0 );
+   __m256i m2 = _mm256_srli_epi64( theta, 63 );
+
+   __m128i count = _mm_setr_epi32( 1, 0, 0, 0 );
+   __m256i m3 = _mm256_sll_epi64( theta, count );
+
+  return 0;
+ }
+

@@ -1,0 +1,897 @@
+The system is: Linux - 6.1.0-13-arm64 - aarch64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/bin/cc 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is Clang, found in "/home/suriksurik/libakrypt-0.x/build/CMakeFiles/3.25.1/CompilerIdC/a.out"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_2c194/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_2c194.dir/build.make CMakeFiles/cmTC_2c194.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc'
+Building C object CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o
+/usr/bin/cc   -v -MD -MT CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c
+Debian clang version 14.0.6
+Target: aarch64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12
+Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+ (in-process)
+ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc -resource-dir /usr/lib/llvm-14/lib/clang/14.0.6 -dependency-file CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.6/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/12/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir=/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c
+clang -cc1 version 14.0.6 based upon LLVM 14.0.6 default target aarch64-unknown-linux-gnu
+ignoring nonexistent directory "/usr/bin/../lib/gcc/aarch64-linux-gnu/12/../../../../aarch64-linux-gnu/include"
+ignoring nonexistent directory "/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/llvm-14/lib/clang/14.0.6/include
+ /usr/local/include
+ /usr/include/aarch64-linux-gnu
+ /usr/include
+End of search list.
+Linking C executable cmTC_2c194
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2c194.dir/link.txt --verbose=1
+/usr/bin/cc  -v CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -o cmTC_2c194 
+Debian clang version 14.0.6
+Target: aarch64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12
+Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+ "/usr/bin/ld" -pie -EL --hash-style=both --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_2c194 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/12 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/lib -L/usr/lib CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtendS.o /lib/aarch64-linux-gnu/crtn.o
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc'
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/usr/lib/llvm-14/lib/clang/14.0.6/include]
+    add: [/usr/local/include]
+    add: [/usr/include/aarch64-linux-gnu]
+    add: [/usr/include]
+  end of search list found
+  collapse include dir [/usr/lib/llvm-14/lib/clang/14.0.6/include] ==> [/usr/lib/llvm-14/lib/clang/14.0.6/include]
+  collapse include dir [/usr/local/include] ==> [/usr/local/include]
+  collapse include dir [/usr/include/aarch64-linux-gnu] ==> [/usr/include/aarch64-linux-gnu]
+  collapse include dir [/usr/include] ==> [/usr/include]
+  implicit include dirs: [/usr/lib/llvm-14/lib/clang/14.0.6/include;/usr/local/include;/usr/include/aarch64-linux-gnu;/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_2c194/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_2c194.dir/build.make CMakeFiles/cmTC_2c194.dir/build]
+  ignore line: [gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc']
+  ignore line: [Building C object CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/cc   -v -MD -MT CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c]
+  ignore line: [Debian clang version 14.0.6]
+  ignore line: [Target: aarch64-unknown-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [ (in-process)]
+  ignore line: [ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc -resource-dir /usr/lib/llvm-14/lib/clang/14.0.6 -dependency-file CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.6/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/12/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir=/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Tbx0Bc -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 14.0.6 based upon LLVM 14.0.6 default target aarch64-unknown-linux-gnu]
+  ignore line: [ignoring nonexistent directory "/usr/bin/../lib/gcc/aarch64-linux-gnu/12/../../../../aarch64-linux-gnu/include"]
+  ignore line: [ignoring nonexistent directory "/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /usr/lib/llvm-14/lib/clang/14.0.6/include]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /usr/include/aarch64-linux-gnu]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [Linking C executable cmTC_2c194]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2c194.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/cc  -v CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -o cmTC_2c194 ]
+  ignore line: [Debian clang version 14.0.6]
+  ignore line: [Target: aarch64-unknown-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/12]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  link line: [ "/usr/bin/ld" -pie -EL --hash-style=both --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_2c194 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/12 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/lib -L/usr/lib CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtendS.o /lib/aarch64-linux-gnu/crtn.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-EL] ==> ignore
+    arg [--hash-style=both] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [aarch64linux] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux-aarch64.so.1] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_2c194] ==> ignore
+    arg [/lib/aarch64-linux-gnu/Scrt1.o] ==> obj [/lib/aarch64-linux-gnu/Scrt1.o]
+    arg [/lib/aarch64-linux-gnu/crti.o] ==> obj [/lib/aarch64-linux-gnu/crti.o]
+    arg [/usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtbeginS.o] ==> obj [/usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtbeginS.o]
+    arg [-L/usr/bin/../lib/gcc/aarch64-linux-gnu/12] ==> dir [/usr/bin/../lib/gcc/aarch64-linux-gnu/12]
+    arg [-L/lib/aarch64-linux-gnu] ==> dir [/lib/aarch64-linux-gnu]
+    arg [-L/usr/lib/aarch64-linux-gnu] ==> dir [/usr/lib/aarch64-linux-gnu]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_2c194.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtendS.o] ==> obj [/usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtendS.o]
+    arg [/lib/aarch64-linux-gnu/crtn.o] ==> obj [/lib/aarch64-linux-gnu/crtn.o]
+  collapse obj [/usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtbeginS.o] ==> [/usr/lib/gcc/aarch64-linux-gnu/12/crtbeginS.o]
+  collapse obj [/usr/bin/../lib/gcc/aarch64-linux-gnu/12/crtendS.o] ==> [/usr/lib/gcc/aarch64-linux-gnu/12/crtendS.o]
+  collapse library dir [/usr/bin/../lib/gcc/aarch64-linux-gnu/12] ==> [/usr/lib/gcc/aarch64-linux-gnu/12]
+  collapse library dir [/lib/aarch64-linux-gnu] ==> [/lib/aarch64-linux-gnu]
+  collapse library dir [/usr/lib/aarch64-linux-gnu] ==> [/usr/lib/aarch64-linux-gnu]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit objs: [/lib/aarch64-linux-gnu/Scrt1.o;/lib/aarch64-linux-gnu/crti.o;/usr/lib/gcc/aarch64-linux-gnu/12/crtbeginS.o;/usr/lib/gcc/aarch64-linux-gnu/12/crtendS.o;/lib/aarch64-linux-gnu/crtn.o]
+  implicit dirs: [/usr/lib/gcc/aarch64-linux-gnu/12;/lib/aarch64-linux-gnu;/usr/lib/aarch64-linux-gnu;/lib;/usr/lib]
+  implicit fwks: []
+
+
+Performing C SOURCE FILE Test AK_HAVE_WALL succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jaqc5V
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_68439/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_68439.dir/build.make CMakeFiles/cmTC_68439.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jaqc5V'
+Building C object CMakeFiles/cmTC_68439.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_WALL  -DAK_LITTLE_ENDIAN    -Wall -MD -MT CMakeFiles/cmTC_68439.dir/src.c.o -MF CMakeFiles/cmTC_68439.dir/src.c.o.d -o CMakeFiles/cmTC_68439.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jaqc5V/src.c
+Linking C executable cmTC_68439
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_68439.dir/link.txt --verbose=1
+/usr/bin/cc  -DAK_LITTLE_ENDIAN  CMakeFiles/cmTC_68439.dir/src.c.o -o cmTC_68439 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jaqc5V'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C SOURCE FILE Test AK_HAVE_WPARENTHESES succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Lw0FAj
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_934a8/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_934a8.dir/build.make CMakeFiles/cmTC_934a8.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Lw0FAj'
+Building C object CMakeFiles/cmTC_934a8.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_WPARENTHESES  -DAK_LITTLE_ENDIAN -Wall    -Wparentheses -MD -MT CMakeFiles/cmTC_934a8.dir/src.c.o -MF CMakeFiles/cmTC_934a8.dir/src.c.o.d -o CMakeFiles/cmTC_934a8.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Lw0FAj/src.c
+Linking C executable cmTC_934a8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_934a8.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall  CMakeFiles/cmTC_934a8.dir/src.c.o -o cmTC_934a8 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-Lw0FAj'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C SOURCE FILE Test AK_HAVE_PEDANTIC_ERRORS succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-rl31vP
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7c598/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7c598.dir/build.make CMakeFiles/cmTC_7c598.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-rl31vP'
+Building C object CMakeFiles/cmTC_7c598.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_PEDANTIC_ERRORS  -DAK_LITTLE_ENDIAN -Wall -Wparentheses    -pedantic-errors -MD -MT CMakeFiles/cmTC_7c598.dir/src.c.o -MF CMakeFiles/cmTC_7c598.dir/src.c.o.d -o CMakeFiles/cmTC_7c598.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-rl31vP/src.c
+Linking C executable cmTC_7c598
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7c598.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses  CMakeFiles/cmTC_7c598.dir/src.c.o -o cmTC_7c598 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-rl31vP'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C SOURCE FILE Test AK_HAVE_O3 succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-mYCEGg
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_00f06/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_00f06.dir/build.make CMakeFiles/cmTC_00f06.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-mYCEGg'
+Building C object CMakeFiles/cmTC_00f06.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_O3  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors    -O3 -MD -MT CMakeFiles/cmTC_00f06.dir/src.c.o -MF CMakeFiles/cmTC_00f06.dir/src.c.o.d -o CMakeFiles/cmTC_00f06.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-mYCEGg/src.c
+Linking C executable cmTC_00f06
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_00f06.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors  CMakeFiles/cmTC_00f06.dir/src.c.o -o cmTC_00f06 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-mYCEGg'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C SOURCE FILE Test AK_HAVE_PIPE succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-djbEQC
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_e83d8/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_e83d8.dir/build.make CMakeFiles/cmTC_e83d8.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-djbEQC'
+Building C object CMakeFiles/cmTC_e83d8.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_PIPE  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3    -pipe -MD -MT CMakeFiles/cmTC_e83d8.dir/src.c.o -MF CMakeFiles/cmTC_e83d8.dir/src.c.o.d -o CMakeFiles/cmTC_e83d8.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-djbEQC/src.c
+Linking C executable cmTC_e83d8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e83d8.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3  CMakeFiles/cmTC_e83d8.dir/src.c.o -o cmTC_e83d8 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-djbEQC'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C SOURCE FILE Test AK_HAVE_FUNROLL_LOOPS succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-3gzm29
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_27a37/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_27a37.dir/build.make CMakeFiles/cmTC_27a37.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-3gzm29'
+Building C object CMakeFiles/cmTC_27a37.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_FUNROLL_LOOPS  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe    -funroll-loops -MD -MT CMakeFiles/cmTC_27a37.dir/src.c.o -MF CMakeFiles/cmTC_27a37.dir/src.c.o.d -o CMakeFiles/cmTC_27a37.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-3gzm29/src.c
+Linking C executable cmTC_27a37
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_27a37.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe  CMakeFiles/cmTC_27a37.dir/src.c.o -o cmTC_27a37 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-3gzm29'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C SOURCE FILE Test AK_HAVE_STDDEF_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gSjTzS
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_c80c2/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_c80c2.dir/build.make CMakeFiles/cmTC_c80c2.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gSjTzS'
+Building C object CMakeFiles/cmTC_c80c2.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_STDDEF_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_c80c2.dir/src.c.o -MF CMakeFiles/cmTC_c80c2.dir/src.c.o.d -o CMakeFiles/cmTC_c80c2.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gSjTzS/src.c
+/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gSjTzS/src.c:4:12: warning: unused variable 'ptr' [-Wunused-variable]
+     void *ptr = NULL;
+           ^
+1 warning generated.
+Linking C executable cmTC_c80c2
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c80c2.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_c80c2.dir/src.c.o -o cmTC_c80c2 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gSjTzS'
+
+
+Source file was:
+
+  #include <stddef.h>
+  int main( void ) {
+     void *ptr = NULL;
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_STDIO_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bwbWTS
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_fd96e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_fd96e.dir/build.make CMakeFiles/cmTC_fd96e.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bwbWTS'
+Building C object CMakeFiles/cmTC_fd96e.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_STDIO_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_fd96e.dir/src.c.o -MF CMakeFiles/cmTC_fd96e.dir/src.c.o.d -o CMakeFiles/cmTC_fd96e.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bwbWTS/src.c
+Linking C executable cmTC_fd96e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fd96e.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_fd96e.dir/src.c.o -o cmTC_fd96e 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bwbWTS'
+
+
+Source file was:
+
+  #include <stdio.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_STDLIB_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-UPhMT0
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_2f594/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_2f594.dir/build.make CMakeFiles/cmTC_2f594.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-UPhMT0'
+Building C object CMakeFiles/cmTC_2f594.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_STDLIB_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_2f594.dir/src.c.o -MF CMakeFiles/cmTC_2f594.dir/src.c.o.d -o CMakeFiles/cmTC_2f594.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-UPhMT0/src.c
+Linking C executable cmTC_2f594
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2f594.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_2f594.dir/src.c.o -o cmTC_2f594 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-UPhMT0'
+
+
+Source file was:
+
+  #include <stdlib.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_STRING_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cZAyoE
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_e1c6d/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_e1c6d.dir/build.make CMakeFiles/cmTC_e1c6d.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cZAyoE'
+Building C object CMakeFiles/cmTC_e1c6d.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_STRING_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_e1c6d.dir/src.c.o -MF CMakeFiles/cmTC_e1c6d.dir/src.c.o.d -o CMakeFiles/cmTC_e1c6d.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cZAyoE/src.c
+Linking C executable cmTC_e1c6d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e1c6d.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_e1c6d.dir/src.c.o -o cmTC_e1c6d 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-cZAyoE'
+
+
+Source file was:
+
+  #include <string.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_STRINGS_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-O3fGgp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_89547/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_89547.dir/build.make CMakeFiles/cmTC_89547.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-O3fGgp'
+Building C object CMakeFiles/cmTC_89547.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_STRINGS_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_89547.dir/src.c.o -MF CMakeFiles/cmTC_89547.dir/src.c.o.d -o CMakeFiles/cmTC_89547.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-O3fGgp/src.c
+Linking C executable cmTC_89547
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_89547.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_89547.dir/src.c.o -o cmTC_89547 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-O3fGgp'
+
+
+Source file was:
+
+  #include <strings.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_CTYPE_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4J28vt
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_0d816/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_0d816.dir/build.make CMakeFiles/cmTC_0d816.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4J28vt'
+Building C object CMakeFiles/cmTC_0d816.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_CTYPE_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_0d816.dir/src.c.o -MF CMakeFiles/cmTC_0d816.dir/src.c.o.d -o CMakeFiles/cmTC_0d816.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4J28vt/src.c
+Linking C executable cmTC_0d816
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0d816.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_0d816.dir/src.c.o -o cmTC_0d816 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4J28vt'
+
+
+Source file was:
+
+  #include <ctype.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_ENDIAN_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BhRTWu
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_e5c4b/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_e5c4b.dir/build.make CMakeFiles/cmTC_e5c4b.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BhRTWu'
+Building C object CMakeFiles/cmTC_e5c4b.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_ENDIAN_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_e5c4b.dir/src.c.o -MF CMakeFiles/cmTC_e5c4b.dir/src.c.o.d -o CMakeFiles/cmTC_e5c4b.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BhRTWu/src.c
+Linking C executable cmTC_e5c4b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e5c4b.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_e5c4b.dir/src.c.o -o cmTC_e5c4b 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BhRTWu'
+
+
+Source file was:
+
+  #include <endian.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_TIME_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gEheyr
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7dcc8/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7dcc8.dir/build.make CMakeFiles/cmTC_7dcc8.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gEheyr'
+Building C object CMakeFiles/cmTC_7dcc8.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_TIME_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_7dcc8.dir/src.c.o -MF CMakeFiles/cmTC_7dcc8.dir/src.c.o.d -o CMakeFiles/cmTC_7dcc8.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gEheyr/src.c
+Linking C executable cmTC_7dcc8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7dcc8.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_7dcc8.dir/src.c.o -o cmTC_7dcc8 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-gEheyr'
+
+
+Source file was:
+
+  #include <time.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSTIME_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-CXsACs
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_ab465/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_ab465.dir/build.make CMakeFiles/cmTC_ab465.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-CXsACs'
+Building C object CMakeFiles/cmTC_ab465.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSTIME_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_ab465.dir/src.c.o -MF CMakeFiles/cmTC_ab465.dir/src.c.o.d -o CMakeFiles/cmTC_ab465.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-CXsACs/src.c
+Linking C executable cmTC_ab465
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ab465.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_ab465.dir/src.c.o -o cmTC_ab465 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-CXsACs'
+
+
+Source file was:
+
+  #include <sys/time.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSLOG_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BsNQ6e
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5ae74/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5ae74.dir/build.make CMakeFiles/cmTC_5ae74.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BsNQ6e'
+Building C object CMakeFiles/cmTC_5ae74.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSLOG_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_5ae74.dir/src.c.o -MF CMakeFiles/cmTC_5ae74.dir/src.c.o.d -o CMakeFiles/cmTC_5ae74.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BsNQ6e/src.c
+Linking C executable cmTC_5ae74
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5ae74.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_5ae74.dir/src.c.o -o cmTC_5ae74 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BsNQ6e'
+
+
+Source file was:
+
+  #include <syslog.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_UNISTD_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jDM7t8
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_69e28/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_69e28.dir/build.make CMakeFiles/cmTC_69e28.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jDM7t8'
+Building C object CMakeFiles/cmTC_69e28.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_UNISTD_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_69e28.dir/src.c.o -MF CMakeFiles/cmTC_69e28.dir/src.c.o.d -o CMakeFiles/cmTC_69e28.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jDM7t8/src.c
+Linking C executable cmTC_69e28
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_69e28.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_69e28.dir/src.c.o -o cmTC_69e28 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-jDM7t8'
+
+
+Source file was:
+
+  #include <unistd.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_FCNTL_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-2fIBrQ
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9c482/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_9c482.dir/build.make CMakeFiles/cmTC_9c482.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-2fIBrQ'
+Building C object CMakeFiles/cmTC_9c482.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_FCNTL_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_9c482.dir/src.c.o -MF CMakeFiles/cmTC_9c482.dir/src.c.o.d -o CMakeFiles/cmTC_9c482.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-2fIBrQ/src.c
+Linking C executable cmTC_9c482
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9c482.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_9c482.dir/src.c.o -o cmTC_9c482 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-2fIBrQ'
+
+
+Source file was:
+
+  #include <fcntl.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_LIMITS_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i9IS9T
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f9181/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_f9181.dir/build.make CMakeFiles/cmTC_f9181.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i9IS9T'
+Building C object CMakeFiles/cmTC_f9181.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_LIMITS_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_f9181.dir/src.c.o -MF CMakeFiles/cmTC_f9181.dir/src.c.o.d -o CMakeFiles/cmTC_f9181.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i9IS9T/src.c
+Linking C executable cmTC_f9181
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f9181.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_f9181.dir/src.c.o -o cmTC_f9181 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-i9IS9T'
+
+
+Source file was:
+
+  #include <limits.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSMMAN_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0zneSb
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_bb6c8/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_bb6c8.dir/build.make CMakeFiles/cmTC_bb6c8.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0zneSb'
+Building C object CMakeFiles/cmTC_bb6c8.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSMMAN_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_bb6c8.dir/src.c.o -MF CMakeFiles/cmTC_bb6c8.dir/src.c.o.d -o CMakeFiles/cmTC_bb6c8.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0zneSb/src.c
+Linking C executable cmTC_bb6c8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bb6c8.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_bb6c8.dir/src.c.o -o cmTC_bb6c8 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0zneSb'
+
+
+Source file was:
+
+  #include <sys/mman.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSSTAT_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-pggAMR
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_20a39/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_20a39.dir/build.make CMakeFiles/cmTC_20a39.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-pggAMR'
+Building C object CMakeFiles/cmTC_20a39.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSSTAT_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_20a39.dir/src.c.o -MF CMakeFiles/cmTC_20a39.dir/src.c.o.d -o CMakeFiles/cmTC_20a39.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-pggAMR/src.c
+Linking C executable cmTC_20a39
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_20a39.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_20a39.dir/src.c.o -o cmTC_20a39 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-pggAMR'
+
+
+Source file was:
+
+  #include <sys/stat.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSTYPES_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0cIDBI
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_c1bed/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_c1bed.dir/build.make CMakeFiles/cmTC_c1bed.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0cIDBI'
+Building C object CMakeFiles/cmTC_c1bed.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSTYPES_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_c1bed.dir/src.c.o -MF CMakeFiles/cmTC_c1bed.dir/src.c.o.d -o CMakeFiles/cmTC_c1bed.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0cIDBI/src.c
+Linking C executable cmTC_c1bed
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c1bed.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_c1bed.dir/src.c.o -o cmTC_c1bed 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-0cIDBI'
+
+
+Source file was:
+
+  #include <sys/types.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSSOCKET_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4w8fJe
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_0312f/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_0312f.dir/build.make CMakeFiles/cmTC_0312f.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4w8fJe'
+Building C object CMakeFiles/cmTC_0312f.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSSOCKET_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_0312f.dir/src.c.o -MF CMakeFiles/cmTC_0312f.dir/src.c.o.d -o CMakeFiles/cmTC_0312f.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4w8fJe/src.c
+Linking C executable cmTC_0312f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0312f.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_0312f.dir/src.c.o -o cmTC_0312f 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-4w8fJe'
+
+
+Source file was:
+
+  #include <sys/socket.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSUN_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-DbQHhH
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a765e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a765e.dir/build.make CMakeFiles/cmTC_a765e.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-DbQHhH'
+Building C object CMakeFiles/cmTC_a765e.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSUN_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_a765e.dir/src.c.o -MF CMakeFiles/cmTC_a765e.dir/src.c.o.d -o CMakeFiles/cmTC_a765e.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-DbQHhH/src.c
+/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-DbQHhH/src.c:5:29: warning: unused variable 'sock' [-Wunused-variable]
+         struct sockaddr_un sock;
+                            ^
+1 warning generated.
+Linking C executable cmTC_a765e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a765e.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_a765e.dir/src.c.o -o cmTC_a765e 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-DbQHhH'
+
+
+Source file was:
+
+      #include <sys/un.h>
+      #include <sys/socket.h>
+      int main( void ) {
+         struct sockaddr_un sock;
+        return 0;
+      }
+
+Performing C SOURCE FILE Test AK_HAVE_SYSSELECT_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tnjwJN
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_da145/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_da145.dir/build.make CMakeFiles/cmTC_da145.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tnjwJN'
+Building C object CMakeFiles/cmTC_da145.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SYSSELECT_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_da145.dir/src.c.o -MF CMakeFiles/cmTC_da145.dir/src.c.o.d -o CMakeFiles/cmTC_da145.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tnjwJN/src.c
+Linking C executable cmTC_da145
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_da145.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_da145.dir/src.c.o -o cmTC_da145 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tnjwJN'
+
+
+Source file was:
+
+  #include <sys/select.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_ERRNO_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-WIurh3
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_036e8/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_036e8.dir/build.make CMakeFiles/cmTC_036e8.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-WIurh3'
+Building C object CMakeFiles/cmTC_036e8.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_ERRNO_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_036e8.dir/src.c.o -MF CMakeFiles/cmTC_036e8.dir/src.c.o.d -o CMakeFiles/cmTC_036e8.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-WIurh3/src.c
+Linking C executable cmTC_036e8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_036e8.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_036e8.dir/src.c.o -o cmTC_036e8 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-WIurh3'
+
+
+Source file was:
+
+  #include <errno.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_TERMIOS_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-5h7RGa
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f4aea/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_f4aea.dir/build.make CMakeFiles/cmTC_f4aea.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-5h7RGa'
+Building C object CMakeFiles/cmTC_f4aea.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_TERMIOS_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_f4aea.dir/src.c.o -MF CMakeFiles/cmTC_f4aea.dir/src.c.o.d -o CMakeFiles/cmTC_f4aea.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-5h7RGa/src.c
+Linking C executable cmTC_f4aea
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f4aea.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_f4aea.dir/src.c.o -o cmTC_f4aea 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-5h7RGa'
+
+
+Source file was:
+
+  #include <termios.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_DIRENT_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-k3u0zS
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7f7ee/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7f7ee.dir/build.make CMakeFiles/cmTC_7f7ee.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-k3u0zS'
+Building C object CMakeFiles/cmTC_7f7ee.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_DIRENT_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_7f7ee.dir/src.c.o -MF CMakeFiles/cmTC_7f7ee.dir/src.c.o.d -o CMakeFiles/cmTC_7f7ee.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-k3u0zS/src.c
+Linking C executable cmTC_7f7ee
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7f7ee.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_7f7ee.dir/src.c.o -o cmTC_7f7ee 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-k3u0zS'
+
+
+Source file was:
+
+  #include <dirent.h>
+  int main( void ) {
+     struct dirent st;
+     st.d_type = 4;
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_FNMATCH_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-s46CSz
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f2709/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_f2709.dir/build.make CMakeFiles/cmTC_f2709.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-s46CSz'
+Building C object CMakeFiles/cmTC_f2709.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_FNMATCH_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_f2709.dir/src.c.o -MF CMakeFiles/cmTC_f2709.dir/src.c.o.d -o CMakeFiles/cmTC_f2709.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-s46CSz/src.c
+Linking C executable cmTC_f2709
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f2709.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_f2709.dir/src.c.o -o cmTC_f2709 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-s46CSz'
+
+
+Source file was:
+
+  #include <fnmatch.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_STDALIGN_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-7nENnp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_eb479/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_eb479.dir/build.make CMakeFiles/cmTC_eb479.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-7nENnp'
+Building C object CMakeFiles/cmTC_eb479.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_STDALIGN_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_eb479.dir/src.c.o -MF CMakeFiles/cmTC_eb479.dir/src.c.o.d -o CMakeFiles/cmTC_eb479.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-7nENnp/src.c
+Linking C executable cmTC_eb479
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_eb479.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_eb479.dir/src.c.o -o cmTC_eb479 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-7nENnp'
+
+
+Source file was:
+
+  #include <stdalign.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_STDARG_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-LXwyUU
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_470e4/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_470e4.dir/build.make CMakeFiles/cmTC_470e4.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-LXwyUU'
+Building C object CMakeFiles/cmTC_470e4.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_STDARG_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_470e4.dir/src.c.o -MF CMakeFiles/cmTC_470e4.dir/src.c.o.d -o CMakeFiles/cmTC_470e4.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-LXwyUU/src.c
+Linking C executable cmTC_470e4
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_470e4.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_470e4.dir/src.c.o -o cmTC_470e4 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-LXwyUU'
+
+
+Source file was:
+
+  #include <stdarg.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_GETOPT_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-99V1wv
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_3ec23/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_3ec23.dir/build.make CMakeFiles/cmTC_3ec23.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-99V1wv'
+Building C object CMakeFiles/cmTC_3ec23.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_GETOPT_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_3ec23.dir/src.c.o -MF CMakeFiles/cmTC_3ec23.dir/src.c.o.d -o CMakeFiles/cmTC_3ec23.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-99V1wv/src.c
+Linking C executable cmTC_3ec23
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3ec23.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_3ec23.dir/src.c.o -o cmTC_3ec23 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-99V1wv'
+
+
+Source file was:
+
+  #include <getopt.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_LOCALE_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-1YvLcE
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_868d7/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_868d7.dir/build.make CMakeFiles/cmTC_868d7.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-1YvLcE'
+Building C object CMakeFiles/cmTC_868d7.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_LOCALE_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_868d7.dir/src.c.o -MF CMakeFiles/cmTC_868d7.dir/src.c.o.d -o CMakeFiles/cmTC_868d7.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-1YvLcE/src.c
+Linking C executable cmTC_868d7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_868d7.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_868d7.dir/src.c.o -o cmTC_868d7 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-1YvLcE'
+
+
+Source file was:
+
+  #include <locale.h>
+  int main( void ) {
+     setlocale( LC_ALL, "" );
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_LIBINTL_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BE8Jcp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_47cd9/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_47cd9.dir/build.make CMakeFiles/cmTC_47cd9.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BE8Jcp'
+Building C object CMakeFiles/cmTC_47cd9.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_LIBINTL_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_47cd9.dir/src.c.o -MF CMakeFiles/cmTC_47cd9.dir/src.c.o.d -o CMakeFiles/cmTC_47cd9.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BE8Jcp/src.c
+Linking C executable cmTC_47cd9
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_47cd9.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_47cd9.dir/src.c.o -o cmTC_47cd9 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-BE8Jcp'
+
+
+Source file was:
+
+  #include <libintl.h>
+  int main( void ) {
+     setlocale( LC_ALL, "" );
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SIGNAL_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tMyCBQ
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b4897/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b4897.dir/build.make CMakeFiles/cmTC_b4897.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tMyCBQ'
+Building C object CMakeFiles/cmTC_b4897.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SIGNAL_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_b4897.dir/src.c.o -MF CMakeFiles/cmTC_b4897.dir/src.c.o.d -o CMakeFiles/cmTC_b4897.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tMyCBQ/src.c
+Linking C executable cmTC_b4897
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b4897.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_b4897.dir/src.c.o -o cmTC_b4897 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-tMyCBQ'
+
+
+Source file was:
+
+  #include <signal.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_BYTESWAP_H succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-A9IUKA
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_566c7/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_566c7.dir/build.make CMakeFiles/cmTC_566c7.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-A9IUKA'
+Building C object CMakeFiles/cmTC_566c7.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_BYTESWAP_H  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_566c7.dir/src.c.o -MF CMakeFiles/cmTC_566c7.dir/src.c.o.d -o CMakeFiles/cmTC_566c7.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-A9IUKA/src.c
+Linking C executable cmTC_566c7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_566c7.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_566c7.dir/src.c.o -o cmTC_566c7 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-A9IUKA'
+
+
+Source file was:
+
+  #include <byteswap.h>
+  int main( void ) {
+     return 0;
+  }
+
+Performing C SOURCE FILE Test AK_HAVE_SSIZE_T succeeded with the following output:
+Change Dir: /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bxJNl2
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_839fb/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_839fb.dir/build.make CMakeFiles/cmTC_839fb.dir/build
+gmake[1]: Entering directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bxJNl2'
+Building C object CMakeFiles/cmTC_839fb.dir/src.c.o
+/usr/bin/cc -DAK_HAVE_SSIZE_T  -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  -MD -MT CMakeFiles/cmTC_839fb.dir/src.c.o -MF CMakeFiles/cmTC_839fb.dir/src.c.o.d -o CMakeFiles/cmTC_839fb.dir/src.c.o -c /home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bxJNl2/src.c
+/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bxJNl2/src.c:4:14: warning: unused variable 'x' [-Wunused-variable]
+     ssize_t x = 0;
+             ^
+1 warning generated.
+Linking C executable cmTC_839fb
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_839fb.dir/link.txt --verbose=1
+/usr/bin/cc -DAK_LITTLE_ENDIAN -Wall -Wparentheses -pedantic-errors -O3 -pipe -funroll-loops  CMakeFiles/cmTC_839fb.dir/src.c.o -o cmTC_839fb 
+gmake[1]: Leaving directory '/home/suriksurik/libakrypt-0.x/build/CMakeFiles/CMakeScratch/TryCompile-bxJNl2'
+
+
+Source file was:
+
+  #include <sys/types.h>
+  int main( void ) {
+     ssize_t x = 0;
+     return 0;
+  }
+
