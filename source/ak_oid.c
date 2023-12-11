@@ -8,6 +8,8 @@
 /* ----------------------------------------------------------------------------------------------- */
 /*                           функции для доступа к именам криптоалгоритмов                         */
 /* ----------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------------- */
  static const char *libakrypt_engine_names[] = {
     "identifier",
     "block cipher",
@@ -37,14 +39,76 @@
     "kbox params",
     "encrypt mode",
     "encrypt2k mode",
-    "acpkm mode",
-    "mac mode",
-    "aead mode",
-    "xcrypt mode",
+    "acpkm",
+    "mac",
+    "aead",
+    "xcrypt",
     "descriptor",
     "undefined mode"
 };
 
+/*! \addtogroup oid-doc
+
+  \ref oid (Object IDentifier) это уникальная последовательность чисел, разделенных точками.
+  Уникальный идентификатор может быть присвоен любому криптографическому механизму (алгоритму,
+  схеме, протоколу), а также произвольным параметрам этих механизмов.
+  Использование OID'в позволяет однозначно определять тип криптографического механизма или
+  значения его параметров на этапе выполнения программы, а также
+  однозначно связывать данные (как правило ключевые) с алгоритмами, в которых эти данные
+  используются.
+
+  Все \ref oid образуют одно большое дерево,
+  поддерживаемое уполномоченными на то организациями в соответствии с международным стандартом [ГОСТ Р ИСО/МЭК 9834-1-2009](https://files.stroyinf.ru/Data2/1/4293825/4293825307.pdf).
+
+  Корень российского дерева идентификаторов образует идентификатор `1.2.643`.
+  Далее дерево выглядит следующим образом
+
+    - `1.2.643.1`  Операторы связи (communication organization)
+    - `1.2.643.2`  [Производители программного обеспечения](https://oid.iitrust.ru/oid_search/11/) (program organization)
+    - `1.2.643.3`  Удостоверяющие центры (certificate authority)
+    - `1.2.643.4`  Банки (banks)
+    - `1.2.643.5`  Органы власти и государственные организации (government organization)
+    - `1.2.643.6`  Прочие организации (another organization)
+    - `1.2.643.7`  Организации по стандартизации (organization of standardization); сюда, в частности,
+    входит Технический комитет по стандартизации ТК26 "Криптографическая защита информации"
+    - `1.2.643.8`  Образовательные организации (organization of education)
+    - `1.2.643.9`  Муниципальные образования (municipalities)
+    - `1.2.643.10` Индивидуальные предприниматели (individual businessman)
+
+  Библиотека `libakrypt` поддерживает свое собственное дерево идентификаторов, корнем
+  которого служит последовательность `1.2.643.2.52.1`.
+  Данные значения используются в случае, когда идентификаторы алгоритмов не определены
+  ни рекомендациями ТК 26, ни существующими реализациями других производителей
+  программного обеспечения.
+
+  Поддеревья алгоритмов и их параметров определяются следующим образом.
+
+  - `1.2.643.2.52.1.1` генераторы псевдо-случайных чисел,
+  - `1.2.643.2.52.1.2` алгоритмы поточного шифрования,
+  - `1.2.643.2.52.1.3` режимы работы поточных шифров,
+  - `1.2.643.2.52.1.4` алгоритмы блочного шифрования,
+  - `1.2.643.2.52.1.5` базовые режимы работы блочных шифров,
+  - `1.2.643.2.52.1.6` расширенные режимы работы блочных шифров,
+  - `1.2.643.2.52.1.7` алгоритмы выработки имитовставки,
+
+  - `1.2.643.2.52.1.10` алгоритмы выработки электронной подписи,
+  - `1.2.643.2.52.1.11` алгоритмы проверки электронной подписи,
+  - `1.2.643.2.52.1.12` параметры эллиптических кривых
+
+  - `1.2.643.2.52.1.181` алгоритмы генерации ключевой информации для схемы Блома
+  - `1.2.643.2.52.1.127` контейнеры библиотеки
+  - `1.2.643.2.52.1.98` расширения инфраструктуры открытых ключей (PKIX)
+
+  Техническая реализация класса \ref oid представляет собой структуру,
+  связывающую вместе списки имен (каждый \ref oid может иметь несколько имен),
+  списки идентификаторов (каждый \ref oid может иметь несколько идентификаторов, присвоенных
+  различными организациями), указатель на двоичные данные (это, как правило, явно заданные параметры
+  криптографических алгоритмов), а также набор функций,
+  позволяющих создавать, удалять и управлять объектами (секретными ключами)
+  криптографических преобразований.
+
+  Реализованы функции поиска идентификаторов по заданным именам, идентификаторам,
+  а также типам (\ref oid_engines_t) и режимам (\ref oid_modes_t) криптографических преобразований.*/
 /* ----------------------------------------------------------------------------------------------- */
 /*! Константные значения имен идентификаторов */
  static const char *asn1_lcg_n[] =         { "lcg", NULL };
@@ -59,11 +123,6 @@
  static const char *asn1_winrtl_n[] =       { "winrtl", NULL };
  static const char *asn1_winrtl_i[] =       { "1.2.643.2.52.1.1.4", NULL };
 #endif
-/* генератор, использующий функцию хеширования согласно Р 1323565.1.006-2017 */
- static const char *asn1_hrng_n[] =     { "hrng", NULL };
- static const char *asn1_hrng_i[] =     { "1.2.643.2.52.1.1.5", NULL };
- static const char *asn1_nlfsr_n[] =     { "nlfsr", NULL };
- static const char *asn1_nlfsr_i[] =     { "1.2.643.2.52.1.1.6", NULL };
 
  static const char *asn1_streebog256_n[] = { "streebog256", "md_gost12_256", NULL };
  static const char *asn1_streebog256_i[] = { "1.2.643.7.1.1.2.2", NULL };
@@ -79,6 +138,8 @@
  static const char *asn1_magma_i[] =       { "1.2.643.7.1.1.5.1", NULL };
  static const char *asn1_kuznechik_n[] =   { "kuznechik", "kuznyechik", "grasshopper", NULL };
  static const char *asn1_kuznechik_i[] =   { "1.2.643.7.1.1.5.2", NULL };
+static const char *asn1_sm4_n[] =       { "sm4", NULL };
+static const char *asn1_sm4_i[] =       { "1.2.643.7.1.1.5.3", NULL };
 
  static const char *asn1_ctr_magma_n[] =   { "ctr-magma", NULL };
  static const char *asn1_ctr_magma_i[] =   { "1.2.643.2.52.1.5.1.1", NULL };
@@ -104,6 +165,7 @@
                                            { "cbc-kuznechik", "cbc-kuznyechik", NULL };
  static const char *asn1_cbc_kuznechik_i[] =
                                            { "1.2.643.2.52.1.5.4.2", NULL };
+
 
  static const char *asn1_xts_magma_n[] =   { "xts-magma", NULL };
  static const char *asn1_xts_magma_i[] =   { "1.2.643.2.52.1.5.5.1", NULL };
@@ -157,10 +219,6 @@
                                            { "ctr-hmac-magma-streebog512", NULL };
  static const char *asn1_ctr_hmac_magma_streebog512_i[] =
                                            { "1.2.643.2.52.1.6.2.1.2", NULL };
- static const char *asn1_ctr_nmac_magma_n[] =
-                                           { "ctr-nmac-magma", NULL };
- static const char *asn1_ctr_nmac_magma_i[] =
-                                           { "1.2.643.2.52.1.6.2.1.3", NULL };
  static const char *asn1_ctr_hmac_kuznechik_streebog256_n[] =
                                            { "ctr-hmac-kuznechik-streebog256",
                                              "ctr-hmac-kuznyechik-streebog256", NULL };
@@ -171,12 +229,6 @@
                                              "ctr-hmac-kuznyechik-streebog512", NULL };
  static const char *asn1_ctr_hmac_kuznechik_streebog512_i[] =
                                            { "1.2.643.2.52.1.6.2.2.2", NULL };
- static const char *asn1_ctr_nmac_kuznechik_n[] =
-                                           { "ctr-nmac-kuznechik",
-                                             "ctr-nmac-kuznyechik", NULL };
- static const char *asn1_ctr_nmac_kuznechik_i[] =
-                                           { "1.2.643.2.52.1.6.2.2.3", NULL };
-/*
  static const char *asn1_xtsmac_magma_n[] =
                                            { "xtsmac-magma", NULL };
  static const char *asn1_xtsmac_magma_i[] =
@@ -184,7 +236,7 @@
  static const char *asn1_xtsmac_kuznechik_n[] =
                                            { "xtsmac-kuznechik", "xtsmac-kuznyechik", NULL };
  static const char *asn1_xtsmac_kuznechik_i[] =
-                                           { "1.2.643.2.52.1.6.3.2", NULL }; */
+                                           { "1.2.643.2.52.1.6.3.2", NULL };
 
  static const char *asn1_sign256_n[] =     { "id-tc26-signwithdigest-gost3410-12-256",
                                              "sign256", NULL };
@@ -200,25 +252,24 @@
  static const char *asn1_w256_pst_n[] =    { "id-tc26-gost-3410-2012-256-paramSetTest", NULL };
  static const char *asn1_w256_pst_i[] =    { "1.2.643.7.1.2.1.1.0",
                                              "1.2.643.2.2.35.0", NULL };
- static const char *asn1_w256_psa_n[] =    { "id-tc26-gost-3410-2012-256-paramSetA", 
-                                             "tc26a", NULL };
+ static const char *asn1_w256_psa_n[] =    { "id-tc26-gost-3410-2012-256-paramSetA", NULL };
  static const char *asn1_w256_psa_i[] =    { "1.2.643.7.1.2.1.1.1", NULL };
  static const char *asn1_w256_psb_n[] =    { "id-tc26-gost-3410-2012-256-paramSetB",
                                              "id-rfc4357-gost-3410-2001-paramSetA",
                                              "id-rfc4357-2001dh-paramSet",
                                              "cspdh",
-                                             "cspa", "tc26b", NULL };
+                                             "cspa", NULL };
  static const char *asn1_w256_psb_i[] =    { "1.2.643.7.1.2.1.1.2",
                                              "1.2.643.2.2.35.1",
                                              "1.2.643.2.2.36.0", NULL };
  static const char *asn1_w256_psc_n[] =    { "id-tc26-gost-3410-2012-256-paramSetC",
                                              "id-rfc4357-gost-3410-2001-paramSetB",
-                                             "cspb", "tc26c", NULL };
+                                             "cspb", NULL };
  static const char *asn1_w256_psc_i[] =    { "1.2.643.7.1.2.1.1.3",
                                              "1.2.643.2.2.35.2", NULL };
  static const char *asn1_w256_psd_n[] =    { "id-tc26-gost-3410-2012-256-paramSetD",
                                              "id-rfc4357-gost-3410-2001-paramSetC",
-                                             "cspc", "tc26d", NULL };
+                                             "cspc", NULL };
  static const char *asn1_w256_psd_i[] =    { "1.2.643.7.1.2.1.1.4",
                                              "1.2.643.2.2.35.3", NULL };
  static const char *asn1_w256_axel_n[] =   { "id-axel-gost-3410-2012-256-paramSetN0",
@@ -273,31 +324,31 @@
  static const char *asn1_pcmd_i[] =        { "1.2.643.2.52.1.127.3.6", NULL };
 
 /* добавляем аттрибуты типов (X.500) и расширенные аттрибуты */
- static const char *asn1_email_n[] =       { "email-address", "em", "Почта", NULL };
+ static const char *asn1_email_n[] =       { "email-address", "em", "email", NULL };
  static const char *asn1_email_i[] =       { "1.2.840.113549.1.9.1", NULL };
- static const char *asn1_cn_n[] =          { "common-name", "cn", "Имя", NULL };
+ static const char *asn1_cn_n[] =          { "common-name", "cn", NULL };
  static const char *asn1_cn_i[] =          { "2.5.4.3", NULL };
- static const char *asn1_s_n[] =           { "surname", "su", "Фамилия", NULL };
+ static const char *asn1_s_n[] =           { "surname", "su", NULL };
  static const char *asn1_s_i[] =           { "2.5.4.4", NULL };
- static const char *asn1_sn_n[] =          { "serial-number", "sn", "Серийный номер", NULL };
+ static const char *asn1_sn_n[] =          { "serial-number", "sn", NULL };
  static const char *asn1_sn_i[] =          { "2.5.4.5", NULL };
- static const char *asn1_c_n[] =           { "country-name", "ct", "Страна", NULL };
+ static const char *asn1_c_n[] =           { "country-name", "ct", NULL };
  static const char *asn1_c_i[] =           { "2.5.4.6", NULL };
- static const char *asn1_l_n[] =           { "locality-name", "ln", "Населенный пункт", NULL };
+ static const char *asn1_l_n[] =           { "locality-name", "ln", NULL };
  static const char *asn1_l_i[] =           { "2.5.4.7", NULL };
- static const char *asn1_st_n[] =          { "state-or-province-name", "st", "Область", NULL };
+ static const char *asn1_st_n[] =          { "state-or-province-name", "st", NULL };
  static const char *asn1_st_i[] =          { "2.5.4.8", NULL };
- static const char *asn1_sa_n[] =          { "street-address", "sa", "Адрес", NULL };
+ static const char *asn1_sa_n[] =          { "street-address", "sa", NULL };
  static const char *asn1_sa_i[] =          { "2.5.4.9", NULL };
- static const char *asn1_o_n[] =           { "organization", "or", "Организация", NULL };
+ static const char *asn1_o_n[] =           { "organization", "or", NULL };
  static const char *asn1_o_i[] =           { "2.5.4.10", NULL };
- static const char *asn1_ou_n[] =          { "organization-unit", "ou", "Подразделение", NULL };
+ static const char *asn1_ou_n[] =          { "organization-unit", "ou", NULL };
  static const char *asn1_ou_i[] =          { "2.5.4.11", NULL };
- static const char *asn1_title_n[] =       { "title", "tl", "Название", NULL };
+ static const char *asn1_title_n[] =       { "title", "tl", NULL };
  static const char *asn1_title_i[] =       { "2.5.4.12", NULL };
- static const char *asn1_gn_n[] =          { "given-name", "gn", "Имя, данное при рождении", NULL };
+ static const char *asn1_gn_n[] =          { "given-name", "gn", NULL };
  static const char *asn1_gn_i[] =          { "2.5.4.42", NULL };
- static const char *asn1_ps_n[] =          { "pseudonym", "ps", "Псевдоним", NULL };
+ static const char *asn1_ps_n[] =          { "pseudonym", "ps", NULL };
  static const char *asn1_ps_i[] =          { "2.5.4.65", NULL };
 
  static const char *asn1_ski_n[] =         { "subject-key-identifier", NULL };
@@ -339,19 +390,19 @@
  static const char *asn1_pkix_exAD_i[] =   { "1.3.6.1.5.5.7.48.2", NULL };
 
 /* следующее добро из Приказа ФСБ N 795 */
- static const char *asn1_ogrn_n[] =        { "ogrn", "og", "ОГРН", NULL };
+ static const char *asn1_ogrn_n[] =        { "ogrn", "og", NULL };
  static const char *asn1_ogrn_i[] =        { "1.2.643.100.1", NULL };
- static const char *asn1_snils_n[] =       { "snils", "si", "СНИЛС", NULL };
+ static const char *asn1_snils_n[] =       { "snils", "si", NULL };
  static const char *asn1_snils_i[] =       { "1.2.643.100.3", NULL };
- static const char *asn1_ogrnip_n[] =      { "ogrnip", "oi", "ОГРНИП", NULL };
+ static const char *asn1_ogrnip_n[] =      { "ogrnip", "oi", NULL };
  static const char *asn1_ogrnip_i[] =      { "1.2.643.100.5", NULL };
  static const char *asn1_owner_mod_n[] =   { "subject-crypto-module", NULL };
  static const char *asn1_owner_mod_i[] =   { "1.2.643.100.111", NULL };
  static const char *asn1_issuer_mod_n[] =  { "issuer-crypto-module", NULL };
  static const char *asn1_issuer_mod_i[] =  { "1.2.643.100.112", NULL };
- static const char *asn1_inn_n[] =         { "inn", "in", "ИНН физлица", NULL }; /* ИНН физлица */
+ static const char *asn1_inn_n[] =         { "inn", "in", NULL }; /* ИНН физлица */
  static const char *asn1_inn_i[] =         { "1.2.643.3.131.1.1", NULL };
- static const char *asn1_innle_n[] =       { "inn-legal-entity", "le", "ИНН юрлица", NULL }; /* ИНН юрлица, начиная с 2021 г. */
+ static const char *asn1_innle_n[] =       { "inn-legal-entity", "le", NULL }; /* ИНН юрлица, начиная с 2021 г. */
  static const char *asn1_innle_i[] =       { "1.2.643.100.4", NULL };
  static const char *asn1_class_kc1_n[] =   { "digital-signature-module, class kc1", "kc1", NULL };
  static const char *asn1_class_kc1_i[] =   { "1.2.643.100.113.1", NULL };
@@ -450,6 +501,13 @@
 
 
 /* ----------------------------------------------------------------------------------------------- */
+#define ak_object_bckey_sm4 { sizeof( struct bckey ), \
+                           ( ak_function_create_object *) ak_bckey_create_sm4, \
+                           ( ak_function_destroy_object *) ak_bckey_destroy, \
+                           ( ak_function_set_key_object *)ak_bckey_set_key, \
+                           ( ak_function_set_key_random_object *)ak_bckey_set_key_random, \
+                      ( ak_function_set_key_from_password_object *)ak_bckey_set_key_from_password }
+
  #define ak_object_bckey_magma { sizeof( struct bckey ), \
                            ( ak_function_create_object *) ak_bckey_create_magma, \
                            ( ak_function_destroy_object *) ak_bckey_destroy, \
@@ -533,17 +591,8 @@ static struct oid libakrypt_oids[] =
                                                                 ak_object_undefined, NULL, NULL }},
 #endif
 
- { random_generator, algorithm, asn1_hrng_i, asn1_hrng_n, NULL,
-  {{ sizeof( struct random ), (ak_function_create_object *)ak_random_create_hrng,
-                              (ak_function_destroy_object *)ak_random_destroy, NULL, NULL, NULL },
-                                                                ak_object_undefined, NULL, NULL }},
-
- { random_generator, algorithm, asn1_nlfsr_i, asn1_nlfsr_n, NULL,
-  {{ sizeof( struct random ), (ak_function_create_object *)ak_random_create_nlfsr,
-                              (ak_function_destroy_object *)ak_random_destroy, NULL, NULL, NULL },
-                                                                ak_object_undefined, NULL, NULL }},
-
 /* добавляем идентификаторы алгоритмов */
+
  { hash_function, algorithm, asn1_streebog256_i, asn1_streebog256_n, NULL,
   {{ sizeof( struct hash ), ( ak_function_create_object *) ak_hash_create_streebog256,
                               ( ak_function_destroy_object *) ak_hash_destroy, NULL, NULL, NULL },
@@ -565,14 +614,16 @@ static struct oid libakrypt_oids[] =
  { hmac_function, algorithm, asn1_nmac_streebog_i, asn1_nmac_streebog_n, NULL,
                             { ak_object_nmac_streebog,
                               ak_object_undefined, (ak_function_run_object *) ak_hmac_ptr, NULL }},
-
  { block_cipher, algorithm, asn1_magma_i, asn1_magma_n, NULL,
                                        { ak_object_bckey_magma, ak_object_undefined, NULL, NULL }},
 
  { block_cipher, algorithm, asn1_kuznechik_i, asn1_kuznechik_n, NULL,
                                    { ak_object_bckey_kuznechik, ak_object_undefined, NULL, NULL }},
+ { block_cipher, algorithm, asn1_sm4_i, asn1_sm4_n, NULL,
+   { ak_object_bckey_sm4, ak_object_undefined, NULL, NULL }},
 
 /* базовые режимы блочного шифрования */
+
  { block_cipher, encrypt_mode, asn1_ctr_magma_i, asn1_ctr_magma_n, NULL,
   { ak_object_bckey_magma, ak_object_undefined, ( ak_function_run_object *) ak_bckey_ctr,
                                                        ( ak_function_run_object *) ak_bckey_ctr }},
@@ -654,6 +705,7 @@ static struct oid libakrypt_oids[] =
                                           ( ak_function_run_object *) ak_bckey_encrypt_ctr_cmac,
                                           ( ak_function_run_object *) ak_bckey_decrypt_ctr_cmac }},
 
+/*
  { block_cipher, aead, asn1_ctr_hmac_magma_streebog256_i, asn1_ctr_hmac_magma_streebog256_n, NULL,
   { ak_object_bckey_magma, ak_object_hmac_streebog256,
                                           ( ak_function_run_object *) ak_bckey_encrypt_ctr_hmac,
@@ -675,27 +727,16 @@ static struct oid libakrypt_oids[] =
   { ak_object_bckey_kuznechik, ak_object_hmac_streebog512,
                                           ( ak_function_run_object *) ak_bckey_encrypt_ctr_hmac,
                                           ( ak_function_run_object *) ak_bckey_decrypt_ctr_hmac }},
-
- { block_cipher, aead, asn1_ctr_nmac_magma_i, asn1_ctr_nmac_magma_n, NULL,
-  { ak_object_bckey_magma, ak_object_nmac_streebog,
-                                          ( ak_function_run_object *) ak_bckey_encrypt_ctr_hmac,
-                                          ( ak_function_run_object *) ak_bckey_decrypt_ctr_hmac }},
-
- { block_cipher, aead, asn1_ctr_nmac_kuznechik_i, asn1_ctr_nmac_kuznechik_n, NULL,
-  { ak_object_bckey_kuznechik, ak_object_nmac_streebog,
-                                          ( ak_function_run_object *) ak_bckey_encrypt_ctr_hmac,
-                                          ( ak_function_run_object *) ak_bckey_decrypt_ctr_hmac }},
-
-/*
+*/
  { block_cipher, aead, asn1_xtsmac_magma_i, asn1_xtsmac_magma_n, NULL,
   { ak_object_bckey_magma, ak_object_bckey_magma,
                                             ( ak_function_run_object *) ak_bckey_encrypt_xtsmac,
                                             ( ak_function_run_object *) ak_bckey_decrypt_xtsmac }},
+
  { block_cipher, aead, asn1_xtsmac_kuznechik_i, asn1_xtsmac_kuznechik_n, NULL,
   { ak_object_bckey_kuznechik, ak_object_bckey_kuznechik,
                                             ( ak_function_run_object *) ak_bckey_encrypt_xtsmac,
-                                            ( ak_function_run_object *) ak_bckey_decrypt_xtsmac }},*/
-
+                                            ( ak_function_run_object *) ak_bckey_decrypt_xtsmac }},
  { sign_function, algorithm, asn1_sign256_i, asn1_sign256_n, NULL,
   { ak_object_signkey256, ak_object_undefined,
                                           ( ak_function_run_object *) ak_signkey_sign_ptr, NULL }},
