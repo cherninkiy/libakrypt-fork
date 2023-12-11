@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------------------------- */
-/*  Copyright (c) 2014 - 2023 by Axel Kenzo, axelkenzo@mail.ru                                     */
+/*  Copyright (c) 2014 - 2022 by Axel Kenzo, axelkenzo@mail.ru                                     */
 /*                                                                                                 */
 /* ----------------------------------------------------------------------------------------------- */
 /*  Copyright (c) 2018 by Mikhail Lavrinovich, mikhail.lavrinovich@netcracker.com                  */
@@ -7,8 +7,6 @@
 /*  Copyright (c) 2019 by Diffractee                                                               */
 /*  Copyright (c) 2019 by kirlit26                                                                 */
 /*  Copyright (c) 2019 by Anton Sakharov                                                           */
-/*  Copyright (c) 2022 by Yasmin Yurovskikh, yaeyurovskikh@edu.hse.ru                              */
-/*  Copyright (c) 2022 by AlexVCh66                                                                */
 /*                                                                                                 */
 /* ----------------------------------------------------------------------------------------------- */
 /*  Файл libakrypt.h                                                                               */
@@ -29,10 +27,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* ----------------------------------------------------------------------------------------------- */
-/** \defgroup libakrypt Основные криптографические преобразования (библиотека libakrypt)
-  @{ */
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Попытка доступа к неопределенной опции библиотеки. */
@@ -65,8 +59,6 @@ extern "C" {
  #define ak_error_curve_order_parameters      (-124)
 /*! \brief Ошибка, возникающая когда простой модуль кривой задан неверно. */
  #define ak_error_curve_prime_modulo          (-125)
-/*! \brief Ошибка, возникающая при сравнении двух эллиптических кривых */
- #define ak_error_curve_not_equal             (-126)
 
 /*! \brief Ошибка, возникающая при использовании ключа, значение которого не определено. */
  #define ak_error_key_value                   (-130)
@@ -128,8 +120,6 @@ extern "C" {
  #define ak_error_certificate_engine          (-168)
 /*! \brief Ошибка при импорте сертификата: электроннная подпись под сертификатом не верна. */
  #define ak_error_certificate_signature       (-169)
-/*! \brief Ошибка при проверке электроннной подписи под произвольными данными */
- #define ak_error_signature                   (-170)
 
 /*! \brief Ошибка при выборе схемы асимметричного шифрования */
  #define ak_error_encrypt_scheme              (-180)
@@ -137,7 +127,7 @@ extern "C" {
  #define ak_error_aead_initialization         (-181)
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup options-doc Инициализация и настройка параметров библиотеки
+/** \addtogroup options-doc Инициализация и настройка параметров библиотеки
  @{ */
 /*! \brief Функция инициализации библиотеки. */
  dll_export bool_t ak_libakrypt_create( ak_function_log * );
@@ -165,11 +155,13 @@ extern "C" {
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Функция устанавливает режим совместимости криптографических преобразований с библиотекой openssl. */
  dll_export int ak_libakrypt_set_openssl_compability( bool_t );
+/*! \brief Функция получает домашний каталог библиотеки. */
+ dll_export int ak_libakrypt_get_home_path( char * , const size_t );
 /*! \brief Функция создает полное имя файла в домашем каталоге библиотеки. */
  dll_export int ak_libakrypt_create_home_filename( char * , const size_t , char * , const int );
 /*! \brief Функция выводит в заданный файл параметры эллиптической кривой. */
  dll_export int ak_libakrypt_print_curve( FILE * , const char * );
-/** \defgroup tests-doc Тестирование криптографических механизмов
+/** \addtogroup tests-doc Тестирование криптографических механизмов
  @{ */
 /*! \brief Функция выполняет динамическое тестирование работоспособности криптографических преобразований. */
  dll_export bool_t ak_libakrypt_dynamic_control_test( void );
@@ -209,15 +201,14 @@ extern "C" {
 /*! \brief Выполнение тестовых примеров для алгоритмов выработки и проверки электронной подписи */
  dll_export bool_t ak_libakrypt_test_sign( void );
 
-/** @}*/
-/** @}*/
+/** @}*//** @}*/
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Указатель на класс генератора псевдо-случайных чисел. */
  typedef struct random *ak_random;
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup oid-doc Идентификаторы криптографических механизмов
+/** \addtogroup oid-doc Идентификаторы криптографических механизмов
  @{ */
 /*! \brief Указатель на идентификатор криптографического механизма */
  typedef struct oid *ak_oid;
@@ -308,7 +299,7 @@ extern "C" {
    /*! \brief алгоритм выработки ключа абонента для схемы Блома распределения симметричных ключей */
      blom_subscriber,
    /*! \brief алгоритм выработки ключа парной связи */
-     blom_pairwise,
+    blom_pairwise,
    /*! \brief неопределенный механизм, может возвращаться как ошибка */
      undefined_engine
 } oid_engines_t;
@@ -407,10 +398,10 @@ extern "C" {
  dll_export ak_oid ak_oid_findnext_by_mode( const ak_oid, const oid_modes_t );
 /*! \brief Проверка соответствия заданного адреса корректному oid. */
  dll_export bool_t ak_oid_check( const ak_pointer );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup random-doc Генераторы псевдо-случайных чисел
+/** \addtogroup random-doc Генераторы псевдо-случайных чисел
  @{ */
 /*! \brief Функция, принимающая в качестве аргумента указатель на структуру struct random. */
  typedef int ( ak_function_random )( ak_random );
@@ -463,14 +454,6 @@ extern "C" {
 /*! \brief Инициализация контекста, реализующего интерфейс доступа к генератору псевдо-случайных чисел, предоставляемому ОС Windows. */
  dll_export int ak_random_create_winrtl( ak_random );
 #endif
-/*! \brief Инициализация контекста нелинейного конгруэнтного генератора с обратной квадратичной связью
- *  (NLFSR генератора). */
- dll_export int ak_random_create_nlfsr( ak_random );
-/*! \brief Инициализация контекста нелинейного конгруэнтного генератора с обратной квадратичной связью
-    с явным указанием параметров генератора. */
- dll_export int ak_random_create_nlfsr_with_params( ak_random , size_t , ak_uint64 );
-/*! \brief Инициализация контекста генератора на основе функции хеширования согласно Р 1323565.1.006-2017. */
- dll_export int ak_random_create_hrng( ak_random );
 /*! \brief Инициализация контекста генератора по заданному OID алгоритма генерации псевдо-случайных чисел. */
  dll_export int ak_random_create_oid( ak_random, ak_oid );
 /*! \brief Установка внутреннего состояния генератора псевдо-случайных чисел. */
@@ -485,10 +468,10 @@ extern "C" {
  dll_export int ak_ptr_wipe( ak_pointer , size_t , ak_random );
 /*! \brief Функция очистки и последующего удаления файла. */
  dll_export int ak_file_delete( const char * , ak_random );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup skey-doc Секретные ключи криптографических механизмов
+/** \addtogroup skey-doc Секретные ключи криптографических механизмов
  @{ */
 /*! \brief Указатель на структуру секретного ключа. */
  typedef struct skey *ak_skey;
@@ -596,9 +579,7 @@ extern "C" {
  struct skey {
   /*! \brief ключ */
 #ifdef AK_HAVE_STDALIGN_H
- #ifndef AK_HAVE_WINDOWS_H
    alignas(32)
- #endif
 #endif
    ak_uint8 *key;
   /*! \brief размер ключа (в октетах) */
@@ -717,6 +698,8 @@ extern "C" {
  dll_export int ak_bckey_create_magma( ak_bckey );
 /*! \brief Инициализация секретного ключа алгоритма блочного шифрования Кузнечик. */
  dll_export int ak_bckey_create_kuznechik( ak_bckey );
+/*! \brief Инициализация секретного ключа алгоритма блочного шифрования sm4. */
+dll_export int ak_bckey_create_sm4( ak_bckey );
 /*! \brief Инициализация секретного ключа алгоритма блочного шифрования по его OID. */
  dll_export int ak_bckey_create_oid( ak_bckey , ak_oid );
 /*! \brief Очистка ключа алгоритма блочного шифрования. */
@@ -734,10 +717,10 @@ extern "C" {
    пользователем пароля. */
  dll_export int ak_bckey_create_key_pair_from_password( ak_bckey , ak_bckey , ak_oid ,
                             const char * , const size_t , ak_uint8 *, const size_t, const size_t );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup enc-doc Шифрование данных
+/** \addtogroup enc-doc Шифрование данных
  @{ */
 /*! \brief Нелинейная перестановка для алгоритмов хеширования и блочного шифрования */
  typedef ak_uint8 sbox[256];
@@ -803,11 +786,11 @@ extern "C" {
 /*! \brief Расшифрование данных в режиме `XTS`. */
  dll_export int ak_bckey_decrypt_xts( ak_bckey ,  ak_bckey , ak_pointer , ak_pointer , size_t ,
                                                                              ak_pointer , size_t );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup mac-doc Вычисление кодов целостности (хеширование и имитозащита)
- @{ */
+/** \addtogroup mac-doc Вычисление кодов целостности (хеширование и имитозащита)
+ @{ */ 
 /*! \brief Вычисление имитовставки согласно ГОСТ Р 34.13-2015. */
  dll_export int ak_bckey_cmac( ak_bckey , ak_pointer , const size_t , ak_pointer , const size_t );
 /*! \brief Очистка внутреннего состояния секретного ключа. */
@@ -923,7 +906,7 @@ extern "C" {
  dll_export int ak_hash_ptr( ak_hash , const ak_pointer , const size_t , ak_pointer , const size_t );
 /*! \brief Хеширование заданного файла. */
  dll_export int ak_hash_file( ak_hash , const char*, ak_pointer , const size_t );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
 /** \addtogroup skey-doc Cекретные ключи криптографических механизмов
@@ -974,7 +957,7 @@ extern "C" {
                                                                  const ak_pointer , const size_t );
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup skey-doc-derive Функции выработки производных секретных ключей
+/** \addtogroup skey-doc-derive Функции выработки производных секретных ключей
 @{ */
 /*! Функция выработки производного ключа, согласно Р 50.1.113-2016, раздел 4.4. */
  dll_export int ak_skey_derive_kdf256_to_ptr( ak_pointer , ak_uint8 *, const size_t ,
@@ -1060,13 +1043,12 @@ extern "C" {
  dll_export int ak_kdf_state_next( ak_kdf_state , ak_pointer , const size_t );
 /*! \brief Удаление контекста выработки производных ключей */
  dll_export int ak_kdf_state_destroy( ak_kdf_state );
-
-/** @}*/
-/** @}*/
+/** @} *//** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
 /** \addtogroup mac-doc Вычисление кодов целостности (хеширование и имитозащита)
  @{ */
+/* ----------------------------------------------------------------------------------------------- */
 /*! \brief Функция возвращает размер вырабатываемой имитовставки. */
  dll_export size_t ak_hmac_get_tag_size( ak_hmac );
 /*! \brief Функция возвращает размер блока входных данных, обрабатываемого функцией выработки имитовставки. */
@@ -1087,10 +1069,10 @@ extern "C" {
 /*! \brief Развертка ключевого вектора из пароля (согласно Р 50.1.111-2016, раздел 4) */
  dll_export int ak_hmac_pbkdf2_streebog512( const ak_pointer , const size_t ,
                    const ak_pointer , const size_t, const size_t , const size_t , ak_pointer );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup aead-doc Аутентифицированное шифрование данных
+/** \addtogroup aead-doc Аутентифицированное шифрование данных
  @{ */
 /*! \brief Функция аутентифицированного шифрования. */
  typedef int ( ak_function_aead )( ak_pointer, ak_pointer, const ak_pointer , const size_t ,
@@ -1191,33 +1173,14 @@ extern "C" {
 /*! \brief Создание контекста алгоритма аутентифицированного шифрования Р 1323565.1.024-2019
     для блочного шифра Кузнечик */
  dll_export int ak_aead_create_mgm_kuznechik( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования xtsmac
-    для блочного шифра Магма */
+/*! \brief Создание контекста алгоритма аутентифицированного шифрования xtsmac для блочного шифра Магма */
  dll_export int ak_aead_create_xtsmac_magma( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-cmac
-    для блочного шифра Магма */
+/*! \brief Создание контекста алгоритма аутентифицированного шифрования xtsmac для блочного шифра Кузнечик */
+ dll_export int ak_aead_create_xtsmac_kuznechik( ak_aead , bool_t );
+/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-cmac для блочного шифра Магма */
  dll_export int ak_aead_create_ctr_cmac_magma( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-cmac
-    для блочного шифра Кузнечик */
+/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-cmac для блочного шифра Кузнечик */
  dll_export int ak_aead_create_ctr_cmac_kuznechik( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-nmac
-    для блочного шифра Магма */
- dll_export int ak_aead_create_ctr_nmac_magma( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-hmac
-    для блочного шифра Магма и функции хеширования Стрибог256 */
- dll_export int ak_aead_create_ctr_hmac_magma_streebog256( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-hmac
-    для блочного шифра Магма и функции хеширования Стрибог512 */
- dll_export int ak_aead_create_ctr_hmac_magma_streebog512( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-nmac
-    для блочного шифра Кузнечик */
- dll_export int ak_aead_create_ctr_nmac_kuznechik( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-hmac
-    для блочного шифра Кузнечик и функции хеширования Стрибог256 */
- dll_export int ak_aead_create_ctr_hmac_kuznechik_streebog256( ak_aead , bool_t );
-/*! \brief Создание контекста алгоритма аутентифицированного шифрования ctr-hmac
-    для блочного шифра Кузнечик и функции хеширования Стрибог512 */
- dll_export int ak_aead_create_ctr_hmac_kuznechik_streebog512( ak_aead , bool_t );
 /*! \brief Создание контекста алгоритма аутентифицированного шифрования по заданному oid  */
  dll_export int ak_aead_create_oid( ak_aead , bool_t, ak_oid );
 /*! \brief Удаление контекста алгоритма аутентифицированного шифрования */
@@ -1236,16 +1199,17 @@ extern "C" {
 /*! \brief Функция возвращает ожидаемый размер синхропосылки (в октетах) */
  dll_export ssize_t ak_aead_get_iv_size( ak_aead );
 /*! \brief Функция реализует аутентифицируемое зашифрование данных */
- dll_export int ak_aead_encrypt( ak_aead , const ak_pointer , const size_t ,
+ dll_export int ak_aead_encrypt( ak_aead ,  const ak_pointer , const size_t ,
    const ak_pointer , ak_pointer , const size_t , const ak_pointer , const size_t ,
                                                                        ak_pointer , const size_t );
 /*! \brief Функция реализует аутентифицируемое расшифрование данных */
- dll_export int ak_aead_decrypt( ak_aead , const ak_pointer , const size_t ,
+ dll_export int ak_aead_decrypt( ak_aead ,  const ak_pointer , const size_t ,
    const ak_pointer , ak_pointer , const size_t , const ak_pointer , const size_t ,
                                                                        ak_pointer , const size_t );
 /*! \brief Функция реализует выработку имитовставки (кода аутентификации) */
- dll_export int ak_aead_mac( ak_aead , const ak_pointer , const size_t ,
-                                     const ak_pointer , const size_t , ak_pointer , const size_t );
+ dll_export int ak_aead_mac( ak_aead ,  const ak_pointer , const size_t ,
+                const ak_pointer , const size_t , const ak_pointer , const size_t ,
+                                                                       ak_pointer , const size_t );
 /*! \brief Первичная инициализация параметров контекста алгоритма аутентифицированного шифрования,
     отвеающих как за шифрование, так и за выработку кода атентификации (имитовставку) */
  dll_export int ak_aead_clean( ak_aead , const ak_pointer , const size_t );
@@ -1256,17 +1220,17 @@ extern "C" {
 /*! \brief Обновление контекста алгоритма аутентифицированного шифрования ассоциированными данными */
  dll_export int ak_aead_auth_update( ak_aead , const ak_pointer , const size_t );
 /*! \brief Закрытие контекста алгоритма аутентифицированного шифрования и вычисление кода аутентификации */
- dll_export int ak_aead_finalize( ak_aead , ak_pointer out, const size_t out_size );
+ dll_export int ak_aead_auth_finalize( ak_aead , ak_pointer out, const size_t out_size );
 /*! \brief Зашифрование данных и обновление контекста алгоритма аутентифицированного шифрования */
  dll_export int ak_aead_encrypt_update( ak_aead , const ak_pointer , ak_pointer , const size_t );
 /*! \brief Расшифрование данных и обновление контекста алгоритма аутентифицированного шифрования */
  dll_export int ak_aead_decrypt_update( ak_aead , const ak_pointer , ak_pointer , const size_t );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup math-doc Математические функции
+/** \addtogroup math-doc Математические функции
  @{ */
-/** \defgroup mpzn-doc Арифметика больших чисел
+/** \addtogroup mpzn-doc Арифметика больших чисел
  @{ */
 #ifdef LIBAKRYPT_HAVE_GMP_H
  #include <gmp.h>
@@ -1350,10 +1314,9 @@ extern "C" {
 /*! \brief Преобразование mpz_t в ak_mpznxxx. */
  dll_export void ak_mpz_to_mpzn( const mpz_t , ak_uint64 *, const size_t );
 #endif
-/** @}*/
-
+/** @} */
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup curves-doc Эллиптические кривые
+/** \addtogroup curves-doc Эллиптические кривые
  @{ */
  struct wcurve;
 /*! \brief Контекст эллиптической кривой, заданной в короткой форме Вейерштрасса. */
@@ -1482,10 +1445,10 @@ extern "C" {
  extern const struct wcurve id_tc26_gost_3410_2012_512_paramSetA;
  extern const struct wcurve id_tc26_gost_3410_2012_512_paramSetB;
  extern const struct wcurve id_tc26_gost_3410_2012_512_paramSetC;
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup gf2n-doc Конечные поля характеристики два
+/** \addtogroup gf2n-doc Конечные поля характеристики два
  @{ */
 /*! \brief Умножение элемента поля на примитивный элемент.
     \details Макрос реализует умножение произвольного элемента поля \f$ \mathbb F_{2^{128}} \f$ на
@@ -1532,20 +1495,14 @@ extern "C" {
 #endif
 
 /* Размеры конечных полей (в октетах) */
-/*! \brief Размер поля \f$ \mathbb F_{2^{64}}\f$ в байтах. */
  #define ak_galois64_size               (8)
-/*! \brief Размер поля \f$ \mathbb F_{2^{128}}\f$ в байтах. */
  #define ak_galois128_size             (16)
-/*! \brief Размер поля \f$ \mathbb F_{2^{256}}\f$ в байтах. */
  #define ak_galois256_size             (32)
-/*! \brief Размер поля \f$ \mathbb F_{2^{512}}\f$ в байтах. */
  #define ak_galois512_size             (64)
-
-/** @}*/
-/** @}*/
+/** @} *//** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup asn1-doc Функции кодирования и декодирования ASN.1 нотации
+/** \addtogroup asn1-doc Функции кодирования и декодирования ASN.1 нотации
  @{ */
 /* Флаги, определяющие класс данных ASN.1. */
  #define UNIVERSAL           0x00u
@@ -1884,18 +1841,19 @@ extern "C" {
 /*! \brief Разбиение asn1 дерева на поддеревья первого уровня. */
  dll_export int ak_libakrypt_split_asn1( const char * , export_format_t , crypto_content_t );
 
+/** \addtogroup asn1-doc-is Функции проверки содержимого asn1 дерева
+ @{ */
 /*! \brief Функция проверяет, является ли заданное asn1 дерево запросом на сертификат открытого ключа. */
  dll_export bool_t ak_asn1_is_request( ak_asn1 );
 /*! \brief Функция проверяет, является ли заданное asn1 дерево сертификатом открытого ключа. */
  dll_export bool_t ak_asn1_is_certificate( ak_asn1 );
 /*! \brief Функция проверяет, является ли заданное asn1 дерево хранилищем списка сертификатов. */
  dll_export bool_t ak_asn1_is_p7b_container( ak_asn1 );
-/** @}*/
+ /** @} *//** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
 /** \addtogroup skey-doc Ключи криптографических механизмов
- @{ */
-/*! \brief Секретный ключ алгоритма выработки электронной подписи ГОСТ Р 34.10-2012.
+ @{ *//*! \brief Секретный ключ алгоритма выработки электронной подписи ГОСТ Р 34.10-2012.
 
    Ключ может рассматриваться в качестве секретного ключа как для действующего стандарта
    ГОСТ Р 34.10-2012, так и для предыдущей редакции 2001 года. Кроме того, данный контекст
@@ -1949,14 +1907,12 @@ extern "C" {
  dll_export int ak_signkey_set_key( ak_signkey , const ak_pointer , const size_t );
 /*! \brief Присвоение секретному ключу электронной подписи случайного значения. */
  dll_export int ak_signkey_set_key_random( ak_signkey , ak_random );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup sign-doc Электронная подпись
+/** \addtogroup sign-doc Электронная подпись
+ @{ *//** \addtogroup cert-doc Открытые ключи асимметричных алгоритмов
  @{ */
-/** \defgroup cert-doc Открытые ключи асимметричных алгоритмов
- @{ */
-
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Открытый ключ алгоритма проверки электронной подписи ГОСТ Р 34.10-2012.
 
@@ -2007,10 +1963,9 @@ extern "C" {
  dll_export int ak_verifykey_set_number( ak_verifykey );
 /*! \brief Уничтожение контекста открытого ключа. */
  dll_export int ak_verifykey_destroy( ak_verifykey );
-/** @}*/
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup cert-export-doc Функции экспорта и импорта открытых ключей
+/** @} *//** \addtogroup signalg-doc Алгоритмы выработки и проверки электроной подписи
  @{ */
 /*! \brief Выработка электронной подписи для фиксированного значения случайного числа и вычисленного
     заранее значения хеш-функции. */
@@ -2035,6 +1990,9 @@ extern "C" {
  dll_export bool_t ak_verifykey_verify_file( ak_verifykey , const char * , ak_pointer );
 
 /* ----------------------------------------------------------------------------------------------- */
+/** @} *//** \addtogroup cert-export-doc Функции экспорта и импорта открытых ключей
+@{ */
+
 /*! \brief Параметры запроса на сертификат открытого ключа */
  typedef struct request_opts {
   /*! \brief Версия запроса на сертификат,
@@ -2185,9 +2143,6 @@ extern "C" {
 /*! \brief Функция вырабатывает серийный номер сертификата. */
  dll_export int ak_certificate_generate_serial_number( ak_verifykey , ak_signkey ,
                                                                         ak_uint8 *, const size_t );
-/*! \brief Функция формирует полный путь к сертификату в репозирории */
- dll_export int ak_ceritifcate_generate_repository_name( char * , size_t ,
-                                                                 const ak_uint8 * , const size_t );
 /*! \brief Функция создает asn1 дерево, содержащее сертификат открытого ключа. */
  dll_export ak_asn1 ak_certificate_export_to_asn1( ak_certificate ,
                                                          ak_signkey , ak_certificate , ak_random );
@@ -2195,20 +2150,6 @@ extern "C" {
     в сертификат открытого ключа. */
  dll_export int ak_certificate_export_to_file( ak_certificate , ak_signkey , ak_certificate ,
                                              ak_random , char * , const size_t , export_format_t );
-
-/*! \brief Функция экспортирует открытый ключ асиметричного криптографического алгоритма
-    в сертификат открытого ключа и помещает его в хранилище сертификатов. */
- dll_export int ak_certificate_export_to_repository( ak_certificate ,
-                                                         ak_signkey , ak_certificate , ak_random );
-/*! \brief Функция сохраняет сертификат в текущем репозитории */
- dll_export int ak_certificate_add_file_to_repository( const char * );
-/*! \brief Функция сохраняет сертификат в текущем репозитории */
- dll_export int ak_certificate_add_ptr_to_repository( ak_uint8 * , const size_t );
-/*! \brief Функция сохраняет сертификат в текущем репозитории */
- dll_export int ak_certificate_add_asn1_to_repository( ak_asn1 );
-/*! \brief Функция переводит код ошибки при проверке сертификата в человеко-читаемую строку */
- dll_export char *ak_certificate_get_error_message( int );
-
 /*! \brief Функция импортирует открытый ключ асимметричного преобразования из сертификата
    открытого ключа, представленного в виде asn1 дерева */
  dll_export int ak_certificate_import_from_asn1( ak_certificate , ak_certificate , ak_asn1 );
@@ -2219,16 +2160,12 @@ extern "C" {
    открытого ключа, расположенного в памяти */
  dll_export int ak_certificate_import_from_ptr( ak_certificate , ak_certificate ,
                                                                  const ak_pointer , const size_t );
-/*! \brief Функция импортирует открытый ключ асимметричного преобразования из сертификата
-   открытого ключа, хранящегося в репозитории открытых ключей */
- dll_export int ak_certificate_import_from_repository( ak_certificate , ak_certificate ,
-                                                                 const ak_uint8 * , const size_t );
 /*! \brief Функция изменяет установленный по-умолчанию каталог с расположением
     хранилища сертификатов */
  dll_export int ak_certificate_set_repository( const char * );
 /*! \brief Функция возвращает указатель на установленный каталог с расположением
     хранилища сертификатов */
- dll_export const char *ak_certificate_get_repository( void ); 
+ dll_export const char *ak_certificate_get_repository( void );
 /*! \brief Функция освобождает контекст сертификата открытого ключа. */
  dll_export int ak_certificate_destroy( ak_certificate );
 
@@ -2238,10 +2175,9 @@ extern "C" {
  dll_export ak_asn1 ak_certificate_get_sequence_from_p7b_container( const char * );
 /*! \brief Создание нового (пустого) p7b контейнера */
  dll_export ak_asn1 ak_certificate_new_p7b_skeleton( ak_asn1 *);
-/** @}*/
-
+ /** @} */
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup cert-tlv-doc Функции создания расширений сертификатов открытых ключей
+/** \addtogroup cert-tlv-doc Функции создания расширений сертификатов открытых ключей
  @{ */
 /*! \brief Создание расширения, содержащего идентификатор открытого ключа
    (x509v3: SubjectKeyIdentifier ) */
@@ -2256,13 +2192,10 @@ extern "C" {
 /*! \brief Создание расширения, содержащего номер секретного ключа, соответсвующего открытому ключу
    (non x509v3, Secret Key Number) */
  dll_export ak_tlv ak_tlv_new_secret_key_number( ak_pointer , const size_t );
-/** @}*/
-/** @}*/
+/** @} *//** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \addtogroup skey-doc Секретные ключи криптографических механизмов
- @{ */
-/*! \defgroup skey-export-doc Функции экспорта и импорта секретных ключей
+/*! \addtogroup skey-export-doc
  @{ */
 /*! \brief Перечисление, определяющее способ интерпретации данных, введенных с клавиатуры. */
  typedef enum {
@@ -2277,8 +2210,7 @@ extern "C" {
  typedef ssize_t ( ak_function_password_read ) ( const char *, char *, const size_t , password_t );
 
 /*! \brief Чтение пароля из консоли с выводом уведомления (устанавливается по-умолчанию) */
- dll_export ssize_t ak_password_read_from_terminal( const char * , char * ,
-                                                                       const size_t , password_t );
+ dll_export ssize_t ak_password_read_from_terminal( const char * , char * , const size_t , password_t );
 /*! \brief Функция устанавливает обработчик - функцию чтения пользовательского пароля. */
  dll_export int ak_libakrypt_set_password_read_function( ak_function_password_read * );
 /*! \brief Функция устанавливает приглашение к вводу пароля. */
@@ -2289,25 +2221,24 @@ extern "C" {
 /*! \brief Функция экспортирует секретный ключ в указанный файл. */
  dll_export int ak_skey_export_to_file_with_password( ak_pointer ,
                             const char *, const size_t , char * , const size_t , export_format_t );
-/*! \brief Функция экспортирует секретный ключ в указанный файл в незашифрованном виде */
- dll_export int ak_skey_export_to_file_unencrypted( ak_pointer ,
-                                                         char * , const size_t , export_format_t );
+/*! \brief Функция инициализирует контекст секретного ключа и импортирует параметры ключа
+    из указанного файла. */
+ dll_export int ak_skey_create_from_file( ak_pointer , oid_engines_t , const char * );
 /*! \brief Функция инициализирует контекст секретного ключа, импортирует параметры ключа
     из указанного файла, а также присваивает значение секретного ключа. */
  dll_export int ak_skey_import_from_file( ak_pointer , oid_engines_t , const char * );
-/*! \brief Функция создает и инициализирует контекст секретного ключа,
-    после чего импортирует параметры ключа из указанного файла. */
+/*! \brief Функция создает и инициализирует контекст секретного ключа, после чего импортирует параметры
+    ключа из указанного файла. */
  dll_export ak_pointer ak_skey_new_from_file( const char * );
 /*! \brief Функция создает и инициализирует контекст секретного ключа, после чего импортирует
     значение секретного ключа и его параметры из указанного файла. */
  dll_export ak_pointer ak_skey_load_from_file( const char * );
-/*! \brief Функция удаляет считаный ранее контекст секретного ключа */
- dll_export int ak_skey_delete_after_load( ak_pointer );
-/** @}*/
+/** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \defgroup skey-blom-doc Реализация схемы Блома распределения ключевой информации
+/** \addtogroup skey-doc Cекретные ключи криптографических механизмов
  @{ */
+/* ----------------------------------------------------------------------------------------------- */
 /*! \brief Секретный ключ для схемы Блома распределения ключевой информации. */
 /*! Подробное описание механизмов выработки ключей содержится в разделе \ref skey-blom-doc. */
  typedef struct blomkey {
@@ -2331,7 +2262,8 @@ extern "C" {
  } *ak_blomkey;
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Функция создает мастер-ключ для схемы Блома. */
+/** \addtogroup skey-blom-doc Реализация схемы Блома распределения ключевой информации
+ @{ *//*! \brief Функция создает мастер-ключ для схемы Блома. */
  dll_export int ak_blomkey_create_matrix( ak_blomkey , const ak_uint32 ,
                                                                      const ak_uint32 , ak_random );
 /*! \brief Функция создает ключ абонента для схемы Блома. */
@@ -2349,18 +2281,16 @@ extern "C" {
 /*! \brief Уничтожение ключа */
  dll_export int ak_blomkey_destroy( ak_blomkey );
 
-/*! \brief Экспорт ключа схемы Блома в заданный файл */
+/** @} *//** \addtogroup skey-export-doc Функции экспорта и импорта секретных ключей
+ @{ *//*! \brief Экспорт ключа схемы Блома в заданный файл */
  dll_export int ak_blomkey_export_to_file_with_password( ak_blomkey ,
                                              const char * , const size_t , char * , const size_t );
 /*! \brief Импорт ключа схемы Блома из заданного файла */
  dll_export int ak_blomkey_import_from_file_with_password( ak_blomkey ,
                                                             const char * , const size_t , char * );
-/** @}*/
-/** @}*/
+/** @} @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \defgroup asym-encrypt Схемы асимметричного шифрования
- @{ */
 /*! \brief Перечень доступных схем гибридного шифрования */
  typedef enum {
   /*! \brief Неопределенная асимметричная схема, используется как ошибка */
@@ -2423,10 +2353,8 @@ extern "C" {
 /*! \brief Расшифрование указанного файла */
  dll_export int ak_decrypt_file_with_key( const char * , ak_skey , 
                                                             const char * , char * , const size_t  );
-/** @}*/
-
 /* ----------------------------------------------------------------------------------------------- */
-/** @} */
+
 
 #ifdef __cplusplus
 } /* конец extern "C" */

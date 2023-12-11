@@ -3,12 +3,12 @@
 #
 # CMakeLists.txt
 # -------------------------------------------------------------------------------------------------- #
-cmake_minimum_required( VERSION 3.5 )
+cmake_minimum_required( VERSION 3.2 FATAL_ERROR )
 
 # -------------------------------------------------------------------------------------------------- #
 set( HEAD_VERSION 0 )
 set( MAIN_VERSION 9 )
-set( MINOR_VERSION 12 )
+set( MINOR_VERSION 9 )
 set( MAJOR_VERSION ${HEAD_VERSION}.${MAIN_VERSION} )
 set( FULL_VERSION ${MAJOR_VERSION}.${MINOR_VERSION} )
 # строка с текущей датой, используется при сборке документации
@@ -22,8 +22,7 @@ project( libakrypt C )
 # Перечень доступных опций для сборки библиотеки
 option( AK_SHARED_LIB "Build the shared library" ON )
 option( AK_STATIC_LIB "Build the static library" OFF )
-option( AK_EXAMPLES "Build examples for libakrypt" OFF )
-option( AK_TESTS "Build tests for libakrypt" OFF )
+option( AK_TESTS "Build test for libakrypt" OFF )
 option( AK_TESTS_GMP "Build comparison tests for gmp and libakrypt" OFF )
 string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 
@@ -32,6 +31,16 @@ string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 # для linux
 #   set( AK_CONFIG_PATH  "/etc" )
 #   set( AK_CA_PATH "/usr/share/ca-certificates" )
+
+# -------------------------------------------------------------------------------------------------- #
+# Подключаем модули CMake для тонкой настройки параметров сборки
+set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
+include( DetectFlags )
+include( DetectHeaders )
+include( DetectIntrinsics )
+include( DetectLibraries )
+# модули CMake
+include( GNUInstallDirs )
 
 # -------------------------------------------------------------------------------------------------- #
 # Вырабатываем заголовочный файл (в каталоге сборки)
@@ -70,12 +79,12 @@ set( AKRYPT_SOURCES
    source/ak_bckey.c
    source/ak_cmac.c
    source/ak_magma.c
+   source/ak_sm4.c
    source/ak_kuznechik.c
    source/ak_acpkm.c
    source/ak_mgm.c
    source/ak_aead.c
    source/ak_xts.c
-   source/ak_xtsmac.c
    source/ak_asn1.c
    source/ak_sign.c
    source/ak_asn1_keys.c
@@ -97,16 +106,6 @@ endif()
 message("-- Used compile flags ${CMAKE_C_FLAGS}")
 
 # -------------------------------------------------------------------------------------------------- #
-# Подключаем модули CMake для тонкой настройки параметров сборки
-set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
-include( DetectFlags )
-include( DetectHeaders )
-include( DetectIntrinsics )
-include( DetectLibraries )
-# модули CMake
-include( GNUInstallDirs )
-
-# -------------------------------------------------------------------------------------------------- #
 # Определяем место хранения файла с настройками библиотеки
 # -------------------------------------------------------------------------------------------------- #
 if( AK_CONFIG_PATH )
@@ -126,7 +125,7 @@ message("-- Path for libakrypt.conf is ${AK_CONFIG_PATH}")
 if( AK_CA_PATH )
 else()
   if( CMAKE_HOST_UNIX )
-    set( AK_CA_PATH ${CMAKE_INSTALL_PREFIX}/share/ca-certificates/libakrypt )
+    set( AK_CA_PATH "${CMAKE_INSTALL_PREFIX}/share/ca-certificates/libakrypt" )
   endif()
   if( WIN32 )
     set( AK_CA_PATH "C:\\\\Program Files\\\\Akrypt\\\\ca-certificates" )
@@ -180,72 +179,41 @@ if( AK_STATIC_LIB )
 endif()
 
 # -------------------------------------------------------------------------------------------------- #
-# Сборка различных примеров и иллюстраций
+# Сборка примеров, иллюстрирующих работу базовой библиотеки
 # -------------------------------------------------------------------------------------------------- #
-# начинаем с примеров
-# определяем перечень примеров и тестов для akbase
-set( BASE_EXAMPLES_LIST
-     ini
-     ini-file
-     file
-     mmap
-     realpath
-   )
-
-# определяем перечень примеров из FAQ
-set( EXAMPLES_LIST
-     g01n01 g01n02 g01n03
-     g02n01 g02n02 g02n03 g02n04
-     g03n01 g03n02 g03n03 g03n04
-     g04n01 g04n02
-   )
-
-if( AK_EXAMPLES )
-  message("-- Akbase examples (now \"make test\" enabled):" )
-  enable_testing()
-  foreach( programm ${BASE_EXAMPLES_LIST} )
-    if( AK_STATIC_LIB )
-      add_executable( example-${programm} examples/akbase/example-${programm}.c )
-      target_link_libraries( example-${programm} akbase-static ${LIBAKRYPT_LIBS} )
-      message("      example-${programm}" )
-      add_test( NAME example-${programm} COMMAND example-${programm} )
-    endif()
-    if( AK_SHARED_LIB )
-      add_executable( example-shared-${programm} examples/akbase/example-${programm}.c )
-      target_link_libraries( example-shared-${programm} akbase-shared ${LIBAKRYPT_LIBS} )
-      message("      example-shared-${programm}" )
-      add_test( NAME example-shared-${programm} COMMAND example-shared-${programm} )
-    endif()
-  endforeach()
-
- # теперь то же самое, но из другого каталога + дополнительные зависимости
-  message("-- FAQ examples:" )
-  enable_testing()
-  foreach( programm ${EXAMPLES_LIST} )
-    if( AK_STATIC_LIB )
-      add_executable( example-${programm} examples/faq/example-${programm}.c )
-      target_link_libraries( example-${programm} akbase-static akrypt-static ${LIBAKRYPT_LIBS} )
-      message("      example-${programm}" )
-      add_test( NAME example-static-${programm} COMMAND example-${programm} )
-    endif()
-    if( AK_SHARED_LIB )
-      add_executable( example-shared-${programm} examples/faq/example-${programm}.c )
-      target_link_libraries( example-shared-${programm} akbase-shared akrypt-shared ${LIBAKRYPT_LIBS} )
-      message("      example-shared-${programm}" )
-      add_test( NAME example-shared-${programm} COMMAND example-shared-${programm} )
-    endif()
-  endforeach()
-endif()
-
-# -------------------------------------------------------------------------------------------------- #
-# теперь тесты (включая арифметические)
 if( AK_TESTS_GMP )
   set( AK_TESTS ON )
 endif()
 
+# -------------------------------------------------------------------------------------------------- #
+set( EXAMPLES_LIST
+     log
+     ini
+     file
+     mmap
+   )
+
+# -------------------------------------------------------------------------------------------------- #
+if( AK_TESTS )
+  message("-- Added tests and examples (now \"make test\" enabled):" )
+  foreach( programm ${EXAMPLES_LIST} )
+    if( AK_STATIC_LIB )
+      add_executable( example-${programm} examples/example-${programm}.c )
+      target_link_libraries( example-${programm} akbase-static ${LIBAKRYPT_LIBS} )
+      message("      example-${programm}" )
+    endif()
+    if( AK_SHARED_LIB )
+      add_executable( example-shared-${programm} examples/example-${programm}.c )
+      target_link_libraries( example-shared-${programm} akbase-shared ${LIBAKRYPT_LIBS} )
+      message("      example-shared-${programm}" )
+    endif()
+  endforeach()
+endif()
+
+# -------------------------------------------------------------------------------------------------- #
+# Сборка тестовых примеров, проверяющих корректность элементарных арифметических операций
 set ( ARITHMETIC_TESTS_LIST
       random01
-      random02
       gf2n
       mgm01
       xtsmac01
@@ -254,7 +222,6 @@ set ( ARITHMETIC_TESTS_LIST
       asn1-parse
       sign01
       asn1-keys
-      asn1-keys02
       blom-keys
       cmac01
       cmac02
@@ -263,21 +230,18 @@ set ( ARITHMETIC_TESTS_LIST
     )
 
 if( AK_TESTS_GMP )
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAK_HAVE_GMP_H" )
   set( ARITHMETIC_TESTS_LIST ${ARITHMETIC_TESTS_LIST}
-      mpzn-arithmetic
-      mpzn-convert
-      mpzn-montgomery
-      mpzn-rem
-      mpzn-password
+       mpzn-arithmetic
+       mpzn-convert
+       mpzn-montgomery
+       mpzn-rem
      )
 endif()
 
 if( AK_TESTS )
   enable_testing()
-  message("-- Internal tests (now \"make test\" enabled):" )
   foreach( programm ${ARITHMETIC_TESTS_LIST} )
-    add_executable( test-${programm} examples/tests/test-${programm}.c )
+    add_executable( test-${programm} examples/test-${programm}.c )
     if( AK_STATIC_LIB )
       target_link_libraries( test-${programm} akrypt-static akbase-static ${LIBAKRYPT_LIBS} )
     else()
@@ -319,13 +283,9 @@ endforeach()
 # -------------------------------------------------------------------------------------------------- #
 # дополнительный (опциональный) функционал утилиты aktool
 # libbz2
-if( AK_STATIC_LIB )
-  find_library( LIBBZ2_LIB libbz2.a )
-else()
-  find_library( LIBBZ2_LIB libbz2.so )
-endif()
+find_library( LIBBZ2_LIB bz2 )
 if( LIBBZ2_LIB )
-  message("-- libbz2 found (${LIBBZ2_LIB})" )
+  message("-- libbz2 found" )
   find_file( AK_HAVE_LIBBZ2_H bzlib.h )
   if( AK_HAVE_LIBBZ2_H )
     message("-- bzlib.h found")
@@ -335,30 +295,22 @@ if( LIBBZ2_LIB )
 endif()
 
 # libintl
-if( AK_STATIC_LIB )
-  find_library( LIBINTL_LIB libintl.a )
-else()
-  find_library( LIBINTL_LIB libintl.so )
-endif()
+find_library( LIBINTL_LIB intl )
 if( LIBINTL_LIB )
-  message("-- libintl found (${LIBINTL_LIB})")
-  find_path( AK_HAVE_LIBINTL_H NAMES libintl.h )
-  if( AK_HAVE_LIBINTL_H )
-    include_directories( ${AK_HAVE_LIBINTL_H} )
-    message("-- libintl.h found" )
-  endif()
+  message("-- libintl found")
   set( LIBAKRYPT_LIBS ${LIBAKRYPT_LIBS} ${LIBINTL_LIB} )
 endif()
 
+find_path( AK_HAVE_LIBINTL_H NAMES libintl.h )
+if( AK_HAVE_LIBINTL_H )
+  include_directories( ${AK_HAVE_LIBINTL_H} )
+  message("-- libintl.h found" )
+endif()
 
 # libiconv
-if( AK_STATIC_LIB )
-  find_library( LIBICONV_LIB libiconv.a )
-else()
-  find_library( LIBICONV_LIB libiconv.so )
-endif()
+find_library( LIBICONV_LIB iconv )
 if( LIBICONV_LIB )
-  message("-- libiconv found (${LIBICONV_LIB})")
+  message("-- libiconv found")
   set( LIBAKRYPT_LIBS ${LIBAKRYPT_LIBS} ${LIBICONV_LIB} )
 endif()
 
@@ -390,7 +342,6 @@ endif()
 
 # -------------------------------------------------------------------------------------------------- #
 # инсталляция библиотеки (только для UNIX)
-message("-- Install path:" ${CMAKE_INSTALL_PREFIX} )
 if( CMAKE_HOST_UNIX )
   if( AK_STATIC_LIB )
     install( TARGETS akbase-static LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )
@@ -426,11 +377,9 @@ if( CMAKE_HOST_UNIX )
   endif()
 
   if( GZIP )
-    install( CODE "execute_process( COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/aktool/aktool.1 ${CMAKE_CURRENT_BINARY_DIR} )" )
-    install( CODE "execute_process( COMMAND gzip --force ${CMAKE_CURRENT_BINARY_DIR}/aktool.1 )" )
     install( FILES ${CMAKE_CURRENT_BINARY_DIR}/aktool.1.gz DESTINATION ${AK_MAN_PATH} )
   else()
-    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/aktool/aktool.1 DESTINATION ${AK_MAN_PATH} )
+    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/aktool/aktool.1 DESTINATION ${AK_MAN_PATH} )
   endif()
 
  # инсталлируем корневой сертификат библиотеки
@@ -463,7 +412,7 @@ set( CPACK_PACKAGE_VERSION_MINOR ${MAIN_VERSION} )
 set( CPACK_PACKAGE_VERSION_PATCH ${MINOR_VERSION} )
 
 set( CPACK_DEBIAN_PACKAGE_MAINTAINER "Axel Kenzo") #required
-set( CPACK_PACKAGE_VENDOR "Axel Kenzo и Компания изящной словесности")
+set( CPACK_PACKAGE_VENDOR "Axel Kenzo & The Company Of Belles Lettres")
 set( CPACK_PACKAGE_FILE_NAME ${CMAKE_PROJECT_NAME}-${FULL_VERSION}-${CMAKE_SYSTEM_PROCESSOR} )
 set( CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${FULL_VERSION}" )
 set( CPACK_STRIP_FILES TRUE )
