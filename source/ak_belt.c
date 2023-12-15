@@ -47,32 +47,27 @@ static const ak_uint32 KeyIndex[8][7] = {
 	{ 1, 2, 3, 4, 5, 6, 7 }
 };
 
-static void ak_belt_encrypt( ak_skey skey, ak_pointer in, ak_pointer out ) {	
-	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
-		/* накладываем маску на ключ */
-    	size_t idx = 0, jdx = skey->key_size;
-    	for(idx; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
-	}
-
+static void ak_belt_encrypt( ak_skey skey, ak_pointer in, ak_pointer out ) {
+	int i;
 	ak_uint32 a = ((ak_uint32 *) in)[0];
 	ak_uint32 b = ((ak_uint32 *) in)[1];
 	ak_uint32 c = ((ak_uint32 *) in)[2];
 	ak_uint32 d = ((ak_uint32 *) in)[3];
 	ak_uint32 e;
-	int i;
 	
-    ak_uint32* key = (ak_uint32*)(skey->key);
+    ak_uint32* key  = (ak_uint32*)(skey->key);
+    ak_uint32* mask = (ak_uint32*)(skey->key+skey->key_size);
 
 	for(i = 0; i < 8; i++) {				
-		b ^= G((a + key[KeyIndex[i][0]]), H, 5); 
-		c ^= G((d + key[KeyIndex[i][1]]), H, 21);
-		a = (ak_uint32)(a - G((b + key[KeyIndex[i][2]]), H, 13));
-		e = (G((b + c + key[KeyIndex[i][3]]), H, 21) ^ (ak_uint32)(i + 1));
+		b ^= G((a + (key[KeyIndex[i][0]]^mask[KeyIndex[i][0]])), H, 5); 
+		c ^= G((d + (key[KeyIndex[i][1]]^mask[KeyIndex[i][1]])), H, 21);
+		a = (ak_uint32)(a - G((b + (key[KeyIndex[i][2]]^mask[KeyIndex[i][2]])), H, 13));
+		e = (G((b + c + (key[KeyIndex[i][3]]^mask[KeyIndex[i][3]])), H, 21) ^ (ak_uint32)(i + 1));
 		b += e;
 		c = (ak_uint32)(c - e);
-		d += G((c + key[KeyIndex[i][4]]), H, 13);
-		b ^= G((a + key[KeyIndex[i][5]]), H, 21);
-		c ^= G((d + key[KeyIndex[i][6]]), H, 5);
+		d += G((c + (key[KeyIndex[i][4]]^mask[KeyIndex[i][4]])), H, 13);
+		b ^= G((a + (key[KeyIndex[i][5]]^mask[KeyIndex[i][5]])), H, 21);
+		c ^= G((d + (key[KeyIndex[i][6]]^mask[KeyIndex[i][6]])), H, 5);
 		SWAP(a, b);
 		SWAP(c, d);
 		SWAP(b, c);
@@ -82,39 +77,29 @@ static void ak_belt_encrypt( ak_skey skey, ak_pointer in, ak_pointer out ) {
 	((ak_uint32 *)out)[1] = d;
 	((ak_uint32 *)out)[2] = a;
 	((ak_uint32 *)out)[3] = c;
-
-	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
-		/* накладываем маску на ключ */
-    	size_t jdx = skey->key_size;
-    	for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
-	}
 }
 
 static void ak_belt_decrypt( ak_skey skey, ak_pointer in, ak_pointer out ) {
-	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
-		/* накладываем маску на ключ */
-    	size_t jdx = skey->key_size;
-    	for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
-	}
-
+	int i;
 	ak_uint32 a = ((ak_uint32 *)in)[0];
 	ak_uint32 b = ((ak_uint32 *)in)[1];
 	ak_uint32 c = ((ak_uint32 *)in)[2];
 	ak_uint32 d = ((ak_uint32 *)in)[3];
 	ak_uint32 e;
-	int i;
+	
 	ak_uint32* key = (ak_uint32*)(skey->key);
+	ak_uint32* mask = (ak_uint32*)(skey->key+skey->key_size);
 
 	for(i = 7; i >= 0; i--) {
-		b ^= G((a + key[KeyIndex[i][6]]), H, 5);
-		c ^= G((d + key[KeyIndex[i][5]]), H, 21);
-		a = (ak_uint32)(a - G((b + key[KeyIndex[i][4]]), H, 13));
-		e = (G((b + c + key[KeyIndex[i][3]]), H, 21) ^ (ak_uint32)(i + 1));
+		b ^= G((a + (key[KeyIndex[i][6]]^mask[KeyIndex[i][6]])), H, 5);
+		c ^= G((d + (key[KeyIndex[i][5]]^mask[KeyIndex[i][5]])), H, 21);
+		a = (ak_uint32)(a - G((b + (key[KeyIndex[i][4]]^mask[KeyIndex[i][4]])), H, 13));
+		e = (G((b + c + (key[KeyIndex[i][3]]^mask[KeyIndex[i][3]])), H, 21) ^ (ak_uint32)(i + 1));
 		b += e;
 		c = (ak_uint32)(c - e);
-		d += G((c + key[KeyIndex[i][2]]), H, 13);
-		b ^= G((a + key[KeyIndex[i][1]]), H, 21);
-		c ^= G((d + key[KeyIndex[i][0]]), H, 5);
+		d += G((c + (key[KeyIndex[i][2]]^mask[KeyIndex[i][2]])), H, 13);
+		b ^= G((a + (key[KeyIndex[i][1]]^mask[KeyIndex[i][1]])), H, 21);
+		c ^= G((d + (key[KeyIndex[i][0]]^mask[KeyIndex[i][0]])), H, 5);
 		SWAP(a, b);
 		SWAP(c, d);
 		SWAP(a, d);
@@ -124,12 +109,6 @@ static void ak_belt_decrypt( ak_skey skey, ak_pointer in, ak_pointer out ) {
 	((ak_uint32 *)out)[1] = a;
 	((ak_uint32 *)out)[2] = d;
 	((ak_uint32 *)out)[3] = b;
-
-	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
-		/* накладываем маску на ключ */
-    	size_t jdx = skey->key_size;
-    	for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
-	}
 }
 
 
