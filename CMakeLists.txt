@@ -71,6 +71,7 @@ set( AKRYPT_SOURCES
    source/ak_cmac.c
    source/ak_magma.c
    source/ak_kuznechik.c
+   source/ak_belt.c
    source/ak_acpkm.c
    source/ak_mgm.c
    source/ak_aead.c
