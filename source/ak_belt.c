@@ -1,31 +1,23 @@
 #include <libakrypt-internal.h>
 
-#define RotHi(x, r)         (((x) << (r)) | ((x) >> (32 - (r))))
+#define RotHi(x, r)	(((x) << (r)) | ((x) >> (32 - (r))))
 
-#define U1(x)               ( (x) >> 24 )
-#define U2(x)               (((x) >> 16 ) & 0xff )
-#define U3(x)               (((x) >> 8  ) & 0xff )
-#define U4(x)               ( (x) & 0xff )
+#define U1(x)		( (x) >> 24 )
+#define U2(x)		(((x) >> 16 ) & 0xff )
+#define U3(x)		(((x) >> 8  ) & 0xff )
+#define U4(x)		( (x) & 0xff )
 
-#define HU1(x,H)            (((ak_uint32) (H)[ U1((x)) ]) << 24)
-#define HU2(x,H)            (((ak_uint32) (H)[ U2((x)) ]) << 16)
-#define HU3(x,H)            (((ak_uint32) (H)[ U3((x)) ]) <<  8)
-#define HU4(x,H)            (((ak_uint32) (H)[ U4((x)) ]))
+#define HU1(x,H)	(((ak_uint32) (H)[ U1((x)) ]) << 24)
+#define HU2(x,H)	(((ak_uint32) (H)[ U2((x)) ]) << 16)
+#define HU3(x,H)	(((ak_uint32) (H)[ U3((x)) ]) <<  8)
+#define HU4(x,H)	(((ak_uint32) (H)[ U4((x)) ]))
 
-#define G(x,H,r)            RotHi(HU4((x),(H)) | HU3((x),(H)) | HU2((x),(H)) | HU1((x),(H)),(r))
+#define G(x,H,r)	RotHi(HU4((x),(H)) | HU3((x),(H)) | HU2((x),(H)) | HU1((x),(H)),(r))
 #define SWAP(x,y)\
     do { __typeof__((x)) __tmp = (x); (x) = (y); (y) = __tmp; } while(0);
 
 
-struct belt_encrypted_keys
-{
-    ak_uint64 belt_expanded_key[32];
-};
-
-
-
-static const ak_uint8 H[256] =
-{
+static const ak_uint8 H[256] = {
 	0xB1, 0x94, 0xBA, 0xC8, 0x0A, 0x08, 0xF5, 0x3B, 0x36, 0x6D, 0x00, 0x8E, 0x58, 0x4A, 0x5D, 0xE4,
 	0x85, 0x04, 0xFA, 0x9D, 0x1B, 0xB6, 0xC7, 0xAC, 0x25, 0x2E, 0x72, 0xC2, 0x02, 0xFD, 0xCE, 0x0D,
 	0x5B, 0xE3, 0xD6, 0x12, 0x17, 0xB9, 0x61, 0x81, 0xFE, 0x67, 0x86, 0xAD, 0x71, 0x6B, 0x89, 0x0B,
@@ -44,8 +36,7 @@ static const ak_uint8 H[256] =
 	0xD4, 0xEF, 0xD9, 0xB4, 0x3A, 0x62, 0x28, 0x75, 0x91, 0x14, 0x10, 0xEA, 0x77, 0x6C, 0xDA, 0x1D
 };
 
-static const ak_uint32 KeyIndex[8][7] =
-{
+static const ak_uint32 KeyIndex[8][7] = {
 	{ 0, 1, 2, 3, 4, 5, 6 },
 	{ 7, 0, 1, 2, 3, 4, 5 },
 	{ 6, 7, 0, 1, 2, 3, 4 },
@@ -56,29 +47,23 @@ static const ak_uint32 KeyIndex[8][7] =
 	{ 1, 2, 3, 4, 5, 6, 7 }
 };
 
-
-//static void ak_belt_encrypt(ak_uint8* ks, ak_uint8* inBlock, ak_uint8* outBlock)
-static void ak_belt_encrypt( ak_skey skey, ak_pointer in, ak_pointer out )
-{	
+static void ak_belt_encrypt( ak_skey skey, ak_pointer in, ak_pointer out ) {	
 	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
 		/* накладываем маску на ключ */
-    	 size_t jdx = skey->key_size;
-    	 for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
+    	size_t idx = 0, jdx = skey->key_size;
+    	for(idx; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
 	}
-	
 
-	ak_uint32 a = ((ak_uint32 *) in)[0];     //((ak_uint32 *)inBlock)[0];
-	ak_uint32 b = ((ak_uint32 *) in)[1];     //((ak_uint32 *)inBlock)[1];
-	ak_uint32 c = ((ak_uint32 *) in)[2];     //((ak_uint32 *)inBlock)[2];
-	ak_uint32 d = ((ak_uint32 *) in)[3];     //((ak_uint32 *)inBlock)[3];
+	ak_uint32 a = ((ak_uint32 *) in)[0];
+	ak_uint32 b = ((ak_uint32 *) in)[1];
+	ak_uint32 c = ((ak_uint32 *) in)[2];
+	ak_uint32 d = ((ak_uint32 *) in)[3];
 	ak_uint32 e;
 	int i;
 	
-    //ak_uint32 (*kp)[8] = ((struct belt_encrypted_keys*)(skey->data))->belt_expanded_key[i];
     ak_uint32* key = (ak_uint32*)(skey->key);
 
-	for(i = 0; i<8; ++i)
-	{				
+	for(i = 0; i < 8; i++) {				
 		b ^= G((a + key[KeyIndex[i][0]]), H, 5); 
 		c ^= G((d + key[KeyIndex[i][1]]), H, 21);
 		a = (ak_uint32)(a - G((b + key[KeyIndex[i][2]]), H, 13));
@@ -100,19 +85,16 @@ static void ak_belt_encrypt( ak_skey skey, ak_pointer in, ak_pointer out )
 
 	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
 		/* накладываем маску на ключ */
-    	 size_t jdx = skey->key_size;
-    	 for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
+    	size_t jdx = skey->key_size;
+    	for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
 	}
 }
 
-static void ak_belt_decrypt( ak_skey skey, ak_pointer in, ak_pointer out )
-{
+static void ak_belt_decrypt( ak_skey skey, ak_pointer in, ak_pointer out ) {
 	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
 		/* накладываем маску на ключ */
-    	 size_t jdx = skey->key_size;
-    	 for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
-    	/* меняем значение флага */
-    	// skey->flags |= key_flag_set_mask;
+    	size_t jdx = skey->key_size;
+    	for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
 	}
 
 	ak_uint32 a = ((ak_uint32 *)in)[0];
@@ -121,10 +103,9 @@ static void ak_belt_decrypt( ak_skey skey, ak_pointer in, ak_pointer out )
 	ak_uint32 d = ((ak_uint32 *)in)[3];
 	ak_uint32 e;
 	int i;
-	ak_uint32 * key = (ak_uint32*)(skey->key);
+	ak_uint32* key = (ak_uint32*)(skey->key);
 
-	for(i = 7; i >= 0; --i)
-	{
+	for(i = 7; i >= 0; i--) {
 		b ^= G((a + key[KeyIndex[i][6]]), H, 5);
 		c ^= G((d + key[KeyIndex[i][5]]), H, 21);
 		a = (ak_uint32)(a - G((b + key[KeyIndex[i][4]]), H, 13));
@@ -146,8 +127,8 @@ static void ak_belt_decrypt( ak_skey skey, ak_pointer in, ak_pointer out )
 
 	if((( skey->flags)&key_flag_set_mask ) != 0 ) {
 		/* накладываем маску на ключ */
-    	 size_t jdx = skey->key_size;
-    	 for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
+    	size_t jdx = skey->key_size;
+    	for(size_t idx = 0; idx < skey->key_size; idx++, jdx++ ) skey->key[idx] ^= skey->key[jdx];
 	}
 }
 
@@ -160,14 +141,14 @@ int ak_bckey_create_belt( ak_bckey bkey ) {
 
  	/* создаем ключ алгоритма шифрования */
   	if(( error = ak_bckey_create( bkey, 32, 16 )) != ak_error_ok )
-  	  return ak_error_message( error, __func__, "wrong initalization of block cipher key context" );
+  		return ak_error_message( error, __func__, "wrong initalization of block cipher key context" );
 
  	/* устанавливаем OID алгоритма шифрования */
   	if(( bkey->key.oid = ak_oid_find_by_name( "belt" )) == NULL ) {
-  	  error = ak_error_get_value();
-  	  ak_error_message( error, __func__, "wrong search of predefined belt block cipher OID" );
-  	  ak_bckey_destroy( bkey );
-  	  return error;
+  		error = ak_error_get_value();
+  		ak_error_message( error, __func__, "wrong search of predefined belt block cipher OID" );
+  		ak_bckey_destroy( bkey );
+  		return error;
   	}
 
  	/* устанавливаем методы */
