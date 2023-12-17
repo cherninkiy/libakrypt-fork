@@ -152,6 +152,92 @@ void test_ak_wcurve_discriminant_is_ok() {
   }
 }
 
+void printPointInfo(ak_wcurve curve, const char *name) {
+  printf("----------------%s----------------\n", name);
+  printf("point is ok: %d\n", ak_wpoint_is_ok(&curve->point, curve));
+  printf("order of point is ok: %d\n", ak_wpoint_check_order(&curve->point, curve));
+  printf("Contests: \n"); 
+  printf("X: %s\n", ak_mpzn_to_hexstr(curve->point.x, curve->size));
+  printf("Y: %s\n", ak_mpzn_to_hexstr(curve->point.y, curve->size));
+  printf("Z: %s\n", ak_mpzn_to_hexstr(curve->point.z, curve->size));
+  printf("\n");
+}
+
 int main() {
+  struct wcurve curve1, curve2, curve3, curve4, curve5, curve6, curve7; //gost curves
+  //creating your own curve 
+  struct wcurve paramSetA256 = {
+    ak_mpzn256_size,
+    4, /* cofactor */
+    { 0x6d0078e62fc81048LL, 0x94db4f98bfb73698LL, 0x75e9b60631449efdLL, 0xca0709cc398e1cd1LL }, /* a */
+    { 0xacd1216d5cc63966LL, 0x534b728e6773c810LL, 0xfb4e95d31a5032feLL, 0xb76e3775f6a4aee7LL }, /* b */
+    { 0xfffffffffffffd97LL, 0xffffffffffffffffLL, 0xffffffffffffffffLL, 0xffffffffffffffffLL }, /* p */
+    { 0x000000000005cf11LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL }, /* r2 */
+    { 0xc115af556c360c67LL, 0x0fd8cddfc87b6635LL, 0x0000000000000000LL, 0x4000000000000000LL }, /* q */
+    { 0x57cb446240dd1710LL, 0x7556091c4805caa4LL, 0xd0593365f9384bcdLL, 0x0fb1fbc48b0f0eb4LL }, /* r2q */
+    {
+      { 0x8b2582fe742daa28LL, 0x658b9196932e02c7LL, 0x880923425712b2bbLL, 0x91e38443a5e82c0dLL }, /* px */
+      { 0xaf268adb32322e5cLL, 0x5fde0b5344766740LL, 0x895786c4bb46e956LL, 0x32879423ab1a0375LL }, /* py */
+      { 0x0000000000000001LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL }  /* pz */
+    },
+    0x46f3234475d5add9LL, /* n */
+    0x035bdd1aeafdb0a9LL, /* nq */
+    "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
+  };
+ 
+  //geting curves from libakrypt
+  memcpy(&curve1, &id_tc26_gost_3410_2012_256_paramSetA, sizeof(id_tc26_gost_3410_2012_256_paramSetA));
+  memcpy(&curve2, &id_rfc4357_gost_3410_2001_paramSetA, sizeof(id_rfc4357_gost_3410_2001_paramSetA));  
+  memcpy(&curve3, &id_rfc4357_gost_3410_2001_paramSetB, sizeof(id_rfc4357_gost_3410_2001_paramSetB));  
+  memcpy(&curve4, &id_rfc4357_gost_3410_2001_paramSetC, sizeof(id_rfc4357_gost_3410_2001_paramSetC));  
+  memcpy(&curve5, &id_tc26_gost_3410_2012_512_paramSetA, sizeof(id_tc26_gost_3410_2012_512_paramSetA));
+  memcpy(&curve6, &id_tc26_gost_3410_2012_512_paramSetB, sizeof(id_tc26_gost_3410_2012_512_paramSetB));
+  memcpy(&curve7, &id_tc26_gost_3410_2012_512_paramSetC, sizeof(id_tc26_gost_3410_2012_512_paramSetC));
+
+
+  //output of exits in functions
+  printf("ak_error_ok = %d\n", ak_error_ok);
+  printf("ak_true = %d\n", ak_true);
+
+  printf("\n");
+   
+
+  //checking if our curve is ok
+  printf("CURVE PARAMETERS = %d\n", ak_wcurve_is_ok(&paramSetA256)); 
+  printPointInfo(&paramSetA256, "BASE POINT");
+
+  //POINT OPERATIONS TESTING
+  //double
+  ak_wpoint_double(&paramSetA256.point, &paramSetA256);
+  printPointInfo(&paramSetA256, "DOUBLE POINT");
+ 
+  //add
+  ak_wpoint_add(&paramSetA256.point, &paramSetA256.point, &paramSetA256);
+  printPointInfo(&paramSetA256, "ADD POINT");
+
+  //reduce
+  ak_wpoint_reduce(&paramSetA256.point, &paramSetA256);
+  printPointInfo(&paramSetA256, "REDUCED POINT");
+
+  //key generation
+  //gen
+  struct random gen;
+  ak_mpznmax rand;
+  ak_random_create_lcg(&gen);
+  ak_mpzn_set_random_modulo(rand, paramSetA256.q, paramSetA256.size, &gen);
+  if (ak_mpzn_cmp_ui(rand, paramSetA256.size, 0) == ak_true)
+    ak_mpzn_set_ui(rand, paramSetA256.size, 1); 
+
+  //calculating [k]P with random k
+  ak_wpoint_pow(&paramSetA256.point, &paramSetA256.point, rand, paramSetA256.size, &paramSetA256);
+  printPointInfo(&paramSetA256, "[k]P point");
+
+  ak_mpzn256 k = {0x1, 0x2, 0x3, 0x4};
+  //calc with set k
+  ak_wpoint_pow(&paramSetA256.point, &paramSetA256.point, k, paramSetA256.size, &paramSetA256);
+  printPointInfo(&paramSetA256, "[k]P point");
+
   test_ak_wcurve_discriminant_is_ok();
+
+
 }
