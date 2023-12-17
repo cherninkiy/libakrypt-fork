@@ -239,20 +239,11 @@ void examples_ak_wpoint_functions() {
  
   // Кривая id_tc26_gost_3410_2012_512_paramSetC
   memcpy(&curve7, &id_tc26_gost_3410_2012_512_paramSetC, sizeof(id_tc26_gost_3410_2012_512_paramSetC));
-}
 
-  struct wcurve curves[] = {
-    customCurve,
-    curve1,
-    curve2,
-    curve3,
-    curve4,
-    curve5,
-    curve6,
-    curve7
-  };
+  struct wcurve curves[] = {customCurve, curve1, curve2, curve3, curve4, curve5, curve6, curve7};
 
   /* Проверка заданных кривых */
+  printf("%s\n", "-------------------ПРОВЕРКА КРИВОЙ-------------------");
   for (int i = 0; i < 8; i++) {
     printf("%d\n", ak_wcurve_is_ok(&curves[i]));
   }
@@ -264,7 +255,7 @@ void examples_ak_wpoint_functions() {
     Функция принимает первым аргументом точку эллиптической кривой, 
     а вторым аргументом контекст эллиптической кривой. 
     */
-    ak_wpoint_double(&curves[i].point, &curves[i])
+    ak_wpoint_double(&curves[i].point, &curves[i]);
     printPointInfo(&curves[i], "Точка после операции удвоения");
   }
 
@@ -333,6 +324,8 @@ void examples_ak_wpoint_functions() {
     - Интернет вещи (IoT). Благодаря своей вычислительной эффективности и меньшему размеру ключей 
       эллиптические кривые хорошо подходят для устройств с ограниченными ресурсами в приложениях IoT.
   */
+
+}
 
 int main() {
 
