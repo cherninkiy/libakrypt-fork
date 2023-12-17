@@ -721,6 +721,8 @@ extern "C" {
  dll_export int ak_bckey_create_magma( ak_bckey );
 /*! \brief Инициализация секретного ключа алгоритма блочного шифрования Кузнечик. */
  dll_export int ak_bckey_create_kuznechik( ak_bckey );
+/*! \brief Инициализация секретного ключа алгоритма блочного шифрования BelT. */
+ dll_export int ak_bckey_create_belt( ak_bckey );
 /*! \brief Инициализация секретного ключа алгоритма блочного шифрования по его OID. */
  dll_export int ak_bckey_create_oid( ak_bckey , ak_oid );
 /*! \brief Очистка ключа алгоритма блочного шифрования. */
