@@ -532,7 +532,6 @@
      else ak_wpoint_set_as_unit( wp1, ec );
     return;
   }
-
   //add-1998-cmo-2
   ak_mpzn_mul_montgomery( u1, wp1->x, wp2->z, ec->p, ec->n, ec->size );
   ak_mpzn_mul_montgomery( u2, wp1->y, wp2->z, ec->p, ec->n, ec->size );
@@ -560,6 +559,25 @@
   ak_mpzn_add_montgomery( wp1->y, wp1->y, u2, ec->p, ec->size );
   ak_mpzn_mul_montgomery( wp1->z, u6, u3, ec->p, ec->n, ec->size );
 }
+/* ----------------------------------------------------------------------------------------------- */
+/*! Точка эллиптической кривой \f$ P = (x:y:z) \f$ заменяется значением \f$ 3P  = (x_3:y_3:z_3)\f$,
+    то есть утраивается.
+    При вычислениях используются соотношения, основанные на результатах работы
+    D.Bernstein, T.Lange, <a href="http://eprint.iacr.org/2007/286">Faster addition and doubling
+     on elliptic curves</a>, 2007.
+
+    @param wp утраиваемая точка \f$ P \f$ эллиптической кривой.
+    @param ec эллиптическая кривая, которой принадлежит точка \f$P\f$.                             */
+/* ----------------------------------------------------------------------------------------------- */
+inline void ak_wpoint_triple( ak_wpoint wp, ak_wcurve ec)
+{
+  struct wpoint wp_temp = *wp;
+  ak_wpoint_double( wp, ec );
+  ak_wpoint wp1 = &wp_temp;
+  ak_wpoint_add( wp, wp1, ec );
+  return;
+}
+
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! Для точки \f$ P = (x:y:z) \f$ функция вычисляет аффинное представление,
