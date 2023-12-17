@@ -1,3 +1,24 @@
+/* 
+Тема проекта: "Примеры для работы с эллиптическими кривыми (создание, доступ к данным, вычисление криатной точки)
+
+Команда:
+Сурков Максим Андреевич (СКБ-192)
+Кондратьев Арсений Алексеевич (СКБ-192)
+Киселев Дмитрий Алексеевич (СКБ-192)
+
+Была предемонстрирована работа со следующими функциями:
+- ak_wcurve_discriminant_is_ok
+- ak_wcurve_check_order_parameters
+- ak_wcurve_is_ok
+- ak_wpoint_add
+- ak_wpoint_double
+- ak_wpoint_reduce
+- ak_wpoint_pow
+- ak_wpoint_check_order
+- ak_wpoint_is_ok
+
+*/
+
 #include <libakrypt.h>
 void test_ak_wcurve_discriminant_is_ok() {
   struct wcurve paramSetA256_1 = {
