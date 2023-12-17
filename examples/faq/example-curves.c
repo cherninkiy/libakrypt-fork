@@ -20,7 +20,8 @@
 */
 
 #include <libakrypt.h>
-void test_ak_wcurve_discriminant_is_ok() {
+
+void test_ak_wcurve_functions() {
   struct wcurve paramSetA256_1 = {
     ak_mpzn256_size,
     4, /* cofactor */
@@ -258,7 +259,7 @@ int main() {
   ak_wpoint_pow(&paramSetA256.point, &paramSetA256.point, k, paramSetA256.size, &paramSetA256);
   printPointInfo(&paramSetA256, "[k]P point");
 
-  test_ak_wcurve_discriminant_is_ok();
+  test_ak_wcurve_functions();
 
 
 }

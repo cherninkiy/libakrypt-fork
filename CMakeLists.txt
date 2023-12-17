@@ -22,8 +22,8 @@ project( libakrypt C )
 # Перечень доступных опций для сборки библиотеки
 option( AK_SHARED_LIB "Build the shared library" ON )
 option( AK_STATIC_LIB "Build the static library" OFF )
-option( AK_EXAMPLES "Build examples for libakrypt" OFF )
-option( AK_TESTS "Build tests for libakrypt" ON )
+option( AK_EXAMPLES "Build examples for libakrypt" ON )
+option( AK_TESTS "Build tests for libakrypt" OFF )
 option( AK_TESTS_GMP "Build comparison tests for gmp and libakrypt" OFF )
 string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 
@@ -195,6 +195,7 @@ set( BASE_EXAMPLES_LIST
 # определяем перечень примеров из FAQ
 set( EXAMPLES_LIST
      g01n01
+     curves
    )
 
 if( AK_EXAMPLES )
@@ -257,8 +258,7 @@ set ( ARITHMETIC_TESTS_LIST
       cmac02
       hmacds
       kdf-state
-      ]]
-      curves 
+      ]] 
     )
 
 if( AK_TESTS_GMP )
