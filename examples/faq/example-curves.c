@@ -1,5 +1,5 @@
 /* 
-Тема проекта: "Примеры для работы с эллиптическими кривыми (создание, доступ к данным, вычисление криатной точки)
+Тема проекта: "Примеры для работы с эллиптическими кривыми (создание, доступ к данным, вычисление кратной точки)
 
 Команда:
 Сурков Максим Андреевич (СКБ-192)
@@ -21,6 +21,13 @@
 
 #include <libakrypt.h>
 
+/* 
+Проверка, что параметры кривых работают корректно 
+Ошибка, возникающая если точка не принадлежит заданной кривой (121)
+Ошибка, возникающая когда парметры кривой не соответсвуют алгоритму, в котором они используются (120)
+Ошибка, возникающая когда порядок точки неверен (122)
+Ошибка, возникающая когда неверно определены вспомогательный параметры эллиптической кривой (124) 
+*/
 void test_ak_wcurve_functions() {
   struct wcurve paramSetA256_1 = {
     ak_mpzn256_size,
@@ -40,7 +47,7 @@ void test_ak_wcurve_functions() {
     0x035bdd1aeafdb0a9LL, /* nq */
     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
   };
-  /* Ошибка, возникающая если точка не принадлежит заданной кривой (121)*/
+
   struct wcurve paramSetA256_2 = {
     ak_mpzn256_size,
     4, /* cofactor */
@@ -59,7 +66,7 @@ void test_ak_wcurve_functions() {
     0x46f3234475d5add9LL, /* nq */
     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
   };
-  /* Ошибка, возникающая когда парметры кривой не соответсвуют алгоритму, в котором они используются (120)*/
+
   struct wcurve paramSetA256_3 = {
     ak_mpzn256_size,
     4, /* cofactor */
@@ -78,7 +85,7 @@ void test_ak_wcurve_functions() {
     0x035bdd1aeafdb0a9LL, /* nq */
     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
   };
-  /* Ошибка, возникающая когда порядок точки неверен (122)*/
+
   struct wcurve paramSetA256_4 = {
     ak_mpzn256_size,
     4, /* cofactor */
@@ -116,7 +123,7 @@ void test_ak_wcurve_functions() {
     0x0000000000000000LL, /* nq */
     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
   };
-    /* Ошибка, возникающая когда неверно определены вспомогательный параметры эллиптической кривой (124) */
+
   struct wcurve paramSetA256_6 = {
     ak_mpzn256_size,
     4, /* cofactor */
@@ -136,7 +143,6 @@ void test_ak_wcurve_functions() {
     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
   };
 
-  /* Ошибка, возникающая когда простой модуль кривой задан неверно (125) */
   struct wcurve paramSetA256_7 = {
     ak_mpzn256_size,
     4, /* cofactor */
@@ -156,39 +162,42 @@ void test_ak_wcurve_functions() {
     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
   };
 
+
   struct wcurve tests[] = {paramSetA256_1, paramSetA256_2, paramSetA256_3, paramSetA256_4, paramSetA256_5, paramSetA256_6, paramSetA256_7};
 
-  printf("%s\n", "--------------TESTING DESCRIMINANT IS OK----------------");
+  printf("%s\n", "--------------ПРОВЕРКА ДИСКРИМИНАНТА КРИВОЙ----------------");
   for(int i = 0; i < 7; i++) {
     printf("%d\n", ak_wcurve_discriminant_is_ok(&tests[i]));
   }
 
-  printf("%s\n", "----------------TESTING ORDER PARAMETERS-----------------");
+  printf("%s\n", "----------------ПРОВЕРКА ПАРАМЕТРОВ КРИВОЙ-----------------");
   for(int i = 0; i < 7; i++) {
     printf("%d\n", ak_wcurve_check_order_parameters(&tests[i]));
   }
 
-  printf("%s\n", "-------------------TESTING CURVE IS OK-------------------");
+  printf("%s\n", "-------------------ПРОВЕРКА КРИВОЙ-------------------");
   for(int i = 0; i< 7; i++) {
     printf("%d\n", ak_wcurve_is_ok(&tests[i]));
   }
 }
 
+/* 
+Функция для вывода точки эллиптической кривой 
+*/
 void printPointInfo(ak_wcurve curve, const char *name) {
   printf("----------------%s----------------\n", name);
-  printf("point is ok: %d\n", ak_wpoint_is_ok(&curve->point, curve));
-  printf("order of point is ok: %d\n", ak_wpoint_check_order(&curve->point, curve));
-  printf("Contests: \n"); 
+  printf("Корpектность точки: %d\n", ak_wpoint_is_ok(&curve->point, curve));
+  printf("Корректность порядка точки: %d\n", ak_wpoint_check_order(&curve->point, curve));
+  printf("Точка: \n"); 
   printf("X: %s\n", ak_mpzn_to_hexstr(curve->point.x, curve->size));
   printf("Y: %s\n", ak_mpzn_to_hexstr(curve->point.y, curve->size));
   printf("Z: %s\n", ak_mpzn_to_hexstr(curve->point.z, curve->size));
   printf("\n");
 }
 
-int main() {
-  struct wcurve curve1, curve2, curve3, curve4, curve5, curve6, curve7; //gost curves
-  //creating your own curve 
-  struct wcurve paramSetA256 = {
+void examples_ak_wpoint_functions() {
+  /* Создание эллиптической кривой при помощи задания параметров */
+  struct wcurve customCurve = {
     ak_mpzn256_size,
     4, /* cofactor */
     { 0x6d0078e62fc81048LL, 0x94db4f98bfb73698LL, 0x75e9b60631449efdLL, 0xca0709cc398e1cd1LL }, /* a */
@@ -206,60 +215,128 @@ int main() {
     0x035bdd1aeafdb0a9LL, /* nq */
     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
   };
- 
-  //geting curves from libakrypt
+
+  struct wcurve curve1, curve2, curve3, curve4, curve5, curve6, curve7;
+
+  /* Создание эллиптической кривой при помощи копирования параметров с кривых из ГОСТ */
+  // Кривая id_tc26_gost_3410_2012_256_paramSetA
   memcpy(&curve1, &id_tc26_gost_3410_2012_256_paramSetA, sizeof(id_tc26_gost_3410_2012_256_paramSetA));
+
+  // Кривая id_rfc4357_gost_3410_2001_paramSetA
   memcpy(&curve2, &id_rfc4357_gost_3410_2001_paramSetA, sizeof(id_rfc4357_gost_3410_2001_paramSetA));  
-  memcpy(&curve3, &id_rfc4357_gost_3410_2001_paramSetB, sizeof(id_rfc4357_gost_3410_2001_paramSetB));  
-  memcpy(&curve4, &id_rfc4357_gost_3410_2001_paramSetC, sizeof(id_rfc4357_gost_3410_2001_paramSetC));  
-  memcpy(&curve5, &id_tc26_gost_3410_2012_512_paramSetA, sizeof(id_tc26_gost_3410_2012_512_paramSetA));
-  memcpy(&curve6, &id_tc26_gost_3410_2012_512_paramSetB, sizeof(id_tc26_gost_3410_2012_512_paramSetB));
-  memcpy(&curve7, &id_tc26_gost_3410_2012_512_paramSetC, sizeof(id_tc26_gost_3410_2012_512_paramSetC));
-
-
-  //output of exits in functions
-  printf("ak_error_ok = %d\n", ak_error_ok);
-  printf("ak_true = %d\n", ak_true);
-
-  printf("\n");
-   
-
-  //checking if our curve is ok
-  printf("CURVE PARAMETERS = %d\n", ak_wcurve_is_ok(&paramSetA256)); 
-  printPointInfo(&paramSetA256, "BASE POINT");
-
-  //POINT OPERATIONS TESTING
-  //double
-  ak_wpoint_double(&paramSetA256.point, &paramSetA256);
-  printPointInfo(&paramSetA256, "DOUBLE POINT");
  
-  //add
-  ak_wpoint_add(&paramSetA256.point, &paramSetA256.point, &paramSetA256);
-  printPointInfo(&paramSetA256, "ADD POINT");
+  // Кривая id_rfc4357_gost_3410_2001_paramSetB
+  memcpy(&curve3, &id_rfc4357_gost_3410_2001_paramSetB, sizeof(id_rfc4357_gost_3410_2001_paramSetB));  
+ 
+  // Кривая id_rfc4357_gost_3410_2001_paramSetC
+  memcpy(&curve4, &id_rfc4357_gost_3410_2001_paramSetC, sizeof(id_rfc4357_gost_3410_2001_paramSetC));  
+ 
+  // Кривая id_tc26_gost_3410_2012_512_paramSetA
+  memcpy(&curve5, &id_tc26_gost_3410_2012_512_paramSetA, sizeof(id_tc26_gost_3410_2012_512_paramSetA));
+ 
+  // Кривая id_tc26_gost_3410_2012_512_paramSetB
+  memcpy(&curve6, &id_tc26_gost_3410_2012_512_paramSetB, sizeof(id_tc26_gost_3410_2012_512_paramSetB));
+ 
+  // Кривая id_tc26_gost_3410_2012_512_paramSetC
+  memcpy(&curve7, &id_tc26_gost_3410_2012_512_paramSetC, sizeof(id_tc26_gost_3410_2012_512_paramSetC));
+}
 
-  //reduce
-  ak_wpoint_reduce(&paramSetA256.point, &paramSetA256);
-  printPointInfo(&paramSetA256, "REDUCED POINT");
+  struct wcurve curves[] = {
+    customCurve,
+    curve1,
+    curve2,
+    curve3,
+    curve4,
+    curve5,
+    curve6,
+    curve7
+  };
 
-  //key generation
-  //gen
+  /* Проверка заданных кривых */
+  for (int i = 0; i < 8; i++) {
+    printf("%d\n", ak_wcurve_is_ok(&curves[i]));
+  }
+
+  /* Пример работы с функцией удвоения точки */
+  for (int i = 0; i < 8; i++) {
+    printPointInfo(&curves[i], "Начальная точка");
+    /* 
+    Функция принимает первым аргументом точку эллиптической кривой, 
+    а вторым аргументом контекст эллиптической кривой. 
+    */
+    ak_wpoint_double(&curves[i].point, &curves[i])
+    printPointInfo(&curves[i], "Точка после операции удвоения");
+  }
+
+  /* Пример работы с функцией сложения точек */
+  for (int i = 0; i < 8; i++) {
+    printPointInfo(&curves[i], "Начальная точка");
+    /* 
+    Функция принимает первым аргументом точку эллиптической кривой, 
+    вторым аргумент точку, которая складывается с первой, 
+    а третьим аргументом контекст эллиптической кривой.
+    */
+    ak_wpoint_add(&curves[i].point, &curves[i].point, &curves[i]);
+    printPointInfo(&curves[i], "Точка после операции сложения");
+  }
+
+  /* Пример работы с функцией преобразования точки в афинное представление */
+  /* Пример работы с функцией сложения точек */
+  for (int i = 0; i < 8; i++) {
+    printPointInfo(&curves[i], "Начальная точка");
+    /* 
+    Функция принимает первым аргументом точку эллиптической кривой, 
+    а вторым аргументом контекст эллиптической кривой.
+    */
+    ak_wpoint_reduce(&curves[i].point, &curves[i]);
+    printPointInfo(&curves[i], "Точка после операции преобразования");
+  }
+
+  /* Пример работы с функцией вычисления кратной точки */
+  /* Вычисление кратной точки [k]P с помощью сгенерированного ключа */
+  // Генерация ключа 
   struct random gen;
   ak_mpznmax rand;
   ak_random_create_lcg(&gen);
-  ak_mpzn_set_random_modulo(rand, paramSetA256.q, paramSetA256.size, &gen);
-  if (ak_mpzn_cmp_ui(rand, paramSetA256.size, 0) == ak_true)
-    ak_mpzn_set_ui(rand, paramSetA256.size, 1); 
+  for (int i = 0; i < 8; i++) {
+    ak_mpzn_set_random_modulo(rand, curves[i].q, curves[i].size, &gen);
+    if (ak_mpzn_cmp_ui(rand, curves[i].size, 0) == ak_true)
+      ak_mpzn_set_ui(rand, curves[i].size, 1); 
+    printPointInfo(&curves[i], "Начальная точка");
+    /* 
+    Функция принимает первым аргументом точку эллиптической кривой, 
+    а вторым аргументом контекст эллиптической кривой.
+    */
+    ak_wpoint_pow(&curves[i].point, &curves[i].point, rand, curves[i].size, &curves[i]);
+    printPointInfo(&curves[i], "Точка после вычисления [k]P");
+  /* Вычисление кратной точки [k]P с помощью заданного ключа */
+  } 
+  for (int i = 0; i < 8; i++) {
+    ak_mpzn256 k = {0x1, 0x2, 0x3, 0x4}; //Задание собственного ключа
+    printPointInfo(&curves[i], "Начальная точка");
+    /* 
+    Функция принимает первым аргументом точку эллиптической кривой, 
+    а вторым аргументом контекст эллиптической кривой.
+    */
+    ak_wpoint_pow(&curves[i].point, &curves[i].point, k, curves[i].size, &curves[i]);
+    printPointInfo(&curves[i], "Точка после вычисления [k]P");
+  }
 
-  //calculating [k]P with random k
-  ak_wpoint_pow(&paramSetA256.point, &paramSetA256.point, rand, paramSetA256.size, &paramSetA256);
-  printPointInfo(&paramSetA256, "[k]P point");
+  /* 
+  Использование кратной точки: 
+    - Цифровые подписи (ECDSA) - используют умножение точки для создания и проверки подписи
+    - Обмен ключами (ECDH) - это протокол обмена ключами, основанный на эллиптических кривых. 
+      Умножение точек используется для получения общего секрета между двумя сторонами, 
+      который затем можно использовать в качестве симметричного ключа для безопасной связи.
+    - Многие криптовалюты, включая Биткойн, используют криптографию на основе эллиптических кривых 
+      для генерации ключей и цифровых подписей.
+    - Интернет вещи (IoT). Благодаря своей вычислительной эффективности и меньшему размеру ключей 
+      эллиптические кривые хорошо подходят для устройств с ограниченными ресурсами в приложениях IoT.
+  */
 
-  ak_mpzn256 k = {0x1, 0x2, 0x3, 0x4};
-  //calc with set k
-  ak_wpoint_pow(&paramSetA256.point, &paramSetA256.point, k, paramSetA256.size, &paramSetA256);
-  printPointInfo(&paramSetA256, "[k]P point");
+int main() {
 
   test_ak_wcurve_functions();
-
+  examples_ak_wpoint_functions();
 
 }
