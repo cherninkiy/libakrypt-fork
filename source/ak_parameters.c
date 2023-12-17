@@ -33,7 +33,7 @@
   },
   0xdbf951d5883b2b2fLL, /* n */
   0x66ff43a234713e85LL, /* nq */
-  "8000000000000000000000000000000000000000000000000000000000000431"
+  "8000000000000000000000000000000000000000000000000000000000000431",
  };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -63,7 +63,7 @@
   },
   0x46f3234475d5add9LL, /* n */
   0x035bdd1aeafdb0a9LL, /* nq */
-  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
+  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97",
 };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -93,7 +93,7 @@
   },
   0x46f3234475d5add9LL, /* n */
   0x9ee6ea0b57c7da65LL, /* nq */
-  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
+  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97",
  };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -123,7 +123,7 @@
   },
   0xbd667ab8a3347857LL, /* n */
   0xca89614990611a91LL, /* nq */
-  "8000000000000000000000000000000000000000000000000000000000000c99"
+  "8000000000000000000000000000000000000000000000000000000000000c99",
  };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -153,7 +153,7 @@
   },
   0xdf6e6c2c727c176dLL, /* n */
   0xa1c6af0a552f7577LL, /* nq */
-  "9b9f605f5a858107ab1ec85e6b41c8aacf846e86789051d37998f7b9022d759b"
+  "9b9f605f5a858107ab1ec85e6b41c8aacf846e86789051d37998f7b9022d759b",
  };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -192,7 +192,7 @@
   },
   0x71A1662E6FA1D92DLL, /* n */
   0x40BB2313A95302ADLL, /* nq */
-  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd215b"
+  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd215b",
  };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -222,7 +222,7 @@
   },
   0xd6412ff7c29b8645LL, /* n */
   0x50bc7d084a21aae1LL, /* nq */
-  "4531acd1fe0023c7550d267b6b2fee80922b14b2ffb90f04d4eb7c09b5d2d15df1d852741af4704a0458047e80e4546d35b8336fac224dd81664bbf528be6373"
+  "4531acd1fe0023c7550d267b6b2fee80922b14b2ffb90f04d4eb7c09b5d2d15df1d852741af4704a0458047e80e4546d35b8336fac224dd81664bbf528be6373",
  };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -252,7 +252,7 @@
   },
   0x58a1f7e6ce0f4c09LL, /* n */
   0x02ccc1665d51f223LL, /* nq */
-  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc7"
+  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc7",
  };
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -312,7 +312,7 @@
   },
   0x58a1f7e6ce0f4c09LL, /* n */
   0x0ed9d8e0b6624e1bLL, /* nq */
-  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc7"
+  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc7",
  };
 
 /* ----------------------------------------------------------------------------------------------- */

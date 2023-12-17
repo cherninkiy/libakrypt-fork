@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------------------------- */
-/*  Copyright (c) 2014 - 2021 by Axel Kenzo, axelkenzo@mail.ru                                     */
+/*  Copyright (c) 2014 - 2023 by Axel Kenzo, axelkenzo@mail.ru                                     */
 /*                                                                                                 */
 /*  Файл libakrypt-base.h (определение платформозависимых функций)                                 */
 /* ----------------------------------------------------------------------------------------------- */
@@ -93,8 +93,13 @@ extern "C" {
  #include <sys/mman.h>
 #endif
 
-#cmakedefine AK_HAVE_ERRNO_H
 #cmakedefine AK_HAVE_SYSTYPES_H
+#ifdef AK_HAVE_SYSTYPES_H
+ #include <sys/types.h>
+#endif
+
+/* ----------------------------------------------------------------------------------------------- */
+#cmakedefine AK_HAVE_ERRNO_H
 #cmakedefine AK_HAVE_STRINGS_H
 #cmakedefine AK_HAVE_ENDIAN_H
 #cmakedefine AK_HAVE_SYSTIME_H
@@ -138,7 +143,6 @@ extern "C" {
  typedef unsigned __int32 ak_uint32;
  typedef __int64 ak_int64;
  typedef unsigned __int64 ak_uint64;
- typedef __int64 ssize_t;
 #endif
 #ifdef __MINGW32__
  typedef __int32 ak_int32;
@@ -160,6 +164,11 @@ extern "C" {
  typedef unsigned long long int ak_uint64;
 #endif
 
+#cmakedefine AK_HAVE_SSIZE_T
+#ifndef AK_HAVE_SSIZE_T
+ typedef ak_int64 ssize_t;
+#endif
+
 /* ----------------------------------------------------------------------------------------------- */
  typedef signed char ak_int8;
  typedef unsigned char ak_uint8;
@@ -168,6 +177,10 @@ extern "C" {
 #else
  typedef TCHAR tchar;
 #endif
+
+/* ----------------------------------------------------------------------------------------------- */
+/** \defgroup libakrypt-base Служебные и вспомогательные функции (библиотека libakrypt-base)
+  @{ */
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Объединение для обработки 128-ми битных значений. */
@@ -273,7 +286,7 @@ extern "C" {
 #define ak_min(x,y) ((x) < (y) ? (x) : (y))
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \addtogroup log Функции аудита и обработки ошибок
+/** \defgroup log Функции аудита и обработки ошибок
   @{ */
 /*! \brief Функция возвращает уровень аудита библиотеки. */
  dll_export int ak_log_get_level( void );
@@ -307,7 +320,7 @@ extern "C" {
 /** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \addtogroup list Функции для работы с двусвязными списками
+/** \defgroup list Функции для работы с двусвязными списками
   @{ */
  typedef struct list_node *ak_list_node;
 /*! \brief Узел двусвязного списка. */
@@ -361,7 +374,7 @@ extern "C" {
 /** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \addtogroup ini Функции чтения ini-файлов
+/** \defgroup ini Функции чтения ini-файлов
   @{ */
 /*! \brief Прототип функции-обработчика, используемого при чтении ini-файлов. */
  typedef int (*ak_function_ini_handler)( void * , const char * , const char * , const char * );
@@ -374,7 +387,7 @@ extern "C" {
 /** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \addtogroup file Платформонезависимые функции для работы с файлами
+/** \defgroup file Платформонезависимые функции для работы с файлами
   @{ */
 /*! \brief Определение функции для выполнения действий с заданным файлом */
  typedef int ( ak_function_find )( const tchar * , ak_pointer );
@@ -494,7 +507,7 @@ extern "C" {
 #endif
 
 /* ----------------------------------------------------------------------------------------------- */
-/** \addtogroup func Вспомогательные функции
+/** \defgroup func Вспомогательные функции
   @{ */
 /*! \brief Конвертация строки шестнадцатеричных символов в массив данных. */
  dll_export int ak_hexstr_to_ptr( const char *, ak_pointer , const size_t , const bool_t );
@@ -524,8 +537,25 @@ extern "C" {
  dll_export void ak_aligned_free( ak_pointer );
 
 /* ----------------------------------------------------------------------------------------------- */
+/*! \brief Способ конвертации двоичных данных в строку символов в формате base64 */
+ typedef enum {
+  /*! \brief Преобразование в виде строки */
+   plain_base64_format,
+  /*! \brief Преобразование в виде строки с разделением при помощи пробела на группы по четыре символа */
+   grouped_base64_format,
+} base64_format_t;
+
+/*! \brief Функция возвращает длину строки, необходимой для записи двоичных данных в формате base64 */
+ dll_export size_t ak_ptr_to_base64_size( const size_t , const base64_format_t );
+/*! \brief Функция преобразует двоичные данные в строку символов в формате base64.  */
+ dll_export const char *ak_ptr_to_base64( ak_const_pointer , const size_t , const base64_format_t );
+/*! \brief Функция преобразует двоичные данные в строку символов в формате base64.  */
+ dll_export char *ak_ptr_to_base64_alloc( ak_const_pointer , const size_t , const base64_format_t );
+/*! \brief Функция преобразует строку символов в формате base64 в двоичные данные. */
+ dll_export ak_uint8 *ak_base64_to_ptr( const char *, ak_pointer , size_t * );
 /*! \brief Функция кодирует три байта информации в формат base64.  */
  dll_export void ak_base64_encodeblock( ak_uint8 *, ak_uint8 *, int );
+
 /*! \brief Обобщенная реализация функции snprintf для различных компиляторов. */
  dll_export int ak_snprintf( char *str, size_t size, const char *format, ... );
 /*! \brief Форматированный вывод (аналогичный printf) через пользовательскую функцию. */
@@ -534,6 +564,8 @@ extern "C" {
  dll_export int ak_string_read( const char * , char * , size_t * );
 /*! \brief Чтение пароля из консоли. */
  dll_export ssize_t ak_password_read( char * , const size_t );
+/** @} */
+
 /** @} */
 
 #ifdef __cplusplus

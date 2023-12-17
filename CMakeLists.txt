@@ -1,14 +1,14 @@
 # -------------------------------------------------------------------------------------------------- #
-# Copyright (c) 2014 - 2022 by Axel Kenzo, axelkenzo@mail.ru
+# Copyright (c) 2014 - 2023 by Axel Kenzo, axelkenzo@mail.ru
 #
 # CMakeLists.txt
 # -------------------------------------------------------------------------------------------------- #
-cmake_minimum_required( VERSION 3.2 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.5 )
 
 # -------------------------------------------------------------------------------------------------- #
 set( HEAD_VERSION 0 )
 set( MAIN_VERSION 9 )
-set( MINOR_VERSION 10 )
+set( MINOR_VERSION 12 )
 set( MAJOR_VERSION ${HEAD_VERSION}.${MAIN_VERSION} )
 set( FULL_VERSION ${MAJOR_VERSION}.${MINOR_VERSION} )
 # строка с текущей датой, используется при сборке документации
@@ -32,21 +32,6 @@ string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 # для linux
 #   set( AK_CONFIG_PATH  "/etc" )
 #   set( AK_CA_PATH "/usr/share/ca-certificates" )
-
-# -------------------------------------------------------------------------------------------------- #
-# Подключаем модули CMake для тонкой настройки параметров сборки
-set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
-include( DetectFlags )
-include( DetectHeaders )
-include( DetectIntrinsics )
-include( DetectLibraries )
-# модули CMake
-include( GNUInstallDirs )
-
-# -------------------------------------------------------------------------------------------------- #
-# Вырабатываем заголовочный файл (в каталоге сборки)
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/source/libakrypt-base.h.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.h @ONLY )
-message("-- Generation of libakrypt-base.h is done")
 
 # -------------------------------------------------------------------------------------------------- #
 # Определяем базовое множество исходных текстов библиотеки
@@ -107,6 +92,21 @@ endif()
 message("-- Used compile flags ${CMAKE_C_FLAGS}")
 
 # -------------------------------------------------------------------------------------------------- #
+# Подключаем модули CMake для тонкой настройки параметров сборки
+set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
+include( DetectFlags )
+include( DetectHeaders )
+include( DetectIntrinsics )
+include( DetectLibraries )
+# модули CMake
+include( GNUInstallDirs )
+
+# -------------------------------------------------------------------------------------------------- #
+# Вырабатываем заголовочный файл (в каталоге сборки)
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/source/libakrypt-base.h.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.h @ONLY )
+message("-- Generation of libakrypt-base.h is done")
+
+# -------------------------------------------------------------------------------------------------- #
 # Определяем место хранения файла с настройками библиотеки
 # -------------------------------------------------------------------------------------------------- #
 if( AK_CONFIG_PATH )
@@ -126,7 +126,7 @@ message("-- Path for libakrypt.conf is ${AK_CONFIG_PATH}")
 if( AK_CA_PATH )
 else()
   if( CMAKE_HOST_UNIX )
-    set( AK_CA_PATH "${CMAKE_INSTALL_PREFIX}/share/ca-certificates/libakrypt" )
+    set( AK_CA_PATH ${CMAKE_INSTALL_PREFIX}/share/ca-certificates/libakrypt )
   endif()
   if( WIN32 )
     set( AK_CA_PATH "C:\\\\Program Files\\\\Akrypt\\\\ca-certificates" )
@@ -185,8 +185,8 @@ endif()
 # начинаем с примеров
 # определяем перечень примеров и тестов для akbase
 set( BASE_EXAMPLES_LIST
-     log
      ini
+     ini-file
      file
      mmap
      #realpath
@@ -236,7 +236,7 @@ if( AK_EXAMPLES )
 endif()
 
 # -------------------------------------------------------------------------------------------------- #
-# теперь тесты (включа арифметические)
+# теперь тесты (включая арифметические)
 if( AK_TESTS_GMP )
   set( AK_TESTS ON )
 endif()
@@ -244,6 +244,7 @@ endif()
 set ( ARITHMETIC_TESTS_LIST
       #[[
       random01
+      random02
       gf2n
       mgm01
       xtsmac01
@@ -262,11 +263,13 @@ set ( ARITHMETIC_TESTS_LIST
     )
 
 if( AK_TESTS_GMP )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAK_HAVE_GMP_H" )
   set( ARITHMETIC_TESTS_LIST ${ARITHMETIC_TESTS_LIST}
       mpzn-arithmetic
       mpzn-convert
       mpzn-montgomery
       mpzn-rem
+      mpzn-password
      )
 endif()
 
@@ -339,14 +342,14 @@ else()
 endif()
 if( LIBINTL_LIB )
   message("-- libintl found (${LIBINTL_LIB})")
+  find_path( AK_HAVE_LIBINTL_H NAMES libintl.h )
+  if( AK_HAVE_LIBINTL_H )
+    include_directories( ${AK_HAVE_LIBINTL_H} )
+    message("-- libintl.h found" )
+  endif()
   set( LIBAKRYPT_LIBS ${LIBAKRYPT_LIBS} ${LIBINTL_LIB} )
 endif()
 
-find_path( AK_HAVE_LIBINTL_H NAMES libintl.h )
-if( AK_HAVE_LIBINTL_H )
-  include_directories( ${AK_HAVE_LIBINTL_H} )
-  message("-- libintl.h found" )
-endif()
 
 # libiconv
 if( AK_STATIC_LIB )
@@ -387,6 +390,7 @@ endif()
 
 # -------------------------------------------------------------------------------------------------- #
 # инсталляция библиотеки (только для UNIX)
+message("-- Install path:" ${CMAKE_INSTALL_PREFIX} )
 if( CMAKE_HOST_UNIX )
   if( AK_STATIC_LIB )
     install( TARGETS akbase-static LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )

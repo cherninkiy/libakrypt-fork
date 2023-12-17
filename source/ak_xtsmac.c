@@ -23,9 +23,7 @@
   /*! \brief Текущее значение имитовставки
       - 128 бит (16 байт) для Магмы, - 256 бит (32 байта) для Кузнечика */
    ak_uint64 sum[4];
-  /*! \brief Вектор, используемый для маскирования шифруемой информации
-      \details Для блочного шифра Магма вектор последовательно содержит значения:
-        \f$$ \underbrace{\gamma_{2n} || \gamma_{2n+1}}_{128\:\text{бит}} || \underbrace{ k_0 || k_1 || k_2 || k_3 }_{256\:\text{бит}} \f$$, */
+  /*! \brief Вектор, используемый для маскирования шифруемой информации */
    union {
      ak_uint8 u8[80];
      ak_uint64 u64[10];
@@ -794,7 +792,9 @@
      return ak_error_message( error, __func__, "incorrect secret keys context creation" );
    }
 
-   ctx->tag_size = ctx->iv_size = ctx->block_size = 16; /* длина блока алгоритма Магма */
+   ctx->tag_size = 16; /* два блока алгоритма Магма */
+   ctx->iv_size = 16;
+   ctx->block_size = 16;
    ctx->auth_clean = ak_xtsmac_authentication_clean;
    ctx->auth_update = ak_xtsmac_authentication_update;
    ctx->auth_finalize = ak_xtsmac_authentication_finalize;

@@ -4,3 +4,6 @@ CMakeLists.txt.user*
 libakrypt.rc
 scratch*
 *.kdev4
+tags
+doc/conf.py
+

@@ -216,9 +216,22 @@
     ak_error_message( ak_error_get_value(), __func__, "incorrect testing of pbkdf2 function" );
     return ak_false;
   }
+ /* тестирование функций выработки производных ключей */
+  if( ak_libakrypt_test_kdf256() != ak_true ) {
+    ak_error_message( ak_error_get_value(),
+                                __func__, "incorrect testing a kdf26 key derivaion function" );
+    return ak_false;
+  }
+  if( ak_libakrypt_test_tlstree() != ak_true ) {
+    ak_error_message( ak_error_get_value(),
+                      __func__, "incorrect testing a set of tlstree key derivaion functions" );
+    return ak_false;
+  }
+
  /* тестирование различых реализаци cmac на совпадение */
   if( ak_libakrypt_test_cmac() != ak_true ) {
-    ak_error_message( ak_error_get_value(), __func__, "incorrect testing different kinds of cmac" );
+    ak_error_message( ak_error_get_value(),
+                                       __func__, "incorrect testing different kinds of cmac" );
     return ak_false;
   }
 
@@ -339,13 +352,17 @@
 #endif
 
  /* перед стартом все должно быть хорошо */
-   ak_error_set_value( error = ak_error_ok );
+   ak_error_set_value( ak_error_ok );
 
  /* инициализируем систему аудита (вывод сообщений) */
    if(( error = ak_log_set_function( logger )) != ak_error_ok ) {
      ak_error_message( error, __func__ , "audit mechanism not started" );
      return ak_false;
    }
+
+ /* выводим версию библиотеки */
+   if( ak_log_get_level() > ak_log_none )
+     ak_error_message_fmt( ak_error_ok, __func__, "libakrypt version %s", ak_libakrypt_version( ));
 
  /* считываем настройки криптографических алгоритмов */
    if( ak_libakrypt_load_options() != ak_true ) {
@@ -431,12 +448,6 @@
  return error;
 }
 
-/* ----------------------------------------------------------------------------------------------- */
-/*! \example aktool_asn1.c                                                                         */
-/*! \example aktool_icode.c                                                                        */
-/*! \example aktool_key.c                                                                          */
-/*! \example aktool_show.c                                                                         */
-/*! \example aktool_test.c                                                                         */
 /* ----------------------------------------------------------------------------------------------- */
 /*                                                                                 ak_libakrypt.c  */
 /* ----------------------------------------------------------------------------------------------- */

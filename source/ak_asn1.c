@@ -6,7 +6,7 @@
 /*  - содержит реализацию функций,                                                                 */
 /*    используемых для базового кодирования/декодированя ASN.1 структур                            */
 /* ----------------------------------------------------------------------------------------------- */
- #include <libakrypt.h>
+ #include <libakrypt-internal.h>
 
 /* ----------------------------------------------------------------------------------------------- */
 #ifdef AK_HAVE_STDLIB_H
@@ -1818,7 +1818,8 @@ int ak_asn1_get_length_from_der( ak_uint8** pp_data, size_t *p_len )
 /* ----------------------------------------------------------------------------------------------- */
 /*!
     \param name Обобщенное имя, должно быть предварительно создано.
-    \param idx Строка (идентификатор), которым отмечены данные.
+    \param idx Строка (oid идентификатор), которым отмечены данные,
+           например, для получения Common Name надо указать строку: 2.5.4.3
     \param size Размер найденных данных
     \return Функция возвращает указатель строку символов (данные не копируются и хранятся
             в asn1 дереве). В случае ошибки возвращается NULL и устанавливается код ошибки,
@@ -2703,7 +2704,7 @@ AlgorithmIdentifier  ::=  SEQUENCE  {
       /* полный вывод должен иметь вид
          return ak_error_message( ak_error_wrong_length, __func__, "wrong der-sequence length");
 
-         одако частые ошибки при декодировании произвольных данных
+         однако частые ошибки при декодировании произвольных данных
          портят внешний вид .. ))                                  */
 
     switch( DATA_STRUCTURE( tag )) {
@@ -3167,10 +3168,11 @@ AlgorithmIdentifier  ::=  SEQUENCE  {
  /* теперь пытаемся считать base64 */
   if(( ptr = ak_ptr_load_from_base64_file( buffer, &size, filename )) == NULL )
    return ak_error_message_fmt( ak_error_get_value(), __func__,
-                                       "incorrect reading base64 encoded data from %s", filename );
+                                  "incorrect reading base64 encoded data from file %s", filename );
 
   if(( error = ak_asn1_decode( asn, ptr, size, ak_true )) != ak_error_ok )
-    ak_error_message( error, __func__, "incorrect decoding a der-sequence" );
+    ak_error_message_fmt( error, __func__,
+                               "incorrect decoding a der-sequence readed from file %s", filename );
 
  /* очищаем, при необходимости, выделенную память */
   if( ptr != buffer ) free( ptr );

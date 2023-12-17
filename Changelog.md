@@ -1,6 +1,45 @@
 # Перечень изменений
 
+## Изменения в версии 0.9.12
 
+ - Преобразован раздел с функциями генерации производных ключей.
+   Изменены или добавлены следующие функции:
+    - int ak_skey_derive_kdf256()
+    - int ak_skey_derive_kdf256_from_skey()
+    - ak_pointer ak_skey_new_derive_kdf256_from_skey()
+    - int ak_tlstree_state_create()
+    - int ak_tlstree_state_destroy()
+    - int ak_skey_derive_tlstree()
+    - int ak_skey_derive_tlstree_from_skey()
+    - ak_pointer ak_skey_new_derive_tlstree_from_skey()       
+ - Встроены в общее дерево тестов криптографических преобразований:
+    - ak_libakrypt_test_kdf256()
+    - bool_t ak_libakrypt_test_tlstree()
+ - Добавлен ряд забытых когда-то функций для кодирования/декодирования base64:
+    - const char *ak_ptr_to_base64()
+    - char *ak_ptr_to_base64_alloc()
+    - size_t ak_ptr_to_base64_size()
+    - ak_uint8 *ak_base64_to_ptr()   
+ - Название функции ak_skey_delete_after_load() укоротилось до ak_skey_delete()
+ - Изменена строка с авторами библиотеки в файле с лицензией
+
+
+## Изменения в версии 0.9.11
+
+ - Возвращена реализация ПДСЧ на основе функций хеширования (hrng)
+ - Изменена команда для подписи сертификатов открытого клчюа в утилите aktool 
+   (произведена замена --cert на --sign)
+ - Добавлен ряд функций для работы с сертификатами, в том числе:
+    - int ak_certificate_export_to_repository() 
+    - int ak_certificate_add_file_to_repository()
+    - int ak_certificate_add_ptr_to_repository()
+    - int ak_certificate_add_asn1_to_repository()
+    - int ak_certificate_import_from_repository
+ - Добавлена возможность сборки библиотеки с musl вместо libc
+ - Реализована поддержка petalinux
+ - Существенно расширена документация к библиотеке
+ 
+ 
 ## Изменения в версии 0.9.10
 
  - Исправлена ошибка в реализации алгоритма nmac [функции finalize и create_nmac_...()]
