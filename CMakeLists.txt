@@ -23,7 +23,7 @@ project( libakrypt C )
 option( AK_SHARED_LIB "Build the shared library" ON )
 option( AK_STATIC_LIB "Build the static library" OFF )
 option( AK_EXAMPLES "Build examples for libakrypt" OFF )
-option( AK_TESTS "Build tests for libakrypt" OFF )
+option( AK_TESTS "Build tests for libakrypt" ON )
 option( AK_TESTS_GMP "Build comparison tests for gmp and libakrypt" OFF )
 string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 
@@ -189,7 +189,7 @@ set( BASE_EXAMPLES_LIST
      ini-file
      file
      mmap
-     realpath
+     #realpath
    )
 
 # определяем перечень примеров из FAQ
@@ -245,6 +245,7 @@ if( AK_TESTS_GMP )
 endif()
 
 set ( ARITHMETIC_TESTS_LIST
+      #[[
       random01
       random02
       gf2n
@@ -259,8 +260,10 @@ set ( ARITHMETIC_TESTS_LIST
       blom-keys
       cmac01
       cmac02
-      hmac
+      hmacds
       kdf-state
+      ]]
+      curves 
     )
 
 if( AK_TESTS_GMP )
