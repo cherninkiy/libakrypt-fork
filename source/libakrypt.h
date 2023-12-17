@@ -210,6 +210,8 @@ extern "C" {
  dll_export bool_t ak_libakrypt_test_mgm( void );
 /*! \brief Тестирование корректной работы режима шифрования `ACPKM`, регламентируемого Р 1323565.1.017—2018. */
  dll_export bool_t ak_libakrypt_test_acpkm( void );
+/*! \brief Тестирование корректной работы режима выработки имитовставки `OMAC-ACPKM`, регламентируемого Р 1323565.1.017—2018. */
+ dll_export bool_t ak_libakrypt_test_omac_acpkm( void );
 /*! \brief Выполнение тестовых примеров для алгоритмов выработки и проверки электронной подписи */
  dll_export bool_t ak_libakrypt_test_sign( void );
 
@@ -824,6 +826,8 @@ extern "C" {
                                                                        ak_pointer , const size_t );
 /*! \brief Вычисление имитовставки для заданного файла. */
  dll_export int ak_bckey_cmac_file( ak_bckey , const char * , ak_pointer , const size_t );
+/*! \brief Режим выработки имитовставки OMAC-ACPKM. */
+ dll_export int ak_bckey_omac_acpkm( ak_bckey , ak_pointer , ak_pointer , size_t , size_t , size_t , size_t );
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Функция очистки контекста хеширования. */
