@@ -22,7 +22,7 @@ project( libakrypt C )
 # Перечень доступных опций для сборки библиотеки
 option( AK_SHARED_LIB "Build the shared library" ON )
 option( AK_STATIC_LIB "Build the static library" OFF )
-option( AK_EXAMPLES "Build examples for libakrypt" OFF )
+option( AK_EXAMPLES "Build examples for libakrypt" ON )
 option( AK_TESTS "Build tests for libakrypt" OFF )
 option( AK_TESTS_GMP "Build comparison tests for gmp and libakrypt" OFF )
 string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
@@ -199,6 +199,7 @@ set( EXAMPLES_LIST
      g03n01 g03n02 g03n03 g03n04
      g04n01 g04n02
      g05n01 g05n02 g05n03
+     g06n01
    )
 
 if( AK_EXAMPLES )

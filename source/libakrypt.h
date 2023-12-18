@@ -1453,6 +1453,8 @@ extern "C" {
  dll_export void ak_wpoint_double( ak_wpoint , ak_wcurve );
 /*! \brief Прибавление к одной точке эллиптической кривой значения другой точки. */
  dll_export void ak_wpoint_add( ak_wpoint , ak_wpoint , ak_wcurve );
+/*! \brief Утроение точки эллиптической кривой, заданной в короткой форме Вейерштрасса. */
+ dll_export void ak_wpoint_triple( ak_wpoint , ak_wcurve );
 /*! \brief Приведение проективной точки к аффинному виду. */
  dll_export void ak_wpoint_reduce( ak_wpoint , ak_wcurve );
 /*! \brief Вычисление кратной точки эллиптической кривой. */
