@@ -51,11 +51,11 @@ pchar            const char Строка, содержащая символьн�
                          параметры 256-ти битных эллиптических кривых                           
 -----------------------------------------------------------------------------------------------
 
-id_tc26_gost_3410_2012_256_paramSetTest 
-id_tc26_gost_3410_2012_256_paramSetA
-id_rfc4357_gost_3410_2001_paramSetA
-id_rfc4357_gost_3410_2001_paramSetB
-id_rfc4357_gost_3410_2001_paramSetC
+- id_tc26_gost_3410_2012_256_paramSetTest 
+- id_tc26_gost_3410_2012_256_paramSetA
+- id_rfc4357_gost_3410_2001_paramSetA
+- id_rfc4357_gost_3410_2001_paramSetB
+- id_rfc4357_gost_3410_2001_paramSetC
 
 
 Функции
