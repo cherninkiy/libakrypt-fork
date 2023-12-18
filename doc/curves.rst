@@ -16,7 +16,7 @@
 
 
 .. math::  
-y^2 \equiv x^3 + ax + b \pmod{p} , 
+    y^2 \equiv x^3 + ax + b \pmod{p} , 
 
 
 
