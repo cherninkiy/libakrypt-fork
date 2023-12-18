@@ -59,10 +59,10 @@ pchar            const char Строка, содержащая символьн�
 Гостовские Параметры 512-ти битных эллиптических кривых                           
 ----------------------------------------------
 
-id_tc26_gost_3410_2012_512_paramSetTest
-id_tc26_gost_3410_2012_512_paramSetA
-id_tc26_gost_3410_2012_512_paramSetB
-id_tc26_gost_3410_2012_512_paramSetC
+- id_tc26_gost_3410_2012_512_paramSetTest
+- id_tc26_gost_3410_2012_512_paramSetA
+- id_tc26_gost_3410_2012_512_paramSetB
+- id_tc26_gost_3410_2012_512_paramSetC
 
 
 Функции
