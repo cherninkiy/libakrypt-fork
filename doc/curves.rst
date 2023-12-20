@@ -125,6 +125,52 @@ pchar            const char Строка, содержащая символьн�
 - **id_tc26_gost_3410_2012_512_paramSetB** - Параметры 512-ти битной эллиптической кривой из рекомендаций Р 50.1.114-2016 (paramSetB).
 - **id_tc26_gost_3410_2012_512_paramSetC** - Параметры 512-ти битной эллиптической кривой из рекомендаций Р 50.1.114-2016 (paramSetC). 
 
+Как задать кривую?
+-----------------------------
+
+Существует несколько способа задать эллиптическую кривую.
+
+ - Использование существующих эллиптических кривых в ``libakrypt``
+ - Определение параметров самостоятельно
+
+Использование существующих кривых
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: c
+
+  struct wcurve mycurve;
+  memcpy(
+        &mycurve, 
+        &id_tc26_gost_3410_2012_512_paramSetC, 
+        sizeof(&id_tc26_gost_3410_2012_512_paramSetC)
+  );
+
+Вместо кривой id_tc26_gost_3410_2012_512_paramSetC может быть использована любая кривая, описанная выше
+
+
+Определение параметров самостоятельно
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: c
+
+   struct wcurve mycurve = {
+    ak_mpzn256_size,
+    4, /* cofactor */
+    { 0x6d0078e62fc81048LL, 0x94db4f98bfb73698LL, 0x75e9b60631449efdLL, 0xca0709cc398e1cd1LL }, /* a */
+    { 0xacd1216d5cc63966LL, 0x534b728e6773c810LL, 0xfb4e95d31a5032feLL, 0xb76e3775f6a4aee7LL }, /* b */
+    { 0xfffffffffffffd97LL, 0xffffffffffffffffLL, 0xffffffffffffffffLL, 0xffffffffffffffffLL }, /* p */
+    { 0x000000000005cf11LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL }, /* r2 */
+    { 0xc115af556c360c67LL, 0x0fd8cddfc87b6635LL, 0x0000000000000000LL, 0x4000000000000000LL }, /* q */
+    { 0x57cb446240dd1710LL, 0x7556091c4805caa4LL, 0xd0593365f9384bcdLL, 0x0fb1fbc48b0f0eb4LL }, /* r2q */
+    {
+      { 0x8b2582fe742daa28LL, 0x658b9196932e02c7LL, 0x880923425712b2bbLL, 0x91e38443a5e82c0dLL }, /* px */
+      { 0xaf268adb32322e5cLL, 0x5fde0b5344766740LL, 0x895786c4bb46e956LL, 0x32879423ab1a0375LL }, /* py */
+      { 0x0000000000000001LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL }  /* pz */
+    },
+    0x46f3234475d5add9LL, /* n */
+    0x035bdd1aeafdb0a9LL, /* nq */
+    "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97"
+   }; 
 
 Функции
 ----------------------------------------------
@@ -147,6 +193,8 @@ pchar            const char Строка, содержащая символьн�
  :language: c
  :linenos:
 
+--------------------------------------------------------------
+
 .. c:function:: int ak_wpoint_set_as_unit( ak_wpoint wp , ak_wcurve wc )
 
 Функция инициализирует и присваивает контексту значение бесконечно удаленной точки эллиптической кривой
@@ -164,6 +212,8 @@ pchar            const char Строка, содержащая символьн�
 .. literalinclude:: ../examples/faq/example-g06n02.c
  :language: c
  :linenos:
+
+--------------------------------------------------------------
 
 .. c:function:: int ak_wpoint_set_wpoint( ak_wpoint wp , ak_wpoint wq , ak_wcurve wc )
 
@@ -183,6 +233,8 @@ pchar            const char Строка, содержащая символьн�
 .. literalinclude:: ../examples/faq/example-g06n03.c
  :language: c
  :linenos:
+
+--------------------------------------------------------------
 
 .. c:function:: bool_t ak_wpoint_is_ok( ak_wpoint wp , ak_wcurve ec )
 
@@ -205,6 +257,8 @@ pchar            const char Строка, содержащая символьн�
 .. note:: 
    Если точка принадлежит кривой, то функция возращает 1, иначе 0
 
+--------------------------------------------------------------
+
 .. c:function:: bool_t ak_wpoint_check_order( ak_wpoint wp , ak_wcurve ec )
 
 Функция проверяет порядок заданной точки.
@@ -226,6 +280,8 @@ pchar            const char Строка, содержащая символьн�
 .. note:: 
    Если порядок точки верный, то функция возращает 1, иначе 0
 
+--------------------------------------------------------------
+
 .. c:function:: void ak_wpoint_double( ak_wpoint wp, ak_wcurve ec )
 
 Функция удвоения точки эллиптической кривой, заданной в короткой форме Вейерштрасса
@@ -242,6 +298,8 @@ pchar            const char Строка, содержащая символьн�
 .. literalinclude:: ../examples/faq/example-g06n06.c
  :language: c
  :linenos:
+
+--------------------------------------------------------------
 
 .. c:function:: void ak_wpoint_add( ak_wpoint wp1 , ak_wpoint wp2 , ak_wcurve ec )
 
@@ -265,6 +323,8 @@ pchar            const char Строка, содержащая символьн�
    Если точки, передаваемые в функцию равны, то выызывается функция
    ak_wpoint_double() 
 
+--------------------------------------------------------------
+
 .. c:function:: void ak_wpoint_reduce( ak_wpoint wp , ak_wcurve ec )
 
 Функция приводит проективную точку к аффинному виду.
@@ -281,6 +341,8 @@ pchar            const char Строка, содержащая символьн�
 .. literalinclude:: ../examples/faq/example-g06n08.c
  :language: c
  :linenos:
+
+--------------------------------------------------------------
 
 .. c:function:: void ak_wpoint_pow( ak_wpoint wq, ak_wpoint wp, ak_uint64 * k, size_t size, ak_wcurve ec )
 
@@ -302,6 +364,8 @@ pchar            const char Строка, содержащая символьн�
  :language: c
  :linenos:
 
+--------------------------------------------------------------
+
 .. c:function:: void ak_mpzn_set_wcurve_discriminant( ak_uint64 * d, ak_wcurve ec )
 
 Функция вычисляет дискриминант эллиптической кривой, заданной в короткой форме Вейерштрасса.
@@ -318,6 +382,8 @@ pchar            const char Строка, содержащая символьн�
 .. literalinclude:: ../examples/faq/example-g06n10.c
  :language: c
  :linenos:
+
+--------------------------------------------------------------
 
 .. c:function:: int ak_wcurve_discriminant_is_ok( ak_wcurve ec )
 
@@ -338,7 +404,9 @@ pchar            const char Строка, содержащая символьн�
  :linenos:
 
 .. note::
-   В случае успеха функция возвращает 0, иначе код ошибки. 
+   В случае успеха функция возвращает 0, иначе код ошибки.
+
+--------------------------------------------------------------
 
 .. c:function:: int ak_wcurve_check_order_parameters( ak_wcurve ec )
 
@@ -358,7 +426,9 @@ pchar            const char Строка, содержащая символьн�
  :linenos:
 
 .. note::
-   В случае успеха функция возвращает 0, иначе код ошибки. 
+   В случае успеха функция возвращает 0, иначе код ошибки.
+
+--------------------------------------------------------------
 
 .. c:function:: int ak_wcurve_is_ok( ak_wcurve ec ) 
 
@@ -380,7 +450,16 @@ pchar            const char Строка, содержащая символьн�
 .. note::
    В случае успеха функция возвращает 0, иначе код ошибки. 
 
+Пример вычисления кратной точки со случайным k
+-----------------------------------------------
 
+Файл ``example-g06n14.c`` содержит пример вычисления кратной 
+точки с использованием случайного числа, сгенерированого через ``struct random``,
+а затем принадлежность полученной точки изначальной кривой
+
+.. literalinclude:: ../examples/faq/example-g06n14.c
+ :language: c
+ :linenos:
 
 Ошибки:
 ---------------
