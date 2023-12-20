@@ -250,6 +250,372 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
+/*! \details Функция вычисляет последовательность ключевого материала секций, 
+    в соотвествии с разделом 4.2.1, см. Р 1323565.1.017—2018.
+
+    @param bkey Контекст ключа алгоритма блочного шифрования, для которого вычисляется
+    новое значение. Контекст должен быть инициализирован и содержать ключевое значение.
+    @param out Указатель на область памяти, куда помещаются выходные
+    зашифровываемые данные.
+    @param change_freq Размер параметра частоты смены ключа. Данный параметр должен быть кратен 
+    \f$ n + k\f$, где \f$ n \f$
+    длина блока алгоритма шифрования (8 или 16 байт),
+    \f$ k \f$ длина ключа шифрования (32 байта).
+    @param l Количество элементов в последовательности ключевого материала.
+    @return В случае возникновения ошибки функция возвращает ее код, в противном случае
+    возвращается \ref ak_error_ok (ноль)                                                           */
+/* ----------------------------------------------------------------------------------------------- */
+ int ak_bckey_master_acpkm( ak_bckey bkey, ak_pointer out, size_t change_freq, size_t l)
+{
+  int error = ak_error_ok;
+  size_t
+        size = l * ( bkey->key.key_size + bkey->bsize),
+        iv_size = bkey->bsize / 2;
+
+  ak_uint8
+          msg[size],
+          iv[iv_size];
+
+  memset(msg, 0, size);
+  memset(iv, 0xff, iv_size);
+
+  if(( error = ak_bckey_ctr_acpkm( bkey, msg, out, size, change_freq, iv, iv_size )) != ak_error_ok) {
+    ak_error_message( error, __func__, "CTR-ACPKM error" );
+  }
+
+  return error;
+}
+
+static void revert_key8(ak_uint8* key_in, ak_uint8* key_out) {
+  *( ( ak_uint64* ) ( key_out + 24 ) ) = ( *( ( ak_uint64* ) key_in ) );
+  *( ( ak_uint64* ) ( key_out + 16 ) ) = ( *( (ak_uint64* ) ( key_in + 8 ) ) );
+  *( ( ak_uint64* ) ( key_out + 8 ) ) = ( *( (ak_uint64* ) ( key_in + 16 ) ) );
+  *( ( ak_uint64* ) ( key_out ) ) = ( *( (ak_uint64* ) ( key_in + 24 ) ) );
+}
+
+static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
+  *( ( ak_uint64* ) ( key_out + 24 ) ) = ( *( (ak_uint64* ) ( key_in + 8 ) ) );
+  *( ( ak_uint64* ) ( key_out + 16 ) ) = ( *( ( ak_uint64* ) key_in ) );
+  *( ( ak_uint64* ) ( key_out + 8 ) ) = ( *( (ak_uint64* ) ( key_in + 24 ) ) );
+  *( ( ak_uint64* ) ( key_out ) ) = ( *( (ak_uint64* ) ( key_in + 16 ) ) );
+}
+
+/* ----------------------------------------------------------------------------------------------- */
+/*! При вычислении имитовставки сообщения в режиме `ОМАС-АСРКМ` каждое сообщение разбивают на секции, 
+    где под секцией понимается строка, состоящая из данных, обрабатываемых на одном секци­онном ключе до 
+    применения к нему функции `ACPKM-Master`, определенной в разделе 4.2.1, см. Р 1323565.1.017—2018.
+
+    Длина секции является параметром алгоритма и
+    не должна превосходить величины, определяемой одной из следующих технических характеристик
+    (опций)
+
+     - `ackpm_section_magma_block_count`,
+     - `ackpm_section_kuznechik_block_count`.
+
+    При формировании имитовставки в режиме `ОМАС-АСРКМ` начальный ключ не используют непо­средственно 
+    для обработки данных и задействуют только для порождения последовательности секци­онных ключей. 
+    @param bkey Контекст ключа алгоритма блочного шифрования,
+    используемый для шифрования и порождения цепочки производных ключей.
+    @param in Указатель на область памяти, где хранятся входные данные.
+    @param out Указатель на область памяти, куда помещаются выходные данные.
+    @param size Размер данных (в байтах), для которых вычисляется имитовставка. Длина данных может
+    принимать любое значение, не превосходящее \f$ 2^{\frac{n}{2}-1} \cdot \frac{n \cdot N}{k + n} \f$, где \f$ n \f$
+    длина блока алгоритма шифрования (8 или 16 байт),
+    \f$ k \f$ длина ключа шифрования (32 байта),
+    \f$ N \f$ длина секции, которая должна быть кратна длине блока
+    используемого алгоритма шифрования.
+    @param size_out Размер выходных данных (имитовставки). Длина имитовставки должна быть
+    больше нуля, но не превосходить длину блока используемого алгоритма шифрования.
+    @param section_size Размер одной секции в байтах. Данная величина должна быть кратна длине блока
+    используемого алгоритма шифрования.
+    @param change_freq Размер параметра частоты смены ключа. Данный параметр должен быть кратен 
+    \f$ n + k\f$, где \f$ n \f$
+    длина блока алгоритма шифрования (8 или 16 байт),
+    \f$ k \f$ длина ключа шифрования (32 байта).
+
+    @return В случае возникновения ошибки функция возвращает ее код, в противном случае
+    возвращается \ref ak_error_ok (ноль)                                                           */
+/* ----------------------------------------------------------------------------------------------- */
+ int ak_bckey_omac_acpkm( ak_bckey bkey, ak_pointer in, ak_pointer out, size_t size, size_t size_out, size_t section_size, size_t change_freq)
+{
+  struct bckey key;
+
+  int error = ak_error_ok;
+  size_t i, j;
+  size_t
+        q = size / bkey->bsize, l = size / section_size,
+        big_key_size,
+        r = size % bkey->bsize;
+  
+  ak_uint64 b, k1_l_num_64, k2_l_num_64, ks_num_64;
+  ak_uint128 k1_l_num_128, k2_l_num_128, ks_num_128;
+
+  ak_uint8
+          big_key_revert[32],
+          big_key[(l + 1) * ( bkey->key.key_size + bkey->bsize )],
+          ks_num_array[bkey->bsize],
+          tmp_in[(q + 1) * bkey->bsize],
+          C[(q + 1) * bkey->bsize],
+          tmp[bkey->bsize],
+          tmp_out[bkey->bsize];
+
+  ak_uint8 *k_1_l, *P_i, *C_j;
+  
+  if( ( bkey->bsize != 8 ) &&  ( bkey->bsize != 16 ) ) {
+      error = ak_error_wrong_block_cipher;
+      ak_error_message(
+        error,
+        __func__ ,
+        "incorrect block size of block cipher key"
+      );
+      goto ext2;
+  }
+  if( size > ( 2 <<  ( bkey->bsize / 2 - 1 ) ) * bkey->bsize * section_size / ( bkey->bsize + bkey->key.key_size ) ) {
+    error = ak_error_wrong_length;
+    ak_error_message(error, __func__, "incorrect message length");
+    goto ext2;
+  }
+  if( size_out > bkey->bsize) {
+    error = ak_error_wrong_length;
+    ak_error_message(error, __func__, "incorrect mac length");
+    goto ext2;
+  }
+  if( section_size % bkey->bsize) {
+    error = ak_error_wrong_length;
+    ak_error_message(error, __func__, "incorrect section size value");
+    goto ext2;
+  }
+  if( change_freq % ( bkey->bsize + bkey->key.key_size ) ) {
+    error = ak_error_wrong_length;
+    ak_error_message(error, __func__, "incorrect change frequency value");
+    goto ext2;
+  }
+  
+  switch( bkey->bsize ) {
+    case 8:
+      if(( error = ak_bckey_create_magma( &key )) != ak_error_ok ) {
+        ak_error_message( error, __func__, "incorrect creation of magma secret key" );
+        goto ext2;
+      }
+      break;
+    case 16:
+      if(( error = ak_bckey_create_kuznechik( &key )) != ak_error_ok ) {
+        ak_error_message( error, __func__, "incorrect creation of kuznechik secret key" );
+        goto ext2;
+      }
+      break;
+  }
+
+  if( size % bkey->bsize ) {
+    q += 1;
+  }
+  if( size % section_size ) {
+    l += 1;
+  }
+
+  big_key_size = l * ( bkey->key.key_size + bkey->bsize );
+
+  if(( error = ak_bckey_master_acpkm( bkey, big_key, change_freq, l ) ) != ak_error_ok ) goto ext1;
+
+  switch( bkey->bsize ) {
+    case 8:
+      #ifdef AK_LITTLE_ENDIAN
+      b = 27;
+      #else
+      b = 15564440312192434176ULL;
+      #endif // AK_LITTLE_ENDIAN
+      break;
+    case 16:
+      #ifdef AK_LITTLE_ENDIAN
+      b = 135;
+      #else
+      b = 16212958658533785600ULL;
+      #endif // AK_LITTLE_ENDIAN
+      break;
+  }
+
+  k_1_l = big_key + (big_key_size - bkey->bsize);
+
+  switch( bkey->bsize ) {
+    case 8: {
+      k1_l_num_64 = *( ( ak_uint64 * ) k_1_l );
+
+      #ifdef AK_LITTLE_ENDIAN
+      if( k1_l_num_64 >> 8 * ( bkey->bsize - 1 ) >> 7 == 0 ) {
+        k2_l_num_64 = k1_l_num_64 << 1;
+      }
+      else {
+        k2_l_num_64 = ( k1_l_num_64 << 1 ) ^ b;
+      }
+      #else
+      if( k1_l_num_64 & 0x80 == 0) {
+        k2_l_num_64 = k1_l_num_64 >> 1;
+      }
+      else {
+        k2_l_num_64 = ( k1_l_num_64 >> 1 ) ^ b;
+      }
+      #endif // AK_LITTLE_ENDIAN
+
+      if(!r) {
+        ks_num_64 = k1_l_num_64;
+      }
+      else {
+        ks_num_64 = k2_l_num_64;
+      }
+
+      for( i = 0; i < bkey->bsize; i++ ) {
+        #ifdef AK_LITTLE_ENDIAN
+        ks_num_array[i] = (ks_num_64 >> i * bkey->bsize) & 0xff;
+        #else
+        ks_num_array[i] = (ks_num_64 >> ( bkey->bsize - i ) * bkey->bsize) & 0xff;
+        #endif // AK_LITTLE_ENDIAN
+      }
+
+      break;
+    }
+    case 16: {
+      k1_l_num_128 = *( ( ak_uint128* ) k_1_l );
+
+      #ifdef AK_LITTLE_ENDIAN
+      if( k1_l_num_128.q[0] >> 8 * ( bkey->bsize - 1 ) >> 7 == 0 ) {
+        k2_l_num_128.q[0] = k1_l_num_128.q[0] << 1;
+        k2_l_num_128.q[0] ^= ( k1_l_num_128.q[1] >> 63 ) & 0xff;
+        k2_l_num_128.q[1] = k1_l_num_128.q[1] << 1;
+      }
+      else {
+        k2_l_num_128.q[0] = k1_l_num_128.q[0] << 1;
+        k2_l_num_128.q[0] ^= ( k1_l_num_128.q[1] >> 63 ) & 0xff;
+        k2_l_num_128.q[1] = k1_l_num_128.q[1] << 1;
+        k2_l_num_128.q[1] ^= b;
+      }
+      #else
+      if( k1_l_num_128.q[1] & 0x80 == 0 ) {
+        k2_l_num_128.q[1] = k1_l_num_128.q[1] >> 1;
+        k2_l_num_128.q[1] ^= k1_l_num_128.q[0] & 0x80;
+        k2_l_num_128.q[0] = k1_l_num_128.q[0] >> 1;
+      }
+      else {
+        k2_l_num_128.q[1] = k1_l_num_128.q[1] >> 1;
+        k2_l_num_128.q[1] ^= k1_l_num_128.q[0] & 0x80;
+        k2_l_num_128.q[0] = k1_l_num_128.q[0] >> 1;
+        k2_l_num_128.q[0] ^= b;
+      }
+      #endif // AK_LITTLE_ENDIAN
+
+      if(!r) {
+        ks_num_128 = k1_l_num_128;
+      }
+      else {
+        ks_num_128 = k2_l_num_128;
+      }
+
+      for( i = 0; i < 8; i++ ) {
+        #ifdef AK_LITTLE_ENDIAN
+        ks_num_array[i] = ( ks_num_128.q[0] >> i * 8 ) & 0xff;
+        #else
+        ks_num_array[i] = ( ks_num_128.q[1] >> ( 8 - i ) * 8 ) & 0xff;
+        #endif // AK_LITTLE_ENDIAN
+      }
+      for( i = 0; i < 8; i++ ) {
+        #ifdef AK_LITTLE_ENDIAN
+        ks_num_array[i + 8] = ( ks_num_128.q[1] >> i * 8 ) & 0xff;
+        #else
+        ks_num_array[i + 8] = ( ks_num_128.q[0] >> ( 8 - i ) * 8 ) & 0xff;
+        #endif // AK_LITTLE_ENDIAN
+      }
+
+      break;
+    }
+  }
+
+  memcpy( tmp_in, in, size );
+  if(r) {
+    memcpy(( ( ak_uint8* ) tmp_in ) + q * bkey->bsize - r, ( ( ak_uint8* ) tmp_in ) + ( size - r ), r );
+    memset(( ( ak_uint8* ) tmp_in ) + ( size - r ), 0, q * bkey->bsize - ( size + 1 ) );
+    memset(( ( ak_uint8* ) tmp_in ) + q * bkey->bsize - r - 1, 0x80, 1 );
+  }
+
+  switch( bkey->bsize ) {
+    case 8:
+      revert_key8( big_key, big_key_revert );
+      break;
+    case 16:
+      revert_key16( big_key, big_key_revert );
+      break;
+  }
+
+  if(( error = ak_bckey_set_key( &key, big_key_revert, sizeof ( big_key_revert ) )) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect assigning a key value" );
+    goto ext1;
+  }
+
+  bkey->encrypt( &key.key, tmp_in, C );
+
+  for( i = 1; i < q - 1; i++ ) {
+    P_i = ( ( ak_uint8* ) tmp_in ) + bkey->bsize * i;
+    C_j = ( ( ak_uint8* ) C + bkey->bsize * ( i - 1 ));
+
+    for(j = 0; j < bkey->bsize; j++ ) {
+      tmp[j] = P_i[j] ^ C_j[j];
+    }
+
+    j = (i + 1) * bkey->bsize / section_size;
+    if(( (i + 1) * bkey->bsize ) % section_size ) {
+      j += 1;
+    }
+
+    switch( bkey->bsize ) {
+      case 8:
+        revert_key8( big_key + (32 + bkey->bsize) * (j - 1), big_key_revert );
+        break;
+      case 16:
+        revert_key16( big_key + (32 + bkey->bsize) * (j - 1), big_key_revert );
+        break;
+    }
+
+    if(( error = ak_bckey_set_key( &key, big_key_revert, sizeof ( big_key_revert ) ) ) != ak_error_ok ) {
+      ak_error_message( error, __func__, "incorrect assigning a key value" );
+      goto ext1;
+    }
+
+    bkey->encrypt( &key.key, tmp, C + bkey->bsize * i );
+  }
+
+  P_i = ( ( ak_uint8* ) tmp_in) + bkey->bsize * ( q - 1 );
+  C_j = ( ( ak_uint8* ) C + bkey->bsize * ( q - 2 ) );
+
+  for( j = 0; j < bkey->bsize; j++ ) {
+    tmp[j] = P_i[j] ^ C_j[j] ^ ks_num_array[j];
+  }
+
+  switch( bkey->bsize ) {
+    case 8:
+      revert_key8( big_key + (32 + bkey->bsize) * (l - 1), big_key_revert );
+      break;
+    case 16:
+      revert_key16( big_key + (32 + bkey->bsize) * (l - 1), big_key_revert );
+      break;
+  }
+
+  if(( error = ak_bckey_set_key( &key, big_key_revert, sizeof ( big_key_revert ) ) ) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect assigning a key value" );
+    goto ext1;
+  }
+
+  bkey->encrypt( &key.key, tmp, tmp_out );
+
+  memcpy( ( ak_uint8* ) out, tmp_out + bkey->bsize - size_out, size_out );
+
+  ext1:
+    ak_bckey_destroy( &key );
+
+  ext2:
+
+  return error;
+}
+
+
+/* ----------------------------------------------------------------------------------------------- */
  bool_t ak_libakrypt_test_acpkm( void )
 {
   struct bckey key;
@@ -367,6 +733,137 @@
  return ak_true;
 }
 
+/* ----------------------------------------------------------------------------------------------- */
+ bool_t ak_libakrypt_test_omac_acpkm( void )
+{
+  struct bckey key;
+  int error = ak_error_ok, audit = ak_log_get_level();
+  ak_uint8 skey[32] = {
+    0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01, 0x10, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe,
+    0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00, 0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88
+  };
+
+  ak_uint8 in11[12] = {
+    0x00, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
+    0xcc, 0xdd, 0xee, 0xff
+  };
+
+  ak_uint8 out11[8], out11_true[8] = {
+    0xf3, 0xbc, 0xac, 0x30, 0x37, 0x0e, 0x54, 0xa0
+  };
+
+  ak_uint8 in12[40] = {
+    0x00, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
+    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+    0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00,
+    0x0a, 0xff, 0xee, 0xcc, 0xbb, 0xaa, 0x99, 0x88,
+    0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11
+  };
+
+  ak_uint8 out12[8], out12_true[8] = {
+    0x8e, 0xbb, 0x96, 0x54, 0xad, 0x8d, 0x00, 0x34
+  };
+
+  ak_uint8 in21[24] = {
+    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
+    0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00
+  };
+
+  ak_uint8 out21[16], out21_true[16] = {
+    0x5e, 0x14, 0x43, 0x58, 0x8c, 0x64, 0x2a, 0xeb, 0x5e, 0x99, 0x2b, 0xb6, 0x47, 0x7f, 0x36, 0xb5
+  };
+
+  ak_uint8 in22[80] = {
+    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
+    0x0a, 0xff, 0xee, 0xcc, 0xbb, 0xaa, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00,
+    0x00, 0x0a, 0xff, 0xee, 0xcc, 0xbb, 0xaa, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
+    0x11, 0x00, 0x0a, 0xff, 0xee, 0xcc, 0xbb, 0xaa, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x22, 0x11, 0x00, 0x0a, 0xff, 0xee, 0xcc, 0xbb, 0xaa, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33
+  };
+
+  ak_uint8 out22[16], out22_true[16] = {
+    0x5d, 0x8e, 0x89, 0x00, 0x57, 0x8c, 0xf5, 0x35, 0x7c, 0xa6, 0xbe, 0x45, 0xee, 0xdc, 0xb8, 0xfb
+  };
+
+  /* 1. Выполняем тест для алгоритма Магма */
+  if(( error = ak_bckey_create_magma( &key )) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect creation of magma secret key" );
+    return ak_false;
+  }
+  if(( error = ak_bckey_set_key( &key, skey, sizeof( skey ))) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect assigning a key value" ); goto ex1; }
+  
+  /* (1.5 блока) */
+  if(( error = ak_bckey_omac_acpkm( &key, in11, out11, sizeof( in11 ), sizeof ( out11 ),
+                                                       16, 80 )) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect encryption of plain text" ); goto ex1; }
+
+  if( memcmp( out11, out11_true, sizeof( out11 )) != 0 ) {
+    ak_error_message( error = ak_error_not_equal_data, __func__,
+                "incorrect data comparizon after omac-acpkm encryption (1.5 block) with magma cipher" ); goto ex1; }
+  
+  if( audit >= ak_log_maximum ) ak_error_message( ak_error_ok, __func__ ,
+                                              "omac-acpkm test (1.5 block) for magma is Ok" );
+
+  /* (5 блоков) */
+  if(( error = ak_bckey_omac_acpkm( &key, in12, out12, sizeof( in12 ), sizeof ( out12 ),
+                                                       16, 80 )) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect encryption of plain text" ); goto ex1; }
+
+  if( memcmp( out12, out12_true, sizeof( out12 )) != 0 ) {
+    ak_error_message( error = ak_error_not_equal_data, __func__,
+                "incorrect data comparizon after omac-acpkm encryption (5 block) with magma cipher" ); goto ex1; }
+  
+  if( audit >= ak_log_maximum ) ak_error_message( ak_error_ok, __func__ ,
+                                              "omac-acpkm test (5 block) for magma is Ok" );
+
+  ex1: ak_bckey_destroy( &key );
+  if( error != ak_error_ok ) {
+    ak_error_message( ak_error_ok, __func__ , "acpkm mode test for magma is wrong" );
+    return ak_false;
+  }
+
+  /* 2. Выполняем тест для алгоритма Кузнечик */
+
+  if(( error = ak_bckey_create_kuznechik( &key )) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect creation of kuznechik secret key" );
+    return ak_false;
+  }
+  if(( error = ak_bckey_set_key( &key, skey, sizeof( skey )) ) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect assigning a key value" ); goto ex2; }
+  
+  /* (1.5 блока) */
+  if(( error = ak_bckey_omac_acpkm( &key, in21, out21, sizeof( in21 ), sizeof ( out21 ),
+                                                       32, 96 )) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect encryption of plain text" ); goto ex1; }
+
+  if( memcmp( out21, out21_true, sizeof( out21 )) != 0 ) {
+    ak_error_message( error = ak_error_not_equal_data, __func__,
+                "incorrect data comparizon after omac-acpkm encryption (1.5 block) with kuznechik cipher" ); goto ex1; }
+  
+  if( audit >= ak_log_maximum ) ak_error_message( ak_error_ok, __func__ ,
+                                              "omac-acpkm test (1.5 block) for kuznechik is Ok" );
+
+  /* (5 блоков) */
+  if(( error = ak_bckey_omac_acpkm( &key, in22, out22, sizeof( in22 ), sizeof ( out22 ),
+                                                       32, 96 )) != ak_error_ok ) {
+    ak_error_message( error, __func__, "incorrect encryption of plain text" ); goto ex1; }
+
+  if( memcmp( out22, out22_true, sizeof( out22 )) != 0 ) {
+    ak_error_message( error = ak_error_not_equal_data, __func__,
+                "incorrect data comparizon after omac-acpkm encryption (5 block) with kuznechik cipher" ); goto ex1; }
+  
+  if( audit >= ak_log_maximum ) ak_error_message( ak_error_ok, __func__ ,
+                                              "omac-acpkm test (5 block) for kuznechik is Ok" );
+
+  ex2: ak_bckey_destroy( &key );
+  if( error != ak_error_ok ) {
+    ak_error_message( ak_error_ok, __func__ , "acpkm mode test for kuznechik is wrong" );
+    return ak_false;
+  }
+
+  return ak_true;
+}
 /* ----------------------------------------------------------------------------------------------- */
 /*                                                                                      ak_acpkm.c */
 /* ----------------------------------------------------------------------------------------------- */

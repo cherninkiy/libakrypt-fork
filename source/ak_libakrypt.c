@@ -183,6 +183,13 @@
                                   "incorrect testing of acpkm encryption mode for block ciphers" );
     return ak_false;
   }
+
+  if( ak_libakrypt_test_omac_acpkm()  != ak_true ) {
+    ak_error_message( ak_error_get_value(), __func__ ,
+                                  "incorrect testing of omac-acpkm mode for block ciphers" );
+    return ak_false;
+  }
+
   if( ak_libakrypt_test_mgm()  != ak_true ) {
     ak_error_message( ak_error_get_value(), __func__ ,
                                                "incorrect testing of mgm mode for block ciphers" );

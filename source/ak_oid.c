@@ -124,6 +124,15 @@
  static const char *asn1_acpkm_kuznechik_i[] =
                                            { "1.2.643.7.1.1.5.2.1", NULL };
 
+ static const char *asn1_omac_acpkm_magma_n[] = { "omac-acpkm-magma",
+                                             "id-gostr3412-2015-magma-omacacpkm", NULL };
+ static const char *asn1_omac_acpkm_magma_i[] = { "1.2.643.7.1.1.5.1.2", NULL };
+ static const char *asn1_omac_acpkm_kuznechik_n[] =
+                                           { "omac-acpkm-kuznechik", "acpkm-kuznyechik",
+                                             "id-gostr3412-2015-kuznechik-omacacpkm", NULL };
+ static const char *asn1_omac_acpkm_kuznechik_i[] =
+                                           { "1.2.643.7.1.1.5.2.2", NULL };
+
  static const char *asn1_cmac_magma_n[] =  { "cmac-magma", NULL };
  static const char *asn1_cmac_magma_i[] =  { "1.2.643.2.52.1.7.1.1", NULL };
  static const char *asn1_cmac_kuznechik_n[] =
@@ -625,6 +634,14 @@ static struct oid libakrypt_oids[] =
   { ak_object_bckey_kuznechik, ak_object_undefined,
                                                   ( ak_function_run_object *) ak_bckey_ctr_acpkm,
                                                  ( ak_function_run_object *) ak_bckey_ctr_acpkm }},
+
+ { cmac_function, mac, asn1_omac_acpkm_magma_i, asn1_omac_acpkm_magma_n, NULL,
+  { ak_object_bckey_magma, ak_object_undefined, ( ak_function_run_object *) ak_bckey_omac_acpkm,
+                                                 ( ak_function_run_object *) ak_bckey_omac_acpkm }},
+ { cmac_function, mac, asn1_omac_acpkm_kuznechik_i, asn1_omac_acpkm_kuznechik_n, NULL,
+  { ak_object_bckey_kuznechik, ak_object_undefined,
+                                                  ( ak_function_run_object *) ak_bckey_omac_acpkm,
+                                                 ( ak_function_run_object *) ak_bckey_omac_acpkm }},
 
  { block_cipher, mac, asn1_cmac_magma_i, asn1_cmac_magma_n, NULL,
   { ak_object_bckey_magma, ak_object_undefined, ( ak_function_run_object *) ak_bckey_cmac, NULL }},
