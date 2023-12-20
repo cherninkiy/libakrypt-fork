@@ -34,7 +34,7 @@
     Y3 = 8*Y1*(U*(T-U)-E*EE)
     Z3 = (Z1+E)2-ZZ-EE
 
-Ссылка на источник: ``https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-0.html#tripling-tpl-2007-bl``
+Ссылка на источник: https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-0.html#tripling-tpl-2007-bl
 
 Второй этап: модификация функции вычисления кратной точки
 -------------------------------------------------
