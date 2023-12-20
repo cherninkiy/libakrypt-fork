@@ -126,12 +126,12 @@
 
  static const char *asn1_omac_acpkm_magma_n[] = { "omac-acpkm-magma",
                                              "id-gostr3412-2015-magma-omacacpkm", NULL };
- static const char *asn1_omac_acpkm_magma_i[] = { "1.2.643.7.1.1.5.3.1", NULL };
+ static const char *asn1_omac_acpkm_magma_i[] = { "1.2.643.7.1.1.5.1.2", NULL };
  static const char *asn1_omac_acpkm_kuznechik_n[] =
                                            { "omac-acpkm-kuznechik", "acpkm-kuznyechik",
                                              "id-gostr3412-2015-kuznechik-omacacpkm", NULL };
  static const char *asn1_omac_acpkm_kuznechik_i[] =
-                                           { "1.2.643.7.1.1.5.3.2", NULL };
+                                           { "1.2.643.7.1.1.5.2.2", NULL };
 
  static const char *asn1_cmac_magma_n[] =  { "cmac-magma", NULL };
  static const char *asn1_cmac_magma_i[] =  { "1.2.643.2.52.1.7.1.1", NULL };

@@ -273,30 +273,16 @@
         iv_size = bkey->bsize / 2;
 
   ak_uint8
-          *msg,
-          *iv;
+          msg[size],
+          iv[iv_size];
 
-  if(
-    ( msg = (ak_uint8*) calloc( size, 1 ) ) == NULL ||
-    ( iv = (ak_uint8*) calloc( iv_size, 1 ) ) == NULL
-  ) {
-    error = ak_error_null_pointer;
-    ak_error_message( error, __func__, "memory allocation error" );
-    goto ext2;
-  }
-
+  memset(msg, 0, size);
   memset(iv, 0xff, iv_size);
 
   if(( error = ak_bckey_ctr_acpkm( bkey, msg, out, size, change_freq, iv, iv_size )) != ak_error_ok) {
     ak_error_message( error, __func__, "CTR-ACPKM error" );
-    goto ext1;
   }
 
-  ext1:
-    free(iv);
-    free(msg);
-
-  ext2:
   return error;
 }
 
@@ -364,15 +350,16 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
   ak_uint64 b, k1_l_num_64, k2_l_num_64, ks_num_64;
   ak_uint128 k1_l_num_128, k2_l_num_128, ks_num_128;
 
-  ak_uint8 big_key_revert[32];
-
   ak_uint8
-          *big_key,
-          *k_1_l, *ks_num_array,
-          *tmp_in,
-          *C,
-          *P_i, *C_j, *tmp,
-          *tmp_out;
+          big_key_revert[32],
+          big_key[(l + 1) * ( bkey->key.key_size + bkey->bsize )],
+          ks_num_array[bkey->bsize],
+          tmp_in[(q + 1) * bkey->bsize],
+          C[(q + 1) * bkey->bsize],
+          tmp[bkey->bsize],
+          tmp_out[bkey->bsize];
+
+  ak_uint8 *k_1_l, *P_i, *C_j;
   
   if( ( bkey->bsize != 8 ) &&  ( bkey->bsize != 16 ) ) {
       error = ak_error_wrong_block_cipher;
@@ -428,12 +415,6 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
 
   big_key_size = l * ( bkey->key.key_size + bkey->bsize );
 
-  if(( big_key = ( ak_uint8* ) calloc( big_key_size, 1 ) ) == NULL ) {
-    error = ak_error_null_pointer;
-    ak_error_message( error, __func__, "memory allocation error" );
-    goto ext1;
-  }
-
   if(( error = ak_bckey_master_acpkm( bkey, big_key, change_freq, l ) ) != ak_error_ok ) goto ext1;
 
   switch( bkey->bsize ) {
@@ -454,12 +435,6 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
   }
 
   k_1_l = big_key + (big_key_size - bkey->bsize);
-
-  if(( ks_num_array = ( ak_uint8* ) calloc( bkey->bsize, 1 ) ) == NULL ) {
-    error = ak_error_null_pointer;
-    ak_error_message( error, __func__, "memory allocation error" );
-    goto ext1;
-  }
 
   switch( bkey->bsize ) {
     case 8: {
@@ -553,11 +528,6 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
     }
   }
 
-  if(( tmp_in = ( ak_uint8* ) calloc( q * bkey->bsize, 1 )) == NULL ) {
-    error = ak_error_null_pointer;
-    ak_error_message( error, __func__, "memory allocation error" );
-    goto ext1;
-  }
   memcpy( tmp_in, in, size );
   if(r) {
     memcpy(( ( ak_uint8* ) tmp_in ) + q * bkey->bsize - r, ( ( ak_uint8* ) tmp_in ) + ( size - r ), r );
@@ -579,19 +549,7 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
     goto ext1;
   }
 
-  if(( C = ( ak_uint8* ) calloc( q * bkey->bsize, 1 )) == NULL ) {
-    error = ak_error_null_pointer;
-    ak_error_message( error, __func__, "memory allocation error" );
-    goto ext1;
-  }
-
   bkey->encrypt( &key.key, tmp_in, C );
-
-  if(( tmp = ( ak_uint8* ) calloc( bkey->bsize, 1 )) == NULL ) {
-    error = ak_error_null_pointer;
-    ak_error_message( error, __func__, "memory allocation error" );
-    goto ext1;
-  }
 
   for( i = 1; i < q - 1; i++ ) {
     P_i = ( ( ak_uint8* ) tmp_in ) + bkey->bsize * i;
@@ -644,11 +602,6 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
     goto ext1;
   }
 
-  if(( tmp_out = ( ak_uint8* ) calloc( bkey->bsize, 1 )) == NULL ) {
-    error = ak_error_null_pointer;
-    ak_error_message( error, __func__, "memory allocation error" );
-    goto ext1;
-  }
   bkey->encrypt( &key.key, tmp, tmp_out );
 
   memcpy( ( ak_uint8* ) out, tmp_out + bkey->bsize - size_out, size_out );
@@ -657,12 +610,6 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
     ak_bckey_destroy( &key );
 
   ext2:
-    if (big_key != NULL) free(big_key);
-    if (tmp != NULL) free(tmp);
-    if (ks_num_array != NULL) free(ks_num_array);
-    if (tmp_in != NULL) free(tmp_in);
-    if (C != NULL) free(C);
-    if (tmp_out != NULL) free(tmp_out);
 
   return error;
 }
@@ -895,7 +842,7 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
                 "incorrect data comparizon after omac-acpkm encryption (1.5 block) with kuznechik cipher" ); goto ex1; }
   
   if( audit >= ak_log_maximum ) ak_error_message( ak_error_ok, __func__ ,
-                                              "omac-acpkm encryption test (1.5 block) for kuznechik is Ok" );
+                                              "omac-acpkm test (1.5 block) for kuznechik is Ok" );
 
   /* (5 блоков) */
   if(( error = ak_bckey_omac_acpkm( &key, in22, out22, sizeof( in22 ), sizeof ( out22 ),
@@ -907,7 +854,7 @@ static void revert_key16(ak_uint8* key_in, ak_uint8* key_out) {
                 "incorrect data comparizon after omac-acpkm encryption (5 block) with kuznechik cipher" ); goto ex1; }
   
   if( audit >= ak_log_maximum ) ak_error_message( ak_error_ok, __func__ ,
-                                              "omac-acpkm encryption test (5 block) for kuznechik is Ok" );
+                                              "omac-acpkm test (5 block) for kuznechik is Ok" );
 
   ex2: ak_bckey_destroy( &key );
   if( error != ak_error_ok ) {
