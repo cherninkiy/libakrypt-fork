@@ -22,7 +22,7 @@ project( libakrypt C )
 # Перечень доступных опций для сборки библиотеки
 option( AK_SHARED_LIB "Build the shared library" ON )
 option( AK_STATIC_LIB "Build the static library" OFF )
-option( AK_EXAMPLES "Build examples for libakrypt" ON )
+option( AK_EXAMPLES "Build examples for libakrypt" OFF )
 option( AK_TESTS "Build tests for libakrypt" OFF )
 option( AK_TESTS_GMP "Build comparison tests for gmp and libakrypt" OFF )
 string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
@@ -189,18 +189,16 @@ set( BASE_EXAMPLES_LIST
      ini-file
      file
      mmap
-     #realpath
+     realpath
    )
 
 # определяем перечень примеров из FAQ
 set( EXAMPLES_LIST
-     #[[ 
      g01n01 g01n02 g01n03
      g02n01 g02n02 g02n03 g02n04
      g03n01 g03n02 g03n03 g03n04
      g04n01 g04n02
      g05n01 g05n02 g05n03 
-     ]]
      g06n01 g06n02 g06n03 g06n04 g06n05 g06n06
      g06n07 g06n08 g06n09 g06n10 g06n11 g06n12
      g06n13 g06n14
@@ -250,7 +248,6 @@ if( AK_TESTS_GMP )
 endif()
 
 set ( ARITHMETIC_TESTS_LIST
-      #[[
       random01
       random02
       gf2n
@@ -267,7 +264,6 @@ set ( ARITHMETIC_TESTS_LIST
       cmac02
       hmacds
       kdf-state
-      ]] 
     )
 
 if( AK_TESTS_GMP )
