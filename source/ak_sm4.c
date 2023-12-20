@@ -3,30 +3,18 @@
 static inline void sm4_4uint8_to_uint32(ak_uint32 *n,ak_uint8* b,ak_uint8 i)
 {
     #ifdef AK_LITTLE_ENDIAN
-        *n = ( (ak_uint32) b[i]<<24)
-            | ( (ak_uint32) b[i+ 1]<<16)
-            | ( (ak_uint32) b[i+2]<<8)
-            | ( (ak_uint32) b[i+3]);
+        *n = bswap_32(*((ak_uint32 *)(b+i)));
     #else
-        *n = ( (ak_uint32) b[i])
-            | ( (ak_uint32) b[i+ 1]<<8)
-            | ( (ak_uint32) b[i+2]<<16)
-            | ( (ak_uint32) b[i+3]<<24);
+        *n = *((ak_uint32 *)(b+i));
     #endif
 }
 
 static inline void sm4_uint32_to_4uint8(ak_uint32 n,ak_uint8* b,ak_uint8 i)
 {
     #ifdef AK_LITTLE_ENDIAN
-        b[i] = (ak_uint8) (n>>24);
-        b[i+1] = (ak_uint8) (n>>16);
-        b[i+2] = (ak_uint8) (n>>8);
-        b[i+3] = (ak_uint8) (n);
+        *((ak_uint32 *)(b+i))=bswap_32(n);
     #else
-        b[i] = (ak_uint8) (n);
-        b[i+1] = (ak_uint8) (n>>8);
-        b[i+2] = (ak_uint8) (n>>16);
-        b[i+3] = (ak_uint8) (n>>24);
+        *((ak_uint32 *)(b+i))=n;
     #endif
 }
 
@@ -74,11 +62,9 @@ static const ak_uint32 sm4_fixed_param[32] =
                 0x10171e25,0x2c333a41,0x484f565d,0x646b7279
         };
 
-static ak_uint8 sm4_sbox_get(ak_uint8 order)
+static inline ak_uint8 sm4_sbox_get(ak_uint8 order)
 {
-    ak_uint8 *pTable = (ak_uint8 *)sm4_box;
-    ak_uint8 retVal = (ak_uint8)(pTable[order]);
-    return retVal;
+    return ((ak_uint8 *)sm4_box)[order];
 }
 
 
