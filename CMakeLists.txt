@@ -194,8 +194,14 @@ set( BASE_EXAMPLES_LIST
 
 # определяем перечень примеров из FAQ
 set( EXAMPLES_LIST
-     g01n01
-     curves
+     #[[ 
+     g01n01 g01n02 g01n03
+     g02n01 g02n02 g02n03 g02n04
+     g03n01 g03n02 g03n03 g03n04
+     g04n01 g04n02
+     g05n01 g05n02 g05n03 
+     ]]
+     g06n01 g06n02 g06n03 g06n04 g06n05
    )
 
 if( AK_EXAMPLES )
