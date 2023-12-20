@@ -262,7 +262,7 @@ set ( ARITHMETIC_TESTS_LIST
       blom-keys
       cmac01
       cmac02
-      hmacds
+      hmac
       kdf-state
     )
 
