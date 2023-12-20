@@ -135,7 +135,7 @@ int main() {
 	point_coord(&paramSetA256_1, "4P with double");
 
 	// ak_wpoint_triple(&paramSetA256_1.point, &paramSetA256_1);
-	// ak_wpoint_triple_not_ok(&paramSetA256_1.point, &paramSetA256_1);
+	// ak_wpoint_triple2(&paramSetA256_1.point, &paramSetA256_1);
 	return 0;
 }
 

@@ -1456,7 +1456,7 @@ extern "C" {
 /*! \brief Утроение точки эллиптической кривой, заданной в короткой форме Вейерштрасса. */
  dll_export void ak_wpoint_triple( ak_wpoint , ak_wcurve );
  /*! \brief Утроение точки эллиптической кривой, заданной в короткой форме Вейерштрасса. Неудачная попытка реализации tpl-2007-bl.*/
- dll_export void ak_wpoint_triple_not_ok( ak_wpoint , ak_wcurve );
+ dll_export void ak_wpoint_triple2( ak_wpoint , ak_wcurve );
 /*! \brief Приведение проективной точки к аффинному виду. */
  dll_export void ak_wpoint_reduce( ak_wpoint , ak_wcurve );
 /*! \brief Вычисление кратной точки эллиптической кривой. */

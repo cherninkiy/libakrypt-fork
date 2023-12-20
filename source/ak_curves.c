@@ -518,9 +518,9 @@ inline void ak_wpoint_triple( ak_wpoint wp, ak_wcurve ec)
   return;
 }
 /* ----------------------------------------------------------------------------------------------- */
-inline void ak_wpoint_triple_not_ok( ak_wpoint wp, ak_wcurve ec) 
+inline void ak_wpoint_triple2( ak_wpoint wp, ak_wcurve ec) 
 {
-  ak_mpznmax u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14;
+  ak_mpznmax u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13;
   if( ak_mpzn_cmp_ui( wp->z, ec->size, 0 ) == ak_true ) return;
   if( ak_mpzn_cmp_ui( wp->y, ec->size, 0 ) == ak_true ) {
     ak_wpoint_set_as_unit( wp, ec );
@@ -598,10 +598,6 @@ inline void ak_wpoint_triple_not_ok( ak_wpoint wp, ak_wcurve ec)
   ak_mpzn_sub( u9, ec->p, u9, ec->size ); //-ee
   ak_mpzn_add_montgomery( u4, u4, u3, ec->p, ec->size ); //(z+e)^2 - zz
   ak_mpzn_add_montgomery( wp->z, u4, u9, ec->p, ec->size ); //(z+e)^2 - zz - ee
-
-  ak_mpzn_mul_montgomery(wp->x, wp->x, wp->y, ec->p, ec->n, ec->size );
-  ak_mpzn_mul_montgomery(u14, wp->z, wp->z, ec->p, ec->n, ec->size ); 
-  ak_mpzn_mul_montgomery(wp->z, u14, wp->z, ec->p, ec->n, ec->size );  
   return; 
 }
 
