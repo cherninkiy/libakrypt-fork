@@ -12,12 +12,27 @@
 
 ``void ak_wpoint_triple( ak_wpoint wp,  ak_wcurve we)``
 
-Функция перезаписывает в переменную wp значение 3P = 3 * P, где P - точка, которую необходимо утроить.
+Функция перезаписывает в переменную ``wp`` значение 3P = 3 * P, где P - точка, которую необходимо утроить.
 
    :ak_wpoint: Точка, которую необходимо утроить
    :ak_wcurve: Эллиптическая кривая, заданная в короткой форме Вейерштрасса
    :return:    Функция не возвращает ничего
 
 Для реализации данной функции использовался алгоритм ``tpl-2007-bl``
-   
 
+.. math::
+    XX = X12
+    YY = Y12
+    ZZ = Z12
+    YYYY = YY2
+    M = 3*XX+a*ZZ2
+    MM = M2
+    E = 6*((X1+YY)2-XX-YYYY)-MM
+    EE = E2
+    T = 16*YYYY
+    U = (M+E)2-MM-EE-T
+    X3 = 4*(X1*EE-4*YY*U)
+    Y3 = 8*Y1*(U*(T-U)-E*EE)
+    Z3 = (Z1+E)2-ZZ-EE
+
+https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-0.html#tripling-tpl-2007-bl
