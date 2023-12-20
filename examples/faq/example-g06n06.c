@@ -1,7 +1,7 @@
 /* --------------------------------------------------------------------------------- */
-/* Пример example-g06n05.c                                                           */ 
+/* Пример example-g06n06.c                                                           */ 
 /*                                                                                   */
-/* Простейшая иллюстрация вызова функции ak_wpoint_check_order()                     */
+/* Простейшая иллюстрация вызова функции ak_wpoint_double()                          */
 /* --------------------------------------------------------------------------------- */
 
 #include <libakrypt.h>
@@ -21,20 +21,19 @@ int main( void ) {
   memcpy(&mycurve, &id_rfc4357_gost_3410_2001_paramSetA, 
 		  sizeof(id_rfc4357_gost_3410_2001_paramSetA));
 
-  /* объявляем точку R*/
-  struct wpoint R;
-  /* объявляем точку Q равную образующей точки эллиптической кривой */
+  /* объявляем точку Q равную образующей точке эллиптической кривой*/
   struct wpoint Q = mycurve.point;
-
-  /* проверяем порядок точек */
-  printf("порядок R верный: %d\n", ak_wpoint_check_order(&R, &mycurve));  
-  printf("порядок Q верный: %d\n", ak_wpoint_check_order(&Q, &mycurve));  
-
-  /* применяем функцию умножения точки Q, то есть получаем 2Q */
+  
+  /* применяем функцию удвоения точки Q, то есть получаем 2Q */
   ak_wpoint_double(&Q, &mycurve);
-
-  /* проверяем порядок точки */
-  printf("порядок 2Q верный: %d\n", ak_wpoint_check_order(&Q, &mycurve));  
+ 
+  /* выводим полученную точку */  
+  printf("Точка 2Q\n");
+  printf("X = %s\n", ak_mpzn_to_hexstr(Q.x, mycurve.size));
+  printf("Y = %s\n", ak_mpzn_to_hexstr(Q.y, mycurve.size));
+  printf("Z = %s\n", ak_mpzn_to_hexstr(Q.z, mycurve.size));
+  /* проверяем что полученная точка принадлежит кривой*/
+  printf("2Q принадлежит: %d\n", ak_wpoint_is_ok(&Q, &mycurve));   
 
   /* завершаем работу */
   ak_libakrypt_destroy();

@@ -244,6 +244,10 @@ pchar            const char Строка, содержащая символьн�
 Файл ``example-g06n06.c`` содержит очень простой пример 
 использования данной функции
 
+.. literalinclude:: ../examples/faq/example-g06n06.c
+ :language: c
+ :linenos:
+
 .. c:function:: void ak_wpoint_add( ak_wpoint wp1 , ak_wpoint wp2 , ak_wcurve ec )
 
 Функция прибавляет к одной точке эллиптической кривой значения другой точки.
@@ -258,6 +262,14 @@ pchar            const char Строка, содержащая символьн�
 Файл ``example-g06n07.c`` содержит очень простой пример 
 использования данной функции
 
+.. literalinclude:: ../examples/faq/example-g06n07.c
+ :language: c
+ :linenos:
+
+.. important:: 
+   Если точки, передаваемые в функцию равны, то выызывается функция
+   ak_wpoint_double() 
+
 .. c:function:: void ak_wpoint_reduce( ak_wpoint wp , ak_wcurve ec )
 
 Функция приводит проективную точку к аффинному виду.
@@ -270,6 +282,10 @@ pchar            const char Строка, содержащая символьн�
 
 Файл ``example-g06n08.c`` содержит очень простой пример 
 использования данной функции
+
+.. literalinclude:: ../examples/faq/example-g06n08.c
+ :language: c
+ :linenos:
 
 .. c:function:: void ak_wpoint_pow( ak_wpoint wq, ak_wpoint wp, ak_uint64 * k, size_t size, ak_wcurve ec )
 
@@ -287,6 +303,9 @@ pchar            const char Строка, содержащая символьн�
 Файл ``example-g06n09.c`` содержит очень простой пример 
 использования данной функции
 
+.. literalinclude:: ../examples/faq/example-g06n09.c
+ :language: c
+ :linenos:
 
 .. c:function:: void ak_mpzn_set_wcurve_discriminant( ak_uint64 * d, ak_wcurve ec )
 
@@ -300,6 +319,10 @@ pchar            const char Строка, содержащая символьн�
 
 Файл ``example-g06n10.c`` содержит очень простой пример 
 использования данной функции
+
+.. literalinclude:: ../examples/faq/example-g06n10.c
+ :language: c
+ :linenos:
 
 .. c:function:: int ak_wcurve_discriminant_is_ok( ak_wcurve ec )
 

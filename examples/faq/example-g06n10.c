@@ -1,7 +1,7 @@
 /* --------------------------------------------------------------------------------- */
-/* Пример example-g06n05.c                                                           */ 
+/* Пример example-g06n10.c                                                           */ 
 /*                                                                                   */
-/* Простейшая иллюстрация вызова функции ak_wpoint_check_order()                     */
+/* Простейшая иллюстрация вызова функции ak_mpzn_set_wcurve_discriminant()           */
 /* --------------------------------------------------------------------------------- */
 
 #include <libakrypt.h>
@@ -20,21 +20,15 @@ int main( void ) {
   /* копируем параметры кривой id_rfc4357_gost_3410_2001_paramSetA в mycurve */ 
   memcpy(&mycurve, &id_rfc4357_gost_3410_2001_paramSetA, 
 		  sizeof(id_rfc4357_gost_3410_2001_paramSetA));
+  
+  /* объявляем вычет, в который будет помещено значение*/
+  ak_mpzn256 d;
 
-  /* объявляем точку R*/
-  struct wpoint R;
-  /* объявляем точку Q равную образующей точки эллиптической кривой */
-  struct wpoint Q = mycurve.point;
-
-  /* проверяем порядок точек */
-  printf("порядок R верный: %d\n", ak_wpoint_check_order(&R, &mycurve));  
-  printf("порядок Q верный: %d\n", ak_wpoint_check_order(&Q, &mycurve));  
-
-  /* применяем функцию умножения точки Q, то есть получаем 2Q */
-  ak_wpoint_double(&Q, &mycurve);
-
-  /* проверяем порядок точки */
-  printf("порядок 2Q верный: %d\n", ak_wpoint_check_order(&Q, &mycurve));  
+  /* применяем функцию вычисления дискриминанта кривой */
+  ak_mpzn_set_wcurve_discriminant(d, &mycurve);
+  
+  /* выводим значение дискриминанта */
+  printf("d = %s\n", ak_mpzn_to_hexstr(d, ak_mpzn256_size));
 
   /* завершаем работу */
   ak_libakrypt_destroy();
