@@ -76,15 +76,15 @@ pchar            const char Строка, содержащая символьн�
 Функции
 ----------------------------------------------
 
-.. c:function:: int ak_wpoint_set( ak_wpoint , ak_wcurve )
+.. c:function:: int ak_wpoint_set( ak_wpoint wp , ak_wcurve wc )
 
 Функция инициализирует и присваивает контексту значение образующей точки эллиптической кривой
 
    :param wp: Точка P эллиптической кривой, которой присваивается значение, содержащееся в контексте эллиптической кривой.
    :param wc: Эллиптическая кривая, которой принадлежит точка.
-   :return: Функция возвращает \ref ak_error_ok. В случае, когда один  из контекстов равен NULL, то возвращается \ref ak_error_null_pointer.
+   :return: Функция возвращает ak_error_ok. В случае, когда один  из контекстов равен NULL, то возвращается ak_error_null_pointer.
 
-.. c:function:: int ak_wpoint_set_as_unit( ak_wpoint , ak_wcurve )
+.. c:function:: int ak_wpoint_set_as_unit( ak_wpoint wp , ak_wcurve wc )
 
 Функция инициализирует и присваивает контексту значение бесконечно удаленной точки эллиптической кривой
 
@@ -92,16 +92,16 @@ pchar            const char Строка, содержащая символьн�
    :param wc: Эллиптическая кривая, которой принадлежит точка.
    :return: Функция возвращает ak_error_ok. В случае, когда один  из контекстов равен NULL, то возвращается ak_error_null_pointer.
 
-.. c:function:: int ak_wpoint_set_wpoint( ak_wpoint , ak_wpoint , ak_wcurve )
+.. c:function:: int ak_wpoint_set_wpoint( ak_wpoint wp , ak_wpoint wq , ak_wcurve wc )
 
 Функция инициализирует и присваивает контексту значение заданной точки эллиптической кривой
 
    :param wp: Точка P эллиптической кривой, которой присваивается новое значение.
    :param wq: Точка Q эллиптической кривой, значение которой присваивается.
-   :param curve: Эллиптическая кривая, которой принадлежат обе точки.
+   :param wc: Эллиптическая кривая, которой принадлежат обе точки.
    :return:  Функция возвращает ak_error_ok. В случае, когда один  из контекстов равен NULL, то возвращается ak_error_null_pointer.
 
-.. c:function:: bool_t ak_wpoint_is_ok( ak_wpoint , ak_wcurve )
+.. c:function:: bool_t ak_wpoint_is_ok( ak_wpoint wp , ak_wcurve ec )
 
 Функция проверяет принадлежность точки заданной кривой.
 
@@ -109,7 +109,7 @@ pchar            const char Строка, содержащая символьн�
    :param ec: Эллиптическая кривая, на принадлежность которой проверяется точка P.
    :return: Функция возвращает ak_true если все проверки выполнены. В противном случае возвращается ak_false. 
 
-.. c:function:: bool_t ak_wpoint_check_order( ak_wpoint , ak_wcurve )
+.. c:function:: bool_t ak_wpoint_check_order( ak_wpoint wp , ak_wcurve ec )
 
 Функция проверяет порядок заданной точки.
 
@@ -117,14 +117,14 @@ pchar            const char Строка, содержащая символьн�
    :param ec: Эллиптическая кривая, на принадлежность которой проверяется точка P.
    :return: Функция возвращает ak_true если все проверки выполнены. В противном случае возвращается ak_false. 
 
-.. c:function:: void ak_wpoint_double( ak_wpoint , ak_wcurve )
+.. c:function:: void ak_wpoint_double( ak_wpoint wp, ak_wcurve ec )
 
 Функция удвоения точки эллиптической кривой, заданной в короткой форме Вейерштрасса
 
    :param wp: Удваиваемая точка P эллиптической кривой.
    :param ec: Эллиптическая кривая, которой принадлежит точка P.
 
-.. c:function:: void ak_wpoint_add( ak_wpoint , ak_wpoint , ak_wcurve )
+.. c:function:: void ak_wpoint_add( ak_wpoint wp1 , ak_wpoint wp2 , ak_wcurve ec )
 
 Функция прибавляет к одной точке эллиптической кривой значения другой точки.
 
@@ -132,11 +132,11 @@ pchar            const char Строка, содержащая символьн�
    :param wp2: Точка Q, второе слагаемое
    :param ec: Эллиптическая кривая, которой принадллежат складываемые точки
 
-.. c:function:: void ak_wpoint_reduce( ak_wpoint , ak_wcurve )
+.. c:function:: void ak_wpoint_reduce( ak_wpoint wp , ak_wcurve ec )
 
 Функция приводит проективную точку к аффинному виду.
 
-   :param wp1: Точка кривой, которая приводится к аффинной форме
+   :param wp: Точка кривой, которая приводится к аффинной форме
    :param ec: Эллиптическая кривая, которой принадлежит точка
 
 .. c:function:: void ak_wpoint_pow( ak_wpoint wq, ak_wpoint wp, ak_uint64 *k, size_t size, ak_wcurve ec )
@@ -160,7 +160,8 @@ pchar            const char Строка, содержащая символьн�
  -123        ak_error_curve_discriminant     Ошибка, возникающая если дискриминант кривой равен нулю (уравнение не задает кривую)
  -124        ak_error_curve_order_parameters Ошибка, возникающая когда неверно определены вспомогательные параметры эллиптической кривой.
  -125        ak_error_curve_prime_modulo     Ошибка, возникающая когда простой модуль кривой задан неверно
- -126        ak_error_curve_not_equal        Ошибка, возникающая при сравнении двух эллиптических кривых       
+ -126        ak_error_curve_not_equal        Ошибка, возникающая при сравнении двух эллиптических кривых 
+ -2          ak_error_null_pointer           Ошибка, возникающая при доступе или передаче в качестве аргумента функции null указателя
 ============ =============================== ======== 
 
 Какие функции есть в libakrypt.h и как их тестировать, и в целом их смысл?
