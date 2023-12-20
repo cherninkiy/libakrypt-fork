@@ -794,3 +794,34 @@
 6. Подписывается запрос и сертификат сохраняется в файл при помощи
    `ak_certificate_export_to_file( &cert, &issuer_skey, &ca_cert, generator, "cert.crt", 0, asn1_pem_format )`.
    Предварительно создается генератор (в данном случае ``lcg``) при помощи `ak_oid_new_object(oid_of_generator)`.
+
+Верификация сертификата
+~~~~~~~~~~~~~~~~~~~~~~~
+Исходный текст примера находится в файле ``example-g06n04.c``.
+
+В данном примере подразумевается, что в директории с исполняемым файлом находится:
+
+1. корневой сертификат в файле ``root_cert.crt``.
+
+3. проверяемый сертификат в файле ``cert.crt``.
+
+Для выполнения этих условий достаточно выполнить примеры ``example-g06n01.c``, ``example-g06n02.c`` и ``example-g06n03.c``.
+.. `
+
+В примере использовались следующие переменные
+
+* `struct certificate ca_cert` - корневой сертификат.
+
+* `struct certificate cert` - проверяемый сертификат.
+
+* `ak_asn1 root` - asn1 дерево проверяемого сертификата.
+
+1. Считывается корневой сертификат при помощи `ak_certificate_import_from_file( &ca_cert, NULL, "root_cert.crt" )`
+   из файла ``root_cert.crt``.
+2. Проверяется, что сертификат может подписывать другие сертификаты и проверять подписи с помощью
+   `ca_cert.opts.ext_ca.is_present` (расширение `Basic Constraints` (oid: 2.5.29.19)) и 
+   `ca_cert.opts.ext_key_usage.bits&bit_keyCertSign`.
+3. Считывается asn1 дерево проверяемого сертификата из файла ``cert.crt`` при помощи.
+   `ak_asn1_import_from_file( root = ak_asn1_new(), "cert.crt", NULL )`.
+4. Верифицируется сертификат с помощью `ak_certificate_import_from_asn1( &cert, &ca_cert, root )`.
+   Если данная функция вернет ``ak_error_ok``, то верефикация прошла успешно.
