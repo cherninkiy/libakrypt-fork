@@ -478,6 +478,56 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
+/*! Точка эллиптической кривой Монтгомери \f$ P = (x:y:z) \f$ заменяется значением \f$ 2P  = (x_3:y_3:z_3)\f$,
+    то есть складывается сама с собой (удваивается).
+    При вычислениях используются соотношения, основанные на результатах работы
+    Peter L. Montgomery, <a href="https://www.ams.org/journals/mcom/1987-48-177/S0025-5718-1987-0866113-7/S0025-5718-1987-0866113-7.pdf">Speeding the Pollard and Elliptic Curve Methods
+    of Factorization</a>, 1987.
+
+    \code
+      A = X+Z
+      AA = (X+Z)^2
+      B = X-Z
+      BB = (X-Z)^2
+      X3 = AA*BB
+      C = AA-BB = 4XZ
+      CC = a24*C
+      CC = BB + CC = (X-Z)^2+a24*4XZ
+      Z3 = C*CC
+
+    \endcode
+
+    @param wp удваиваемая точка \f$ P \f$ эллиптической кривой.
+    @param ec эллиптическая кривая, которой принадлежит точка \f$P\f$.                             */
+/* ----------------------------------------------------------------------------------------------- */
+ inline void ak_mpoint_double( ak_wpoint wp, ak_wcurve ec )
+{
+ ak_mpznmax A, B, C, AA, BB, CC;
+ 
+ if( ak_mpzn_cmp_ui( wp->z, ec->size, 0 ) == ak_true ) return;
+//  if( ak_mpzn_cmp_ui( wp->y, ec->size, 0 ) == ak_true ) {
+//    ak_wpoint_set_as_unit( wp, ec );
+//    return;
+//  }
+
+  ak_mpzn_add_montgomery( A, wp->x, wp->z, ec->p, ec->size ); // X+Z
+  ak_mpzn_mul_montgomery( AA, A, A, ec->p, ec->n, ec->size ); // (X+Z)^2
+
+  ak_mpzn_sub( B, ec->p, wp->z, ec->size ); // p-Z
+  ak_mpzn_add_montgomery( B, wp->x, B, ec->p, ec->size ); // X-Z
+  ak_mpzn_mul_montgomery( BB, B, B, ec->p, ec->n, ec->size ); // (X-Z)^2
+
+  ak_mpzn_sub( C, ec->p, BB, ec->size ); // p-BB
+  ak_mpzn_add_montgomery( C, AA, C, ec->p, ec->size ); // AA-BB = 4XZ
+
+  ak_mpzn_mul_montgomery( wp->x, AA, BB, ec->p, ec->n, ec->size ); // X'
+
+  ak_mpzn_mul_montgomery( CC, &(ec->a24), C, ec->p, ec->n, ec->size ); // a24 * C
+  ak_mpzn_add_montgomery( CC, BB, CC, ec->p, ec->size ); // BB + a24 * C
+  ak_mpzn_mul_montgomery( wp->z, C, CC, ec->p, ec->n, ec->size ); // Z'
+}
+
+/* ----------------------------------------------------------------------------------------------- */
 /*! Для двух заданных точек эллиптической кривой \f$ P = (x_1: y_1: z_1) \f$ и
     \f$ Q = (x_2:y_2:z_2)\f$ вычисляется сумма \f$ P+Q = (x_3:y_3:z_3)\f$,
     которая присваивается точке \f$ P\f$.
@@ -562,6 +612,74 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
+/*! Для двух заданных точек эллиптической кривой \f$ P = (x_1: y_1: z_1) \f$ и
+    \f$ Q = (x_2:y_2:z_2)\f$ вычисляется сумма \f$ P+Q = (x_3:y_3:z_3)\f$,
+    которая присваивается точке \f$ P\f$.
+
+    При вычислениях используются соотношения, основанные на результатах работы
+    Peter L. Montgomery, <a href="https://www.ams.org/journals/mcom/1987-48-177/S0025-5718-1987-0866113-7/S0025-5718-1987-0866113-7.pdf">Speeding the Pollard and Elliptic Curve Methods
+    of Factorization</a>, 1987.
+
+    \code
+      A = (X1 - Z1)
+      B = (X2 + Z2)
+      C = (X1 + Z1)
+      D = (X2 - Z2)
+      AB = A*B
+      CD = C*D
+      ABCD = AB*CD
+      ABCD = ABCD^2
+      X3 = Zd*ABCD
+      Z3 = Xd*ABCD
+    \endcode
+
+
+    @param wp1 Точка \f$ P \f$, в которую помещается результат операции сложения; первое слагаемое
+    @param wp2 Точка \f$ Q \f$, второе слагаемое
+    @param wp2 Точка \f$ P-Q = (Xd, Zd) \f$, необходимая для вычисления суммы P+Q
+    @param ec Эллиптическая кривая, которой принадллежат складываемые точки                        */
+/* ----------------------------------------------------------------------------------------------- */
+ inline void ak_mpoint_add( ak_wpoint wp1, ak_wpoint wp2, ak_wpoint wpd, ak_wcurve ec )
+{
+  ak_mpznmax A, B, C, D, AB, CD, ABCD, ABCD2;
+
+  if( ak_mpzn_cmp_ui( wp2->z, ec->size, 0 ) == ak_true ) return;
+  if( ak_mpzn_cmp_ui( wp1->z, ec->size, 0 ) == ak_true ) {
+    ak_wpoint_set_wpoint( wp1, wp2, ec );
+    return;
+  }
+  // // поскольку удвоение точки с помощью формул сложения дает бесконечно удаленную точку,
+  // // необходимо выполнить проверку
+  // ak_mpzn_mul_montgomery( u1, wp1->x, wp2->z, ec->p, ec->n, ec->size );
+  // ak_mpzn_mul_montgomery( u2, wp2->x, wp1->z, ec->p, ec->n, ec->size );
+  // if( ak_mpzn_cmp( u1, u2, ec->size ) == 0 ) { // случай совпадения х-координат точки
+  //   ak_mpzn_mul_montgomery( u1, wp1->y, wp2->z, ec->p, ec->n, ec->size );
+  //   ak_mpzn_mul_montgomery( u2, wp2->y, wp1->z, ec->p, ec->n, ec->size );
+  //   if( ak_mpzn_cmp( u1, u2, ec->size ) == 0 ) // случай полного совпадения точек
+  //     ak_wpoint_double( wp1, ec );
+  //    else ak_wpoint_set_as_unit( wp1, ec );
+  //   return;
+  // }
+
+  ak_mpzn_sub( A, ec->p, wp1->z, ec->size ); // p-Z1
+  ak_mpzn_add_montgomery( A, wp1->x, A, ec->p, ec->size ); // X1-Z1
+
+  ak_mpzn_add_montgomery( B, wp2->x, wp2->z, ec->p, ec->size ); // X2+Z2
+
+  ak_mpzn_add_montgomery( C, wp1->x, wp1->z, ec->p, ec->size ); // X1+Z1
+
+  ak_mpzn_sub( D, ec->p, wp2->z, ec->size ); // p-Z2
+  ak_mpzn_add_montgomery( D, wp2->x, D, ec->p, ec->size ); // X2-Z2
+
+  ak_mpzn_mul_montgomery( AB, A, B, ec->p, ec->n, ec->size ); // A*B
+  ak_mpzn_mul_montgomery( CD, C, D, ec->p, ec->n, ec->size ); // C*D
+  ak_mpzn_mul_montgomery( ABCD, AB, CD, ec->p, ec->n, ec->size ); // ABCD = AB*CD
+  ak_mpzn_mul_montgomery( ABCD2, ABCD, ABCD, ec->p, ec->n, ec->size ); // ABCD2 = AB*CD
+  ak_mpzn_mul_montgomery( wp1->x, wpd->z, ABCD2, ec->p, ec->n, ec->size ); // X3 = Zd*ABCD2
+  ak_mpzn_mul_montgomery( wp1->z, wpd->x, ABCD2, ec->p, ec->n, ec->size ); // Z3 = Xd*ABCD2
+}
+
+/* ----------------------------------------------------------------------------------------------- */
 /*! Для точки \f$ P = (x:y:z) \f$ функция вычисляет аффинное представление,
     задаваемое следующим вектором \f$ P = \left( \frac{x}{z} \pmod{p}, \frac{y}{z} \pmod{p}, 1\right) \f$,
     где \f$ p \f$ модуль эллиптической кривой.
@@ -626,6 +744,35 @@
        uk <<= 1;
      }
   }
+ /* копируем полученный результат */
+  ak_wpoint_set_wpoint( wq, &Q, ec );
+}
+
+void ak_mpoint_pow( ak_wpoint wq, ak_wpoint wp, ak_uint64 *k, size_t size, ak_wcurve ec )
+{
+  ak_uint64 uk = 0;
+  long long int i, j;
+  struct wpoint Q, R; /* две точки из лесенки Монтгомери */
+ 
+ /* начальные значения для переменных */
+  ak_wpoint_set_as_unit( &Q, ec );
+  ak_wpoint_set_wpoint( &R, wp, ec );
+ 
+ /* полный цикл по всем(!) битам числа k */
+  for( i = size-1; i >= 0; i-- ) {
+     uk = k[i];
+     for( j = 0; j < 64; j++ ) {
+       if( uk&0x8000000000000000LL ){ 
+        ak_mpoint_add( &Q, &R, (ak_wpoint)&wp, ec );
+        ak_mpoint_double( &R, ec ); 
+      } else {
+        ak_mpoint_add( &R, &Q, (ak_wpoint)&wp, ec );
+        ak_mpoint_double( &Q, ec ); 
+      }
+       uk <<= 1;
+     }
+  }
+
  /* копируем полученный результат */
   ak_wpoint_set_wpoint( wq, &Q, ec );
 }
