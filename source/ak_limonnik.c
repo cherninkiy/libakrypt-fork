@@ -31,7 +31,6 @@ int get_params_message_a(ak_wcurve E_b, ak_wpoint K_a, ak_pointer k_a) {
 
     ak_wpoint_pow(K_a, &(E_b->point), k_a, ak_mpzn512_size, E_b); // K_a = el_point(k_a*P_b)
     
-    // return (Id_a, Cert_a, K_a); // -> B // TODO: Socket
     return EXIT_SUCCESS;
 }
 
@@ -101,7 +100,7 @@ int check_params_from_message_b(ak_pointer Id_a, ak_pointer Id_b, ak_certificate
     ak_bckey_create_kuznechik(key);
     ak_bckey_set_key(key, M_ab, sizeof(M_ab));
 
-    char in2[64*5]; // Оптимизировать в предыдущий in
+    char in2[64*5];
     ak_snprintf(in2, 64*5, "%d%d%d%d%d", *h2, K_b->x, K_a->x, Id_b, Id_a);
     ak_bckey_cmac(key, in2, 64*5, tag_b, 64); // tag_b = MAC_M_ab(h2||Pi_func(K_b)||Pi_func(K_a)||Id_b||Id_a)
     ak_bckey_destroy(key);
@@ -177,9 +176,9 @@ int check_params_from_message_a(ak_pointer Id_a, ak_pointer Id_b, ak_certificate
         printf("tag_b is not valid");
         return EXIT_FAILURE;
     } else {
-        char in3[64*5]; // Оптимизировать в предыдущий in
-        ak_snprintf(in3, 64*5, "%d%d%d%d%d", *h3, K_a->x, K_b->x, Id_a, Id_b);
-        ak_bckey_cmac(&key, in3, 64*5, tag_a, 64); // tag_a = MAC_M_ba(h3||Pi_func(K_a)||Pi_func(K_b)||Id_a||Id_b)
+        memset(in2, 0, 64*5);
+        ak_snprintf(in2, 64*5, "%d%d%d%d%d", *h3, K_a->x, K_b->x, Id_a, Id_b);
+        ak_bckey_cmac(&key, in2, 64*5, tag_a, 64); // tag_a = MAC_M_ba(h3||Pi_func(K_a)||Pi_func(K_b)||Id_a||Id_b)
 
         memset(M_ba, 0, 32);
 
