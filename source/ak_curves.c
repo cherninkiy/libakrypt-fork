@@ -476,8 +476,131 @@
  ak_mpzn_mul_montgomery( wp->z, u4, u4, ec->p, ec->n, ec->size );
  ak_mpzn_mul_montgomery( wp->z, wp->z, u4, ec->p, ec->n, ec->size );
 }
-
 /* ----------------------------------------------------------------------------------------------- */
+/*! Точка эллиптической кривой \f$ P = (x:y:z) \f$ заменяется значением \f$ 3P  = (x_3:y_3:z_3)\f$,
+    то есть утраивается.
+    При вычислениях используются соотношения, основанные на результатах работы
+    D.Bernstein, T.Lange, <a href="http://eprint.iacr.org/2007/286">Faster addition and doubling
+     on elliptic curves</a>, 2007.
+    tpl-2007-bl 
+    \code
+      XX = X^2
+      YY = Y^2
+      ZZ = Z^2
+      YYYY = YY^2
+      M = 3*XX+a*ZZ^2
+      MM = M^2
+      E = 6*((X1+YY)^2-XX-YYYY) - MM
+      EE = E^2
+      
+      w = a*ZZ+3*XX
+      s = 2*Y*Z
+      ss = s^2
+      sss = s*ss
+      R = Y*s
+      RR = R^2
+      B = (X+R)^2-XX-RR
+      h = w^2-2*B
+      X3 = h*s
+      Y3 = w*(B-h)-2*RR
+      Z3 = sss
+    \endcode
+
+    @param wp утраиваемая точка \f$ P \f$ эллиптической кривой.
+    @param ec эллиптическая кривая, которой принадлежит точка \f$P\f$.                             */
+/* ----------------------------------------------------------------------------------------------- */
+inline void ak_wpoint_triple( ak_wpoint wp, ak_wcurve ec)
+{
+  struct wpoint wp_temp = *wp;
+  ak_wpoint_double( wp, ec );
+  ak_wpoint wp1 = &wp_temp;
+  ak_wpoint_add( wp, wp1, ec );
+  return;
+}
+/* ----------------------------------------------------------------------------------------------- */
+inline void ak_wpoint_triple2( ak_wpoint wp, ak_wcurve ec) 
+{
+  ak_mpznmax u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13;
+  if( ak_mpzn_cmp_ui( wp->z, ec->size, 0 ) == ak_true ) return;
+  if( ak_mpzn_cmp_ui( wp->y, ec->size, 0 ) == ak_true ) {
+    ak_wpoint_set_as_unit( wp, ec );
+    return;
+  }
+  // tpl-2007-bl
+  ak_mpzn_mul_montgomery( u1, wp->x, wp->x, ec->p, ec->n, ec->size ); //xx
+  ak_mpzn_mul_montgomery( u2, wp->y, wp->y, ec->p, ec->n, ec->size ); //yy
+  ak_mpzn_mul_montgomery( u3, wp->z, wp->z, ec->p, ec->n, ec->size ); //zz
+  ak_mpzn_mul_montgomery( u4, u2, u2, ec->p, ec->n, ec->size ); //yyyy
+
+  ak_mpzn_lshift_montgomery( u5, u1, ec->p, ec->size ); // 2*xx
+  ak_mpzn_add_montgomery( u5, u5, u1, ec->p, ec->size ); // 3*xx
+  ak_mpzn_mul_montgomery( u3, u3, u3, ec->p, ec->n, ec->size ); //zz^2
+  ak_mpzn_mul_montgomery( u3, u3, ec->a, ec->p, ec->n, ec->size ); //a*zz^2
+  ak_mpzn_add_montgomery( u5, u5, u3, ec->p, ec->size );  // m = u5 = az^2 + 3x^2
+  // u3 = a*zz, u5 = u5 = az^2 + 3x^2
+  ak_mpzn_mul_montgomery( u6, u5, u5, ec->p, ec->n, ec->size ); // u6 = u5^2 = mm
+  ak_mpzn_add_montgomery( u7, wp->x, u2, ec->p, ec->size ); // x + yy
+  ak_mpzn_mul_montgomery( u7, u7, u7, ec->p, ec->n, ec->size ); // (x + yy)^2
+  ak_mpzn_sub( u1, ec->p, u1, ec->size ); //-xx
+  ak_mpzn_sub( u4, ec->p, u4, ec->size ); //-yyyy
+  ak_mpzn_add_montgomery( u7, u7, u1, ec->p, ec->size ); // (x + yy)^2 - xx
+  ak_mpzn_add_montgomery( u7, u7, u4, ec->p, ec->size ); // (x + yy)^2 - xx -yyyy
+  ak_mpzn_lshift_montgomery( u8, u7, ec->p, ec->size ); // 2*((x + yy)^2 - xx -yyyy)
+  ak_mpzn_lshift_montgomery( u8, u8, ec->p, ec->size ); // 4*((x + yy)^2 - xx -yyyy)
+  ak_mpzn_add_montgomery( u8, u8, u7, ec->p, ec->size ); //5*((x + yy)^2 - xx -yyyy)
+  ak_mpzn_add_montgomery( u8, u8, u7, ec->p, ec->size ); //6*((x + yy)^2 - xx -yyyy)
+  ak_mpzn_sub( u6, ec->p, u6, ec->size ); //-mm
+  ak_mpzn_add_montgomery( u8, u8, u6, ec->p, ec->size ); //e = 6*((x + yy)^2 - xx -yyyy) - mm
+  ak_mpzn_mul_montgomery( u9, u8, u8, ec->p, ec->n, ec->size ); //ee
+  ak_mpzn_mul_montgomery( u4, u2, u2, ec->p, ec->n, ec->size ); //yyyy
+  ak_mpzn_lshift_montgomery( u4, u4, ec->p, ec->size ); // 2*yyyy
+  ak_mpzn_lshift_montgomery( u4, u4, ec->p, ec->size ); // 4*yyyy
+  ak_mpzn_lshift_montgomery( u4, u4, ec->p, ec->size ); // 8*yyyy
+  ak_mpzn_lshift_montgomery( u4, u4, ec->p, ec->size ); // 16*yyyy
+  ak_mpzn_add_montgomery( u10, u5, u8, ec->p, ec->size );  // m+e
+  ak_mpzn_mul_montgomery( u10, u10, u10, ec->p, ec->n, ec->size ); // (m+e)^2
+  ak_mpzn_add_montgomery( u10, u10, u6, ec->p, ec->size ); //(m+e)^2 - mm
+  ak_mpzn_sub( u9, ec->p, u9, ec->size ); //-ee
+  ak_mpzn_add_montgomery( u10, u10, u9, ec->p, ec->size ); //(m+e)^2 - mm - ee
+  ak_mpzn_sub( u4, ec->p, u4, ec->size ); //-t = -16yyyy
+  ak_mpzn_add_montgomery( u10, u10, u4, ec->p, ec->size ); //u = (m+e)^2 - mm - ee - t
+
+  //x3
+  ak_mpzn_mul_montgomery( u11, u10, u2, ec->p, ec->n, ec->size ); // yy*u
+  ak_mpzn_lshift_montgomery( u11, u11, ec->p, ec->size ); // 2*yy*u
+  ak_mpzn_lshift_montgomery( u11, u11, ec->p, ec->size ); // 4*yy*u
+  ak_mpzn_sub( u11, ec->p, u11, ec->size ); // -4*yy*u
+  ak_mpzn_sub( u9, ec->p, u9, ec->size ); //ee
+  ak_mpzn_mul_montgomery( u12, u9, wp->x, ec->p, ec->n, ec->size ); // x*ee
+  ak_mpzn_add_montgomery( u12, u12, u11, ec->p, ec->size ); //x*ee - 4*yy*u
+  ak_mpzn_lshift_montgomery( u12, u12, ec->p, ec->size ); // 2*(x*ee - 4*yy*u)
+  ak_mpzn_lshift_montgomery( wp->x, u12, ec->p, ec->size ); // 4*(x*ee - 4*yy*u)
+
+
+  //y3
+  ak_mpzn_sub( u4, ec->p, u4, ec->size ); //t = 16yyyy
+  ak_mpzn_sub( u10, ec->p, u10, ec->size ); //-u
+  ak_mpzn_add_montgomery( u4, u4, u10, ec->p, ec->size ); //t-u
+  ak_mpzn_sub( u10, ec->p, u10, ec->size ); //u
+  ak_mpzn_mul_montgomery( u4, u10, wp->x, ec->p, ec->n, ec->size ); // u*(t-u)
+  ak_mpzn_mul_montgomery( u13, u9, u8, ec->p, ec->n, ec->size ); // e*ee
+  ak_mpzn_sub( u13, ec->p, u13, ec->size ); // -e*ee
+  ak_mpzn_add_montgomery( u4, u4, u13, ec->p, ec->size ); //u*(t-u) - e*ee
+  ak_mpzn_mul_montgomery( u4, u4, wp->y, ec->p, ec->n, ec->size ); // y*(u*(t-u) - e*ee)
+  ak_mpzn_lshift_montgomery( u4, u4, ec->p, ec->size ); // 2*y*(u*(t-u) - e*ee)
+  ak_mpzn_lshift_montgomery( u4, u4, ec->p, ec->size ); // 4*y*(u*(t-u) - e*ee)
+  ak_mpzn_lshift_montgomery( wp->y, u4, ec->p, ec->size ); // 8*y*(u*(t-u) - e*ee)
+  //z3
+  ak_mpzn_add_montgomery( u4, wp->z, u8, ec->p, ec->size ); //z + e
+  ak_mpzn_mul_montgomery( u4, u4, u4, ec->p, ec->n, ec->size ); // (z+e)^2
+  ak_mpzn_mul_montgomery( u3, wp->z, wp->z, ec->p, ec->n, ec->size ); //zz
+  ak_mpzn_sub( u3, ec->p, u3, ec->size ); // -zz
+  ak_mpzn_sub( u9, ec->p, u9, ec->size ); //-ee
+  ak_mpzn_add_montgomery( u4, u4, u3, ec->p, ec->size ); //(z+e)^2 - zz
+  ak_mpzn_add_montgomery( wp->z, u4, u9, ec->p, ec->size ); //(z+e)^2 - zz - ee
+  return; 
+}
+
 /*! Для двух заданных точек эллиптической кривой \f$ P = (x_1: y_1: z_1) \f$ и
     \f$ Q = (x_2:y_2:z_2)\f$ вычисляется сумма \f$ P+Q = (x_3:y_3:z_3)\f$,
     которая присваивается точке \f$ P\f$.
@@ -511,6 +634,7 @@
     @param wp2 Точка \f$ Q \f$, второе слагаемое
     @param ec Эллиптическая кривая, которой принадллежат складываемые точки                        */
 /* ----------------------------------------------------------------------------------------------- */
+ 
  inline void ak_wpoint_add( ak_wpoint wp1, ak_wpoint wp2, ak_wcurve ec )
 {
   ak_mpznmax u1, u2, u3, u4, u5, u6, u7;
@@ -532,7 +656,6 @@
      else ak_wpoint_set_as_unit( wp1, ec );
     return;
   }
-
   //add-1998-cmo-2
   ak_mpzn_mul_montgomery( u1, wp1->x, wp2->z, ec->p, ec->n, ec->size );
   ak_mpzn_mul_montgomery( u2, wp1->y, wp2->z, ec->p, ec->n, ec->size );
@@ -562,7 +685,7 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! Для точки \f$ P = (x:y:z) \f$ функция вычисляет аффинное представление,
+/*! Для точки \f$ P = (x:y:z) \f$ функция выfчисляет аффинное представление,
     задаваемое следующим вектором \f$ P = \left( \frac{x}{z} \pmod{p}, \frac{y}{z} \pmod{p}, 1\right) \f$,
     где \f$ p \f$ модуль эллиптической кривой.
 
@@ -621,6 +744,43 @@
   for( i = size-1; i >= 0; i-- ) {
      uk = k[i];
      for( j = 0; j < 64; j++ ) {
+       if( uk&0x8000000000000000LL ) { ak_wpoint_add( &Q, &R, ec ); ak_wpoint_double( &R, ec );}
+        else { ak_wpoint_add( &R, &Q, ec ); ak_wpoint_double( &Q, ec );}
+       uk <<= 1;
+     }
+  }
+ /* копируем полученный результат */
+  ak_wpoint_set_wpoint( wq, &Q, ec );
+}
+ void ak_wpoint_pow_modified( ak_wpoint wq, ak_wpoint wp, ak_uint64 *k, size_t size, ak_wcurve ec )
+{
+  ak_uint64 uk = 0;
+  long long int i, j;
+  struct wpoint Q, R; /* две точки из лесенки Монтгомери */
+
+  ak_uint32 counter = 0; /* счетчик степени тройки */
+
+  ak_uint64 *k_tmp = malloc(ak_mpzn256_size*sizeof(*k_tmp)) ;
+  memcpy(k_tmp, k, ak_mpzn256_size*sizeof(ak_uint64)); 
+
+  while (ak_mpzn_rem_uint32(k_tmp, ak_mpzn256_size, 3) == 0x0)
+  {
+    *k_tmp /= 3; /* содержит k без степеней тройки */
+    counter++;
+  }
+
+ /* начальные значения для переменных */
+  ak_wpoint_set_as_unit( &Q, ec );
+  ak_wpoint_set_wpoint( &R, wp, ec );
+
+  for (size_t i = 0; i < counter; i++) {
+    ak_wpoint_triple( &R, ec );
+  }
+
+ /* полный цикл по всем(!) битам числа k */
+  for( i = size-1; i >= 0; i-- ) {
+     uk = k_tmp[i];
+     for( j = 0; j < 64; j++ ) {
        if( uk&0x8000000000000000LL ) { ak_wpoint_add( &Q, &R, ec ); ak_wpoint_double( &R, ec ); }
         else { ak_wpoint_add( &R, &Q, ec ); ak_wpoint_double( &Q, ec ); }
        uk <<= 1;
@@ -628,7 +788,9 @@
   }
  /* копируем полученный результат */
   ak_wpoint_set_wpoint( wq, &Q, ec );
+  free(k_tmp);
 }
+
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! Для заданной точки \f$ P = (x:y:z) \f$ функция проверяет
