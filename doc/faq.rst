@@ -15,6 +15,7 @@
    encrypt.rst
    kdf.rst
    aead.rst
+   curves.rst
    libakrypt-base.rst
 
 Cоглашения по именам примеров
