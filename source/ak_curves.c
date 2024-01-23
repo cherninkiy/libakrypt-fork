@@ -392,28 +392,72 @@
   memset( s, 0, sizeof(ak_uint64)*ak_mpznmax_size );
 
  /* Проверяем принадлежность точки заданной кривой */
-  ak_mpzn_set( t, ec->a, ec->size );
-  ak_mpzn_mul_montgomery( t, t, wp->x, ec->p, ec->n, ec->size );
-  ak_mpzn_set( s, ec->b, ec->size );
-  ak_mpzn_mul_montgomery( s, s, wp->z, ec->p, ec->n, ec->size );
+  ak_mpzn_set( t, ec->a, ec->size ); // a
+  ak_mpzn_mul_montgomery( t, t, wp->x, ec->p, ec->n, ec->size ); // ax
+  ak_mpzn_set( s, ec->b, ec->size ); // b
+  ak_mpzn_mul_montgomery( s, s, wp->z, ec->p, ec->n, ec->size ); // bz
   ak_mpzn_add_montgomery( t, t, s, ec->p, ec->size ); // теперь в t величина (ax+bz)
 
-  ak_mpzn_set( s, wp->z, ec->size );
-  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size );
+  ak_mpzn_set( s, wp->z, ec->size ); // z
+  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size ); // z^2
   ak_mpzn_mul_montgomery( t, t, s, ec->p, ec->n, ec->size ); // теперь в t величина (ax+bz)z^2
 
-  ak_mpzn_set( s, wp->x, ec->size );
-  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size );
-  ak_mpzn_mul_montgomery( s, s, wp->x, ec->p, ec->n, ec->size );
+  ak_mpzn_set( s, wp->x, ec->size ); // x
+  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size ); // x^2
+  ak_mpzn_mul_montgomery( s, s, wp->x, ec->p, ec->n, ec->size ); // x^3
   ak_mpzn_add_montgomery( t, t, s, ec->p, ec->size ); // теперь в t величина x^3 + (ax+bz)z^2
 
-  ak_mpzn_set( s, wp->y, ec->size );
-  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size );
-  ak_mpzn_mul_montgomery( s, s, wp->z, ec->p, ec->n, ec->size ); // теперь в s величина x^3 + (ax+bz)z^2
+  ak_mpzn_set( s, wp->y, ec->size ); // y
+  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size ); // y^2
+  ak_mpzn_mul_montgomery( s, s, wp->z, ec->p, ec->n, ec->size ); // теперь в s величина y^2*z
 
-  if( ak_mpzn_cmp( t, s, ec->size )) return ak_false;
- return ak_true;
+  if( ak_mpzn_cmp( t, s, ec->size )) return ak_false; // y^2*z ?= x^3 + (ax+bz)z^2
+  return ak_true;
 }
+
+
+/* ----------------------------------------------------------------------------------------------- */
+/*! Для заданной точки \f$ P = (x:y:z) \f$ функция проверяет,
+    что точка принадлежит эллиптической кривой Монтгомери, то есть что выполнено сравнение
+    \f$ B*y^2*z \equiv x^3 + A*x^2*z + x*z^2 \pmod{p}\f$.
+
+    @param wp точка \f$ P \f$ эллиптической кривой
+    @param ec эллиптическая кривая, на принадлежность которой проверяется точка \f$P\f$.
+
+    @return Функция возвращает \ref ak_true если все проверки выполнены. В противном случае
+    возвращается \ref ak_false.                                                                    */
+/* ----------------------------------------------------------------------------------------------- */
+ bool_t ak_mpoint_is_ok( ak_wpoint wp, ak_wcurve ec )
+{
+  ak_mpznmax t, s, m;
+  memset( t, 0, sizeof(ak_uint64)*ak_mpznmax_size );
+  memset( s, 0, sizeof(ak_uint64)*ak_mpznmax_size );
+  memset( m, 0, sizeof(ak_uint64)*ak_mpznmax_size );
+
+ /* Проверяем принадлежность точки заданной кривой */
+  ak_mpzn_set( t, ec->ma, ec->size ); // A
+  ak_mpzn_set( s, wp->z, ec->size ); // z
+  ak_mpzn_set( m, wp->x, ec->size ); // x
+
+  ak_mpzn_mul_montgomery( t, t, m, ec->p, ec->n, ec->size ); // Ax
+  ak_mpzn_mul_montgomery( t, t, s, ec->p, ec->n, ec->size ); // Axz
+  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size ); // z^2
+  ak_mpzn_mul_montgomery( m, m, m, ec->p, ec->n, ec->size ); // x^2
+
+  ak_mpzn_add_montgomery( m, m, t, ec->p, ec->size ); // теперь в m величина (x^2 + Axz)
+  ak_mpzn_add_montgomery( m, m, s, ec->p, ec->size ); // теперь в m величина (x^2 + Axz + z^2)
+  ak_mpzn_mul_montgomery( m, m, wp->x, ec->p, ec->n, ec->size ); // теперь в m величина x*(x^2 + Axz + z^2)
+
+  ak_mpzn_set( s, wp->y, ec->size ); // y
+  ak_mpzn_mul_montgomery( s, s, s, ec->p, ec->n, ec->size ); // y^2
+  ak_mpzn_mul_montgomery( s, s, ec->mb, ec->p, ec->n, ec->size ); // B*y^2
+  ak_mpzn_mul_montgomery( s, s, wp->z, ec->p, ec->n, ec->size ); // теперь в s величина B*y^2*z
+
+  if( ak_mpzn_cmp( m, s, ec->size ) ) return ak_false; // B*y^2*z ?= x*(x^2 + Axz + z^2)
+
+  return ak_true;
+}
+
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! Точка эллиптической кривой \f$ P = (x:y:z) \f$ заменяется значением \f$ 2P  = (x_3:y_3:z_3)\f$,
@@ -522,7 +566,7 @@
 
   ak_mpzn_mul_montgomery( wp->x, AA, BB, ec->p, ec->n, ec->size ); // X'
 
-  ak_mpzn_mul_montgomery( CC, &(ec->a24), C, ec->p, ec->n, ec->size ); // a24 * C
+  ak_mpzn_mul_montgomery( CC, ec->a24, C, ec->p, ec->n, ec->size ); // a24 * C
   ak_mpzn_add_montgomery( CC, BB, CC, ec->p, ec->size ); // BB + a24 * C
   ak_mpzn_mul_montgomery( wp->z, C, CC, ec->p, ec->n, ec->size ); // Z'
 }
@@ -763,10 +807,10 @@ void ak_mpoint_pow( ak_wpoint wq, ak_wpoint wp, ak_uint64 *k, size_t size, ak_wc
      uk = k[i];
      for( j = 0; j < 64; j++ ) {
        if( uk&0x8000000000000000LL ){ 
-        ak_mpoint_add( &Q, &R, (ak_wpoint)&wp, ec );
+        ak_mpoint_add( &Q, &R, wp, ec );
         ak_mpoint_double( &R, ec ); 
       } else {
-        ak_mpoint_add( &R, &Q, (ak_wpoint)&wp, ec );
+        ak_mpoint_add( &R, &Q, wp, ec );
         ak_mpoint_double( &Q, ec ); 
       }
        uk <<= 1;
