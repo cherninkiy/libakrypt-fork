@@ -1450,6 +1450,8 @@ extern "C" {
 
 /*! \brief Проверка принадлежности точки заданной кривой. */
  dll_export bool_t ak_wpoint_is_ok( ak_wpoint , ak_wcurve );
+/*! \brief Проверка принадлежности точки заданной кривой Монтгомери. */
+ dll_export bool_t ak_mpoint_is_ok( ak_wpoint , ak_wcurve );
 /*! \brief Проверка порядка заданной точки. */
  dll_export bool_t ak_wpoint_check_order( ak_wpoint , ak_wcurve );
 
@@ -1461,6 +1463,15 @@ extern "C" {
  dll_export void ak_wpoint_reduce( ak_wpoint , ak_wcurve );
 /*! \brief Вычисление кратной точки эллиптической кривой. */
  dll_export void ak_wpoint_pow( ak_wpoint , ak_wpoint , ak_uint64 *, size_t , ak_wcurve );
+/*! \brief Вычисление кратной точки эллиптической кривой. */
+ dll_export void ak_mpoint_pow( ak_wpoint , ak_wpoint , ak_uint64 *, size_t , ak_wcurve );
+
+ 
+/*! \brief Удвоение точки эллиптической кривой, заданной в форме Монтгомери. */
+ dll_export void ak_mpoint_double( ak_wpoint , ak_wcurve );
+/*! \brief Прибавление к одной точке эллиптической кривой значения другой точки (форма Монтгомери). */
+ dll_export void ak_mpoint_add( ak_wpoint , ak_wpoint, ak_wpoint , ak_wcurve );
+
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Класс, реализующий эллиптическую кривую, заданную в короткой форме Вейерштрасса
@@ -1475,6 +1486,8 @@ extern "C" {
     Параметры \f$ n, n_q, r_2\f$ вводятся для оптимизации вычислений. Определим \f$ r = 2^{256}\f$
     или \f$ r=2^{512}\f$, тогда \f$ n \equiv n_0 \pmod{2^{64}}\f$,
     где \f$ n_0 \equiv -p^{-1} \pmod{r}\f$.
+
+
 
     Величина \f$ r_2 \f$ удовлетворяет сравнению \f$ r_2 \equiv r^2 \pmod{p}\f$.                   */
 /* ----------------------------------------------------------------------------------------------- */
@@ -1505,6 +1518,14 @@ extern "C" {
  /*! \brief Строка, содержащая символьную запись модуля \f$ p \f$.
      \details Используется для проверки корректного хранения параметров кривой в памяти. */
   const char *pchar;
+
+  
+ /*! \brief Коэффициент \f$ a \f$ эллиптической кривой, приведенной к форме Монтгомери \f$ by^2 \equiv x^3 + ax^2 + x \pmod{p} \f$ */
+  ak_uint64 ma[ak_mpzn512_size];
+ /*! \brief Коэффициент \f$ b \f$ эллиптической кривой, приведенной к форме Монтгомери \f$ by^2 \equiv x^3 + ax^2 + x \pmod{p} \f$ */
+  ak_uint64 mb[ak_mpzn512_size];
+ /*! \brief Константа \f$ a24 \equiv (a+2)/4 \f$. */
+  ak_uint64 a24[ak_mpzn512_size];
 };
 
 /* ----------------------------------------------------------------------------------------------- */
