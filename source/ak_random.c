@@ -545,7 +545,7 @@ slabel:
                                                                "using null pointer to file name" );
   if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
                                                 "using null pointer to random generator context" );
-  if (rnd->random == NULL && rnd->random_external) {
+  if (rnd->random == NULL && rnd->random_external == NULL) {
     return ak_error_message(ak_error_null_pointer, __func__,
                             "using uninitialized random generator context");
   }
