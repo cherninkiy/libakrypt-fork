@@ -33,15 +33,25 @@ if( MSVC )
   try_append_c_flag( "/arch:SSE2" CMAKE_C_FLAGS )
   try_append_c_flag( "/DNDEBUG" CMAKE_C_FLAGS )
 else()
+  # необходимые для платформы флаги предустанавливаются в CMAKE_C_FLAGS, их удалять нельзя
+  set(CMAKE_C_FLAGS_RELEASE "")
+
   # набор Unix'овых флагов
   try_append_c_flag( "-Wall" CMAKE_C_FLAGS )
   try_append_c_flag( "-Wextra" CMAKE_C_FLAGS )
   try_append_c_flag( "-Wparentheses" CMAKE_C_FLAGS )
   try_append_c_flag( "-Wpedantic" CMAKE_C_FLAGS )
   try_append_c_flag( "-pedantic-errors" CMAKE_C_FLAGS )
-  try_append_c_flag( "-O3" CMAKE_C_FLAGS )
-  try_append_c_flag( "-pipe" CMAKE_C_FLAGS )
-  try_append_c_flag( "-funroll-loops" CMAKE_C_FLAGS )
+
+  # флаги оптимизации должны устанавливаться только для RELEASE билда
+  try_append_c_flag( "-O3" CMAKE_C_FLAGS_RELEASE )
+  # disable assert()
+  try_append_c_flag( "-DNDEBUG" CMAKE_C_FLAGS_RELEASE )
+  try_append_c_flag( "-pipe" CMAKE_C_FLAGS_RELEASE )
+  try_append_c_flag( "-funroll-loops" CMAKE_C_FLAGS_RELEASE )
+  # strip
+  try_append_c_flag( "-s" CMAKE_C_FLAGS_RELEASE )
+
 #  try_append_c_flag( "-fomit-frame-pointer" CMAKE_C_FLAGS )
 #  try_append_c_flag( "-mpclmul" CMAKE_C_FLAGS )
 #  try_append_c_flag( "-msse" CMAKE_C_FLAGS )

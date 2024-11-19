@@ -40,12 +40,17 @@ string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 #   set( AK_LOCALE_PATH "/usr/share/locale" )
 #
 # -------------------------------------------------------------------------------------------------- #
-# добавляем и такое
-if( CMAKE_BUILD_TYPE )
-else()
- set( CMAKE_BUILD_TYPE Release )
- set( CMAKE_C_FLAGS_RELEASE -DNDEBUG )
+
+if (NOT CMAKE_BUILD_TYPE)
+  set(
+    CMAKE_BUILD_TYPE
+    "Release"
+    CACHE STRING
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+    FORCE
+  )
 endif()
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 # -------------------------------------------------------------------------------------------------- #
 # Определяем базовое множество исходных текстов библиотеки
