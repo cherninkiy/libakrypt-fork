@@ -33,14 +33,9 @@
 {
   if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
                                                       "use a null pointer to a random generator" );
-  rnd->oid = NULL;
-  rnd->next = NULL;
-  rnd->randomize_ptr = NULL;
-  rnd->random = NULL;
-  rnd->free = NULL;
-  memset( &rnd->data, 0, sizeof( rnd->data ));
+  memset(rnd, 0, sizeof(struct random));
 
- return ak_error_ok;
+  return ak_error_ok;
 }
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -53,11 +48,7 @@
   if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
                                                       "use a null pointer to a random generator" );
   if( rnd->free != NULL ) rnd->free( rnd );
-  rnd->oid = NULL;
-  rnd->next = NULL;
-  rnd->randomize_ptr = NULL;
-  rnd->random = NULL;
-  memset( &rnd->data, 0, sizeof( rnd->data ));
+  memset(rnd, 0, sizeof(struct random));
 
  return ak_error_ok;
 }
@@ -123,20 +114,54 @@
                                                              "use a null pointer to output data" );
  if( size <= 0 ) return ak_error_message( ak_error_wrong_length, __func__,
                                                               "using a buffer with wrong length" );
- if( rnd->random == NULL ) return ak_error_message( ak_error_undefined_function, __func__,
-                                                "this generator has undefined random() function" );
- return rnd->random( rnd, out, size );
+ if (rnd->random == NULL && rnd->random_external == NULL) {
+   return ak_error_message(ak_error_undefined_function, __func__,
+                           "generator has undefined random functions");
+ }
+
+ if (rnd->random != NULL) {
+   return rnd->random(rnd, out, size);
+ }
+ if (rnd->random_external(out, size) != 0) {
+   return ak_error_external;
+ }
+
+ return ak_error_ok;
 }
 
-/* ----------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------*/
+/*! @param rnd указатель на контекст генератора псевдо-случайных чисел
+    @param fn_rng Указатель на внешнюю функцию-источник псевдо-случайных чисел.
+
+ @return В случае успеха функция возвращает \ref ak_error_ok. В противном случае
+ возвращается код ошибки. */
+/* ---------------------------------------------------------------------------*/
+int ak_random_create_external_rng(ak_random rnd,
+                                  ak_function_external_rng* fn_rng) {
+  if (fn_rng == NULL) {
+    return ak_error_message(
+        ak_error_undefined_function, __func__,
+        "null pointer to external random generator function");
+  }
+
+  int error = ak_random_create(rnd);
+  if (error != ak_error_ok) {
+    return ak_error_message(error, __func__,
+                            "wrong initialization of random generator");
+  }
+
+  rnd->random_external = fn_rng;
+  return error;
+}
+
+/* -----------------------------------------------------------------------------------------------*/
 /*! @param rnd указатель на контекст генератора псевдо-случайных чисел
     @param oid OID генератора.
 
-    @return В случае успеха возвращается ak_error_ok (ноль). В случае возникновения ошибки
-    возвращается ее код.                                                                           */
-/* ----------------------------------------------------------------------------------------------- */
- int ak_random_create_oid( ak_random rnd, ak_oid oid )
-{
+    @return В случае успеха возвращается ak_error_ok (ноль). В случае
+   возникновения ошибки возвращается ее код. */
+/* -----------------------------------------------------------------------------------------------*/
+int ak_random_create_oid(ak_random rnd, ak_oid oid) {
   int error = ak_error_ok;
 
  /* выполняем проверку */
@@ -371,8 +396,6 @@ slabel:
   }
 
   // для данного генератора oid не определен
-  rnd->next = NULL;
-  rnd->randomize_ptr = NULL;
   rnd->random = ak_random_file_ptr;
   rnd->free = ak_random_file_free;
 
@@ -499,15 +522,14 @@ slabel:
   size_t idx = 0;
   int error = ak_error_ok;
 
-  if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
-                                                "using null pointer to random generator context" );
-  if( rnd->random == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
-                                                  "using uninitialized random generator context" );
-  if( size > (((size_t)-1) >> 1 )) return ak_error_message( ak_error_wrong_length, __func__,
-                                                                   "using very large size value" );
   if(( ptr == NULL ) || ( size == 0 )) return ak_error_ok;
 
-  if( rnd->random( rnd, ptr, (ssize_t) size ) != ak_error_ok ) {
+  if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
+                                                "using null pointer to random generator context" );
+  if( size > (((size_t)-1) >> 1 )) return ak_error_message( ak_error_wrong_length, __func__,
+                                                                   "using very large size value" );
+
+  if( ak_random_ptr(rnd, ptr, size) != ak_error_ok ) {
     memset( ptr, 0, size );
     ak_error_message( error = ak_error_write_data, __func__, "incorrect memory wiping" );
   }
@@ -523,12 +545,15 @@ slabel:
                                                                "using null pointer to file name" );
   if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
                                                 "using null pointer to random generator context" );
-  if( rnd->random == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
-                                                  "using uninitialized random generator context" );
- /* пропущен фрагмент с очищением кармы */
-  #ifdef AK_HAVE_SYSMMAN_H
-    /* здесь надо немного поработать ))) */
-  #endif
+  if (rnd->random == NULL && rnd->random_external) {
+    return ak_error_message(ak_error_null_pointer, __func__,
+                            "using uninitialized random generator context");
+  }
+
+  /* пропущен фрагмент с очищением кармы */
+#ifdef AK_HAVE_SYSMMAN_H
+  /* здесь надо немного поработать ))) */
+#endif
 
   #ifdef AK_HAVE_UNISTD_H
    unlink( file );

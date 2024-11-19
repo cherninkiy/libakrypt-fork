@@ -127,7 +127,7 @@
   if( generator == NULL ) return ak_error_message( ak_error_undefined_value,
                                                 __func__, "using an undefined random generator" );
 
- return generator->random( generator, x, size*sizeof( ak_uint64 ));
+  return ak_random_ptr(generator, x, size * sizeof(ak_uint64));
 }
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -154,7 +154,10 @@
   }
 
  /* старший разряд - по модулю, остальное мусор */
-  generator->random( generator, x, ( ssize_t )( size*sizeof( ak_uint64 )));
+  int r = ak_random_ptr(generator, x, size * sizeof(ak_uint64));
+  if (r != ak_error_ok) {
+    return r;
+  }
   x[midx] %= p[midx];
 
  return ak_error_ok;
