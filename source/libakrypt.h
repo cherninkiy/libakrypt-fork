@@ -2148,14 +2148,13 @@ extern "C" {
     предварительно сохраненном в простом текстовом файле */
  dll_export int ak_verifykey_create_from_file( ak_verifykey , const char * );
 
- /*! \brief Для Плутон. Функция сохраняет координаты X, Y открытого ключа в область памяти.
+ /*! \brief Функция сохраняет координаты X, Y открытого ключа в область памяти.
    Размер области памяти должен быть не менее 144 байт (sizeof(uint64_t) *
-   ak_mpznmax_size).
-   Параметры кривой не сохраняются, т.к. они заданы жестко для обеих сторон. */
+   ak_mpznmax_size). Параметры кривой не сохраняются. */
  dll_export int ak_verifykey_export_to_xy_ptr(ak_verifykey vk, void* buffer,
                                               size_t buffer_size,
                                               size_t* data_size);
- /*! \brief Для Плутон. Функция, обратная к ak_verifykey_export_to_xy_ptr. */
+ /*! \brief Функция, обратная к ak_verifykey_export_to_xy_ptr. */
  dll_export int ak_verifykey_create_from_xy_ptr(ak_verifykey out_vk,
                                                 void* buffer, size_t data_size,
                                                 ak_wcurve wc);

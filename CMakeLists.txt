@@ -441,7 +441,11 @@ set( CPACK_SOURCE_IGNORE_FILES
   .gitignore
   .delme*
   .kdev4/*
+  .vscode
   TAGS
+  TODO
+  tags
+  build*/
   "CMakeLists.txt.user*"
   "scratch*"
 )
