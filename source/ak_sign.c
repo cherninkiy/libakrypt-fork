@@ -1242,7 +1242,6 @@
 /* ----------------------------------------------------------------------------------------------- */
  int ak_verifykey_export_to_file( ak_verifykey vk, const char *filename )
 {
-    size_t len = 0;
     struct file fp;
     ak_oid oid = NULL;
     int error = ak_error_ok;
@@ -1257,6 +1256,11 @@
       return ak_error_message( ak_error_wrong_oid, __func__,
                                                 "unsuccessfull search of the given elliptic curve");
    /* формируем буффер */
+    size_t len = sizeof(ak_uint64) * vk->wc->size;
+    if (len * 2 > sizeof(buffer))
+      return ak_error_message( ak_error_wrong_length, __func__, "too large size of verify key" );
+
+
     if(( len = sizeof( ak_uint64 )*vk->wc->size ) > sizeof( buffer ))
       return ak_error_message( ak_error_wrong_length, __func__, "too large size of verify key" );
 
@@ -1292,8 +1296,8 @@
     ak_oid oid = NULL;
     ak_wcurve wc = NULL;
     int error = ak_error_ok;
-    ak_uint8 qp[ak_mpznmax_size];
-    size_t length = sizeof( qp )*sizeof( ak_uint64 );
+    ak_uint8 qp[ak_mpznmax_size * sizeof(ak_uint64)];
+    size_t length = sizeof(qp);
     char strbuffer[512], *b64point = NULL, *ptr = NULL;
 
     if( vk == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
@@ -1345,7 +1349,6 @@
     ak_mpzn_set_little_endian( vk->qpoint.x, vk->wc->size, qp, length, ak_false );
     ak_mpzn_set_little_endian( vk->qpoint.y, vk->wc->size, qp +length, length, ak_false );
     ak_mpzn_set_ui( vk->qpoint.z, vk->wc->size, 1 );
-    //free( qp );
 
     if( ak_wpoint_is_ok( &vk->qpoint, vk->wc ) != ak_true )
       error = ak_error_message( ak_error_curve_point, __func__,
@@ -1358,6 +1361,78 @@
       }
 
  return error;
+}
+
+/* ----------------------------------------------------------------------------------------------- */
+int ak_verifykey_export_to_xy_ptr(ak_verifykey vk, void* buffer,
+                                  size_t buffer_size, size_t* data_size) {
+  if (vk == NULL || buffer == NULL || data_size == NULL) {
+    return ak_error_message(ak_error_null_pointer, __func__,
+                            "null pointer in function argements");
+  }
+
+  size_t len = sizeof(ak_uint64) * vk->wc->size;
+  if (len * 2 > buffer_size) {
+    return ak_error_message(ak_error_wrong_length, __func__,
+                            "buffer is too small");
+  }
+
+  /* сохраняем в little endian */
+#ifdef AK_LITTLE_ENDIAN
+  bool_t reverse = ak_false;
+#else
+  bool_t reverse = ak_true;
+#endif
+
+  ak_wpoint_reduce(&vk->qpoint, vk->wc);
+  ak_mpzn_to_little_endian(vk->qpoint.x, vk->wc->size, buffer, len, reverse);
+  ak_mpzn_to_little_endian(vk->qpoint.y, vk->wc->size, (char*)buffer + len, len,
+                           reverse);
+  *data_size = (len << 1);
+  return ak_error_ok;
+}
+
+int ak_verifykey_create_from_xy_ptr(ak_verifykey out_vk, void* buffer,
+                                    size_t data_size, ak_wcurve wc) {
+  int error = ak_error_ok;
+
+  size_t length = (data_size >> 1);
+  if (length != sizeof(ak_uint64) * wc->size) {
+    return ak_error_message(
+        ak_error_wrong_length, __func__,
+        "incorrect length of decoded point of elliptic curve");
+  }
+
+  /* создаем контекст и присваиваем ему необходимые значения */
+  if ((error = ak_verifykey_create(out_vk, (struct wcurve*)wc)) != 0) {
+    return ak_error_message(error, __func__,
+                            "incorrect creation of verify key context");
+  }
+
+/* данных были сохранены в little endian */
+#ifdef AK_LITTLE_ENDIAN
+  bool_t reverse = ak_false;
+#else
+  bool_t reverse = ak_true;
+#endif
+
+  ak_mpzn_set_little_endian(out_vk->qpoint.x, out_vk->wc->size, buffer, length,
+                            reverse);
+  ak_mpzn_set_little_endian(out_vk->qpoint.y, out_vk->wc->size,
+                            (char*)buffer + length, length, reverse);
+  ak_mpzn_set_ui(out_vk->qpoint.z, out_vk->wc->size, 1);
+
+  if (ak_wpoint_is_ok(&out_vk->qpoint, out_vk->wc) != ak_true) {
+    return ak_error_message(ak_error_curve_point, __func__,
+                            "decoded point is not on the elliptic curve");
+  }
+
+  /* вычисляем номер ключа */
+  ak_verifykey_set_number(out_vk);
+  /* отмечаем, что ключ установлен */
+  out_vk->flags = key_flag_set_key;
+
+  return ak_error_ok;
 }
 
 /* ----------------------------------------------------------------------------------------------- */
