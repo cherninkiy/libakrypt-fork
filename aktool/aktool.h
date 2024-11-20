@@ -268,7 +268,7 @@
 /* определение функции вывода сообщений о ходе выполнения программы */
  void aktool_set_audit( tchar * );
 /* вывод в консоль строки с сообщением об ошибке */
- void aktool_error( const char *format, ... );
+ void aktool_error( const char *format, ... ) AK_ATTRIBUTE_FORMAT_PRINTF(1, 2);
 /* общий для всех подпрограмм запуск процедуры инициализации билиотеки */
  bool_t aktool_create_libakrypt( void );
 /* общий для всех подпрограмм запуск процедуры остановки билиотеки */

@@ -253,4 +253,20 @@ check_c_source_compiles("
   }" AK_HAVE_SSIZE_T )
 
 # -------------------------------------------------------------------------------------------------- #
+# проверка поддержки компилятором __attribute__((format(printf, X, Y)))
+check_c_source_compiles("
+  #include <stdarg.h>
+  void foo(const char *format, ...) __attribute__((format(printf, 1, 2)));
+  int main( void ) {
+    foo(\"%d\", 42);
+    return 0;
+  }
+  void foo(const char *format, ...) {
+    va_list ap;
+    va_start(ap, format);
+    va_end(ap);
+  }
+  " AK_HAVE_ATTRIBUTE_FORMAT_PRINTF )
+
+# -------------------------------------------------------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------- #

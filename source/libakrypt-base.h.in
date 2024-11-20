@@ -120,6 +120,14 @@ extern "C" {
 #cmakedefine AK_HAVE_LIBINTL_H
 
 /* ----------------------------------------------------------------------------------------------- */
+#cmakedefine AK_HAVE_ATTRIBUTE_FORMAT_PRINTF
+#ifdef AK_HAVE_ATTRIBUTE_FORMAT_PRINTF
+#define AK_ATTRIBUTE_FORMAT_PRINTF(FPOS, ARGPOS) __attribute__((format(printf, FPOS, ARGPOS)))
+#else
+#define AK_ATTRIBUTE_FORMAT_PRINTF(FPOS, ARGPOS)
+#endif
+
+/* ----------------------------------------------------------------------------------------------- */
 #cmakedefine AK_HAVE_WINDOWS_H
 #ifdef AK_HAVE_WINDOWS_H
  #include <windows.h>
@@ -317,7 +325,7 @@ extern "C" {
 /*! \brief Вывод сообщений о возникшей в процессе выполнения ошибке. */
  dll_export int ak_error_message( const int, const char *, const char * );
 /*! \brief Вывод сообщений о возникшей в процессе выполнения ошибке. */
- dll_export int ak_error_message_fmt( const int , const char *, const char *, ... );
+ dll_export int ak_error_message_fmt( const int , const char *, const char *, ... ) AK_ATTRIBUTE_FORMAT_PRINTF(3, 4);
 /*! \brief Функция устанавливает значение переменной, хранящей ошибку выполнения программы. */
  dll_export int ak_error_set_value( const int );
 /*! \brief Функция возвращает код последней ошибки выполнения программы. */
@@ -592,7 +600,7 @@ extern "C" {
 /*! \brief Функция сдвигает файловый указатель на заданное количество байт. */
  dll_export ak_int64 ak_file_lseek( ak_file , ak_int64 , int );
 /*! \brief Функция записывает в файл строку символов. */
- dll_export ssize_t ak_file_printf( ak_file , const char * , ... );
+ dll_export ssize_t ak_file_printf( ak_file , const char * , ... ) AK_ATTRIBUTE_FORMAT_PRINTF(2, 3);
 /*! \brief Отображение заданного файла в память. */
  dll_export ak_pointer ak_file_mmap( ak_file , void * , size_t , int , int , size_t );
 /*! \brief Закрытие файла, отбраженног в память. */
@@ -719,9 +727,9 @@ extern "C" {
  dll_export void ak_base64_encodeblock( ak_uint8 *, ak_uint8 *, int );
 
 /*! \brief Обобщенная реализация функции snprintf для различных компиляторов. */
- dll_export int ak_snprintf( char *str, size_t size, const char *format, ... );
+ dll_export int ak_snprintf( char *str, size_t size, const char *format, ... ) AK_ATTRIBUTE_FORMAT_PRINTF(3, 4);
 /*! \brief Форматированный вывод (аналогичный printf) через пользовательскую функцию. */
- dll_export int ak_printf( ak_function_log *function, const char *format, ... );
+ dll_export int ak_printf( ak_function_log *function, const char *format, ... ) AK_ATTRIBUTE_FORMAT_PRINTF(2, 3);
 /*! \brief Чтение строки из консоли. */
  dll_export int ak_string_read( const char * , char * , size_t * );
 /*! \brief Чтение пароля из консоли. */
