@@ -150,15 +150,15 @@
        switch( options[i].value ) {
 
          case  0:  ak_error_message_fmt( ak_error_ok, __func__,
-                                  "option %s is %ld (false)", options[i].name, options[i].value );
+                                 "option %s is %lld (false)", options[i].name, options[i].value );
                    break;
 
          case  1:  ak_error_message_fmt( ak_error_ok, __func__,
-                                   "option %s is %ld (true)", options[i].name, options[i].value );
+                                  "option %s is %lld (true)", options[i].name, options[i].value );
                    break;
 
          default:  ak_error_message_fmt( ak_error_ok, __func__,
-                                          "option %s is %ld", options[i].name, options[i].value );
+                                         "option %s is %lld", options[i].name, options[i].value );
        }
     }
  /* выводим сообщение об установленных каталогах доступа к криптографическим ключам */
@@ -306,7 +306,7 @@
  /* потом сохраняем текущие значения всех опций */
   for( i = 0; i < ak_libakrypt_options_count(); i++ ) {
     memset( hpath, 0, ak_min( 1024, FILENAME_MAX ));
-    ak_snprintf( hpath, FILENAME_MAX - 1, "  %s = %d\n", options[i].name, options[i].value );
+    ak_snprintf( hpath, FILENAME_MAX - 1, "  %s = %lld\n", options[i].name, options[i].value );
     if( ak_file_write( &fd, hpath, strlen( hpath )) < 1 ) {
      #ifdef _MSC_VER
       strerror_s( hpath, FILENAME_MAX, errno ); /* помещаем сообщение об ошибке в ненужный буффер */

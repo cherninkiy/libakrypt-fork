@@ -530,6 +530,13 @@
   return file->addr;
  #else
  /* в ситуациях, когда mmap не определена, сразу выходим */
+
+  (void) start;
+  (void) length;
+  (void) prot;
+  (void) flags;
+  (void) offset;
+
   ak_error_message( ak_error_undefined_function, __func__, "this function is'nt well developed" );
   return NULL;
  #endif
@@ -546,6 +553,8 @@
   return ak_error_ok;
  #else
  /* в ситуациях, когда mmap не определена, сразу выходим */
+
+  (void) file;
   return ak_error_message( ak_error_undefined_function, __func__,
                                                             "this function is'nt well developed" );
  #endif

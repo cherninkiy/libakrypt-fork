@@ -14,8 +14,8 @@
  static const char base64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! Буфер, который хранит строку максимально возможной длины */
- char localbuffer[FILENAME_MAX];
+/*! Общий локальный буфер, который хранит строку максимально возможной длины */
+ static char localbuffer[FILENAME_MAX];
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \param in  указатель на кодируемые данные,
@@ -119,7 +119,8 @@
      }
      if( off > (int)( sizeof( localbuffer )-2 )) {
        ak_error_message_fmt( error = ak_error_read_data, __func__ ,
-                   "%s has a line with more than %u symbols", filename, sizeof( localbuffer )-2 );
+                         "%s has a line with more than %u symbols", filename,
+                                                          (unsigned int)sizeof( localbuffer )-2 );
        goto exlab;
      }
     if( ch == '\n' ) {

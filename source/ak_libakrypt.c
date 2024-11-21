@@ -55,7 +55,8 @@
   }
 
   if( ak_log_get_level() > ak_log_standard )
-    ak_error_message_fmt( ak_error_ok, __func__, "size of pointer is %d", sizeof( ak_pointer ));
+    ak_error_message_fmt( ak_error_ok, __func__, "size of pointer is %u",
+                                                       (unsigned int) sizeof( ak_pointer ));
 
  /* определяем тип платформы: little-endian или big-endian */
   val.x[0] = 0; val.x[1] = 1; val.x[2] = 2; val.x[3] = 3;

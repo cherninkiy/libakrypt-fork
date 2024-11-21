@@ -511,7 +511,7 @@
       /* 4.1 количество элементов в списке */
        if( ak_file_read( &fp, buffer, 8 ) != 8 ) {
          error = ak_error_message_fmt( ak_error_read_data, __func__,
-                                      "unable to read count of elements for list number %llu", i );
+                    "unable to read count of elements for list number %lu", (long unsigned int)i );
          ak_htable_destroy(tbl);
          goto exlab;
        }

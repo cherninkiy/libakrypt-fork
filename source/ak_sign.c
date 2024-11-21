@@ -199,12 +199,12 @@
   }
   if( oid->engine != identifier ) {
     ak_error_message_fmt( ak_error_oid_engine, __func__,
-                                      "using identifier with incorrect engine (%s)", oid->engine );
+       "using identifier with incorrect engine (%s)", ak_libakrypt_get_engine_name( oid->engine ));
     return NULL;
   }
   if( oid->mode != wcurve_params ) {
     ak_error_message_fmt( ak_error_oid_mode, __func__,
-                                          "using identifier with incorrect mode (%s)", oid->mode );
+            "using identifier with incorrect mode (%s)", ak_libakrypt_get_mode_name ( oid->mode ));
     return NULL;
   }
  return oid->data;
@@ -1493,7 +1493,7 @@ int ak_verifykey_create_from_xy_ptr(ak_verifykey out_vk, void* buffer,
        ak_signkey_destroy( &skey );
        if( !result ) {
          ak_error_message_fmt( ak_error_not_equal_data, __func__,
-             "wrong checking of digital signature for \"%s\" elliptic curve", oid->name[0] );
+                   "wrong checking of digital signature for \"%s\" elliptic curve", oid->name[0] );
          goto labexit;
        } else count++;
      }
@@ -1506,7 +1506,7 @@ int ak_verifykey_create_from_xy_ptr(ak_verifykey out_vk, void* buffer,
   if(( count > 0 ) && ( ak_log_get_level() >= ak_log_maximum ))
     ak_error_message_fmt( ak_error_ok, __func__,
        "executing a %u successfull tests from %u for all predefined elliptic curves",
-                                                                        count, allcount );
+                                                   (unsigned int) count, (unsigned int) allcount );
   if( !result ) ak_error_message( error, __func__,
         "testing a creation and verification processes from GOST R 34.10-2012 is wrong" );
   ak_random_destroy( &generator );

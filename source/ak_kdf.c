@@ -1095,7 +1095,7 @@
       }
       if( state->max*( 1+ state->state_size / state->block_size ) > (size_t) resource ) {
         ak_error_message_fmt( error = ak_error_low_key_resource, __func__,
-                  "the expected number of derivative keys is very large (must be less than %ld)",
+                  "the expected number of derivative keys is very large (must be less than %lld)",
                                             resource/( 1+ state->state_size / state->block_size ));
         goto labex;
       }
@@ -1124,7 +1124,7 @@
       }
       if( state->max*( 1+ state->state_size / state->block_size ) > (size_t) resource ) {
         ak_error_message_fmt( error = ak_error_low_key_resource, __func__,
-                  "the expected number of derivative keys is very large (must be less than %ld)",
+                  "the expected number of derivative keys is very large (must be less than %lld)",
                                             resource/( 1+ state->state_size / state->block_size ));
         goto labex;
       }
@@ -1154,7 +1154,7 @@
       }
       if( 2*state->max > (size_t) resource ) {
         ak_error_message_fmt( error = ak_error_low_key_resource, __func__,
-                   "the expected number of derivative keys is very large (must be less than %ld)",
+                   "the expected number of derivative keys is very large (must be less than %lld)",
                                                                                       resource/2 );
         goto labex;
       }
@@ -1184,7 +1184,7 @@
       }
       if( 2*state->max > (size_t) resource ) {
         ak_error_message_fmt( error = ak_error_low_key_resource, __func__,
-                   "the expected number of derivative keys is very large (must be less than %ld)",
+                   "the expected number of derivative keys is very large (must be less than %lld)",
                                                                                       resource/2 );
         goto labex;
       }
@@ -1214,7 +1214,7 @@
       }
       if( 2*state->max > (size_t) resource ) {
         ak_error_message_fmt( error = ak_error_low_key_resource, __func__,
-                   "the expected number of derivative keys is very large (must be less than %ld)",
+                   "the expected number of derivative keys is very large (must be less than %lld)",
                                                                                       resource/2 );
         goto labex;
       }

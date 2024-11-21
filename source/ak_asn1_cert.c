@@ -300,7 +300,7 @@
 
   if(( oid = ak_oid_find_by_id( ptr )) == NULL )
     return ak_error_message_fmt( ak_error_oid_id, __func__,
-                                                   "using unsupported object identifier %s", ptr );
+                                                           "using unsupported object identifier" );
   if(( oid->engine != verify_function ) || ( oid->mode != algorithm ))
     return ak_error_message( ak_error_oid_engine, __func__, "using wrong object identifier" );
 
@@ -322,7 +322,7 @@
 
   if(( oid = ak_oid_find_by_id( ptr )) == NULL )
     return ak_error_message_fmt( ak_error_oid_id, __func__,
-                            "import an unsupported object identifier %s for elliptic curve", ptr );
+                                    "import an unsupported object identifier for elliptic curve" );
   if(( oid->engine != identifier ) || ( oid->mode != wcurve_params ))
     return ak_error_message( ak_error_oid_engine, __func__, "using wrong object identifier" );
 
@@ -2379,7 +2379,7 @@
 
                   ak_snprintf( fileca, sizeof( fileca ), "%s/%s.cer", ca_repository_path,
                     ak_ptr_to_hexstr( vptr->subject->opts.issuer_serialnum,
-                                 vptr->subject->opts.issuer_serialnum_length, ak_false ), ".cer" );
+                                          vptr->subject->opts.issuer_serialnum_length, ak_false ));
 
                   ak_certificate_opts_create( &vptr->real_issuer.opts );
                   if( ak_certificate_import_from_file( &vptr->real_issuer,
@@ -2721,8 +2721,7 @@
   }
   ak_tlv_get_oid( tlv, &ptr );
   if(( oid = ak_oid_find_by_id( ptr )) == NULL ) {
-    ak_error_message_fmt( ak_error_null_pointer, __func__,
-                                                   "using unsupported object identifier %s", ptr );
+    ak_error_message_fmt( ak_error_null_pointer, __func__, "using unsupported object identifier" );
     return NULL;
   }
   if( strncmp( oid->id[0], "1.2.840.113549.1.7.2", strlen( oid->id[0] )) != 0 ) {
@@ -2804,8 +2803,7 @@
     }
     ak_tlv_get_oid( tlv, &ptr );
     if(( oid = ak_oid_find_by_id( ptr )) == NULL ) {
-      ak_error_message_fmt( ak_error_oid_id, __func__,
-                                                   "using unsupported object identifier %s", ptr );
+      ak_error_message_fmt( ak_error_oid_id, __func__, "using unsupported object identifier");
       return NULL;
     }
     if( strncmp( oid->id[0], "1.2.840.113549.1.7.1", strlen( oid->id[0] )) != 0 ) {

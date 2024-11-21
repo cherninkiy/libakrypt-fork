@@ -46,7 +46,7 @@
        char name[16];
 
        memset( name, 0, 16 );
-       ak_snprintf( name, 15, "hello-%f", i );
+       ak_snprintf( name, 15, "hello-%d", i );
        ak_list_add_node( &ll, create_new_node( rand(), rand(), name ));
     }
 

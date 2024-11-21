@@ -659,7 +659,8 @@
      ak_error_message_fmt( ak_error_ok, __func__, _("database file: %s"), ki->pubkey_file );
      ak_error_message_fmt( ak_error_ok, __func__, _("database format: %s"),
           ki->field == format_binary ? "binary" : ( ki->field == format_linux ? "linux" : "bsd" ));
-     ak_error_message_fmt( ak_error_ok, __func__, _("database nodes: %u"), ki->icode_lists_count );
+     ak_error_message_fmt( ak_error_ok, __func__, _("database nodes: %lu"),
+                                                       (long unsigned int) ki->icode_lists_count );
    }
 
   /* вывод поддерживаемых через конфиг опций */
