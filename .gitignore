@@ -11,3 +11,5 @@ build*/
 
 .vscode
 
+# auto-generated 
+libakrypt-config.h

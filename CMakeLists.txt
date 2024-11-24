@@ -54,7 +54,11 @@ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 # -------------------------------------------------------------------------------------------------- #
 # Определяем базовое множество исходных текстов библиотеки
-set( MAIN_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.h source/libakrypt.h )
+set( MAIN_HEADERS
+  ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-config.h
+  source/libakrypt-base.h
+  source/libakrypt.h
+)
 
 # -------------------------------------------------------------------------------------------------- #
 set( AKBASE_SOURCES
@@ -138,8 +142,9 @@ include( GNUInstallDirs )
 
 # -------------------------------------------------------------------------------------------------- #
 # Вырабатываем заголовочный файл (в каталоге сборки)
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/source/libakrypt-base.h.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.h @ONLY )
-message( STATUS "Generation of libakrypt-base.h is done")
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/source/libakrypt-config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-config.h @ONLY )
+message( STATUS "Generation of libakrypt-config.h is done")
 
 # -------------------------------------------------------------------------------------------------- #
 # Определяем место хранения файла с настройками библиотеки
