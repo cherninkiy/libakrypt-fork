@@ -9,6 +9,7 @@
 /*  Copyright (c) 2019 by Anton Sakharov                                                           */
 /*  Copyright (c) 2022 by Yasmin Yurovskikh, yaeyurovskikh@edu.hse.ru                              */
 /*  Copyright (c) 2022 by AlexVCh66                                                                */
+/*  Copyright (c) 2024 by Yuri Epstein, y.epshtein@kryptonite.ru                                   */
 /*                                                                                                 */
 /* ----------------------------------------------------------------------------------------------- */
 /*  Файл libakrypt.h                                                                               */

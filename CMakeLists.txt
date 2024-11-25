@@ -40,7 +40,7 @@ string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 #   set( AK_LOCALE_PATH "/usr/share/locale" )
 #
 # -------------------------------------------------------------------------------------------------- #
-
+# Тип сборки библиотеки
 if (NOT CMAKE_BUILD_TYPE)
   set(
     CMAKE_BUILD_TYPE
@@ -405,6 +405,10 @@ set( LIBAKRYPT_DOCUMENTATION
 # -------------------------------------------------------------------------------------------------- #
 # инсталляция библиотеки (только для UNIX)
 message( STATUS "Install path:" ${CMAKE_INSTALL_PREFIX} )
+message( STATUS "Install headers:" )
+foreach( file ${MAIN_HEADERS} )
+    message( NOTICE "      ${file}" )
+endforeach()
 if( CMAKE_HOST_UNIX )
   if( AK_STATIC_LIB )
     if( AK_BASE )

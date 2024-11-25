@@ -78,7 +78,10 @@ try_aktool_lib( intl libintl )
 try_aktool_lib( iconv iconv )
 
 if( LIBAKRYPT_LIBS )
-  message( STATUS "Additional libraries for aktool is ${LIBAKRYPT_LIBS}")
+  message( STATUS "Additional libraries for aktool:")
+  foreach( file ${LIBAKRYPT_LIBS} )
+    message( NOTICE "      ${file}" )
+  endforeach()
 endif()
 
 add_executable( aktool ${AKTOOL_SOURCES} )
