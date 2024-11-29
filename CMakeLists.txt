@@ -9,7 +9,7 @@ cmake_minimum_required( VERSION 3.5 )
 # -------------------------------------------------------------------------------------------------- #
 set( HEAD_VERSION 0 )
 set( MAIN_VERSION 9 )
-set( MINOR_VERSION 17 )
+set( MINOR_VERSION 18 )
 set( MAJOR_VERSION ${HEAD_VERSION}.${MAIN_VERSION} )
 set( FULL_VERSION ${MAJOR_VERSION}.${MINOR_VERSION} )
 # строка с текущей датой, используется при сборке документации
@@ -28,6 +28,7 @@ option( AK_EXAMPLES "Build examples for libakrypt" OFF )
 option( AK_TESTS "Build tests for libakrypt" OFF )
 option( AK_TESTS_GMP "Build comparison tests for gmp and libakrypt" OFF )
 option( AK_TOOL "Build aktool utility" ON )
+option( AK_LOAD_OPTIONS "Loading library options from config file every time as library starts" ON )
 string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 
 # -------------------------------------------------------------------------------------------------- #
@@ -131,6 +132,12 @@ if( AK_SIZEOF_VOID_P_IS_8 )
 endif()
 
 # -------------------------------------------------------------------------------------------------- #
+# Флаг чтения параметров библиотеки из файла libakrypt.conf при каждом запуске библиотеки
+if( AK_LOAD_OPTIONS )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAK_LOAD_OPTIONS" )
+endif()
+
+# -------------------------------------------------------------------------------------------------- #
 # Подключаем модули CMake для тонкой настройки параметров сборки
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 include( DetectFlags )
@@ -191,9 +198,9 @@ endif()
 # -------------------------------------------------------------------------------------------------- #
 # формируем команды для сборки библиотеки
 if( AK_BASE )
-  message( STATUS "Options AK_BASE is ON" )
+  message( STATUS "Option AK_BASE is ON" )
 else()
-  message( STATUS "Options AK_BASE is OFF" )
+  message( STATUS "Option AK_BASE is OFF" )
 endif()
 
 if( AK_SHARED_LIB )
@@ -405,7 +412,7 @@ set( LIBAKRYPT_DOCUMENTATION
 # -------------------------------------------------------------------------------------------------- #
 # инсталляция библиотеки (только для UNIX)
 message( STATUS "Install path:" ${CMAKE_INSTALL_PREFIX} )
-message( STATUS "Install headers:" )
+message( STATUS "The list of headers that will be installed:" )
 foreach( file ${MAIN_HEADERS} )
     message( NOTICE "      ${file}" )
 endforeach()

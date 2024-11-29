@@ -365,12 +365,16 @@
    if( ak_log_get_level() > ak_log_standard )
      ak_error_message_fmt( ak_error_ok, __func__, "libakrypt version %s", ak_libakrypt_version( ));
 
- /* считываем настройки криптографических алгоритмов */
+ /* если при настройке бибилиотеки был указан данный флаг, то
+    при старте библиотеки считываются настройки, в противном случае,
+    используются значения, установленные по умолчанию (см. ak_options.c ) */
+#ifdef AK_LOAD_OPTIONS
    if( ak_libakrypt_load_options() != ak_true ) {
      ak_error_message( ak_error_get_value(), __func__ ,
                                         "unsuccessful load options from libakrypt.conf file" );
      return ak_false;
    }
+#endif
 
 #ifdef _WIN32
  /* использование цвета в стандартной консоли Windows бессмысленно

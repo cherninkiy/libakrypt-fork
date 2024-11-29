@@ -344,13 +344,13 @@
                                       const char *section , const char *name , const char *valstr )
 {
   size_t idx = 0;
-  char message[256], *endptr = NULL;
+  char *endptr = NULL;
   ak_int64 value = strtoll( valstr, &endptr, 10 );
 
  /* проверки */
   if( user != NULL ) return 0;
   if( strncmp( section, "libakrypt", 9 ) != 0 ) return 0;
-  if( strncmp( name, "certificate_repository", 25 ) == 0 ) {
+  if( strncmp( name, "certificate_repository", 22 ) == 0 ) {
     if( ak_certificate_set_repository( valstr ) != ak_error_ok ) ak_error_set_value( ak_error_ok );
    /* если каталог с доверенными сертификатами не существует,
       мы выдаём сообщение об ошибке и продолжаем работу программы */
@@ -364,12 +364,9 @@
   }
 
  /* если ничего не нашли, выводим красивое сообщение */
-  ak_error_message( ak_error_undefined_value, __func__, "found unexpected following option" );
-  memset( message, 0, sizeof( message ));
-  ak_snprintf( message, sizeof( message )-1, " [%s]\n  %s = %s", section, name, valstr );
-  ak_log_set_message( message );
-  ak_error_set_value( ak_error_ok );
-
+  ak_error_message( ak_error_undefined_value, __func__, "found unexpected libakrypt option:" );
+  ak_error_set_value( ak_error_message_fmt( ak_error_ok, "", "[%s]\n  %s = %s",
+                                                                          section, name, valstr ));
  /* нулевое значение - неуспешное завершение обработчика */
  return 1;
 }
@@ -382,7 +379,6 @@
 /* ----------------------------------------------------------------------------------------------- */
  bool_t ak_libakrypt_load_options( void )
 {
- struct file fd;
  int error = ak_error_ok;
  char name[FILENAME_MAX];
 
@@ -392,11 +388,12 @@
    ak_error_message( error, __func__, "incorrect name generation for options file");
    return ak_false;
  }
+
 /* пытаемся считать данные из указанного файла */
- if( ak_file_open_to_read( &fd, name ) == ak_error_ok ) {
-   ak_file_close( &fd );
+ if( ak_file_or_directory( name ) == DT_REG ) {
    if(( error = ak_ini_parse( name, ak_libakrypt_load_option_from_file, NULL )) == ak_error_ok ) {
-     if( ak_log_get_level() > ak_log_standard ) ak_error_message_fmt( ak_error_ok, __func__,
+     if( ak_log_get_level() > ak_log_standard )
+      ak_error_message_fmt( ak_error_ok, __func__,
                                             "all options have been read from the %s file", name );
      return ak_true;
    } else {
@@ -413,8 +410,7 @@
    return ak_false;
  }
 /* пытаемся считать данные из указанного файла */
- if( ak_file_open_to_read( &fd, name ) == ak_error_ok ) {
-   ak_file_close( &fd );
+ if( ak_file_or_directory( name ) == DT_REG ) {
    if(( error = ak_ini_parse( name, ak_libakrypt_load_option_from_file, NULL )) == ak_error_ok ) {
      if( ak_log_get_level() > ak_log_standard ) ak_error_message_fmt( ak_error_ok, __func__,
                                              "all options have been read from the %s file", name );

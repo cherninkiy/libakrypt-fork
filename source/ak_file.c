@@ -198,8 +198,6 @@
 {
   #define buffer_length ( FILENAME_MAX + 160 )
 
-  // struct stat st;
-   // size_t idx = 0;
   size_t off = 0;
   int fd = 0, error = ak_error_ok;
   char ch, localbuffer[buffer_length];
@@ -208,24 +206,18 @@
   if(( fd = open( filename, O_RDONLY | O_BINARY )) < 0 )
     return ak_error_message_fmt( ak_error_open_file,
                              __func__, "wrong open file \"%s\" - %s", filename, strerror( errno ));
-  // if( fstat( fd, &st ) ) {
-  //   close( fd );
-  //   return ak_error_message_fmt( ak_error_access_file, __func__ ,
-  //                             "wrong stat file \"%s\" with error %s", filename, strerror( errno ));
-  // }
 
  /* нарезаем входные на строки длиной не более чем buffer_length - 2 символа */
   memset( localbuffer, 0, buffer_length );
   do{
-     // idx++;
-    int r = read( fd, &ch, 1 );
+     int r = read( fd, &ch, 1 );
      if (r == 0) {
-       // EOF, not an error
+       /* EOF, not an error */
 
 #ifdef _WIN32
        if( off ) localbuffer[off-1] = 0;  /* удаляем второй символ перехода на новую строку */
 #endif
-       // не теряем остаток, если последняя строка файла была без символа перевода строки
+       /* не теряем остаток, если последняя строка файла была без символа перевода строки */
        error = function( localbuffer, ptr );
 
        break;
