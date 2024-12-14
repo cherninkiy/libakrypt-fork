@@ -734,6 +734,8 @@ extern "C" {
 /*! \brief Присвоение ключу алгоритма блочного шифрования значения, выработанного из пароля. */
  dll_export int ak_bckey_set_key_from_password( ak_bckey ,
                                const ak_pointer , const size_t , const ak_pointer , const size_t );
+ /*! \brief Инициализация секретного ключа алгоритма блочного шифрования Belt. */
+  dll_export int ak_bckey_create_belt( ak_bckey );
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Функция вырабатывает пару ключей алгоритма блочного шифрования из заданного
