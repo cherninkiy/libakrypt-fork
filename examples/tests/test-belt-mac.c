@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------- */
-/* Контрольный пример зашифрования одного блока из стандарта (STB 34.101.31-2020)    */
+/* Контрольные примеры выроботки Иммитоставки стандарта (STB 34.101.31-2020)    */
 /* --------------------------------------------------------------------------------- */
 #include <stdio.h>
 #include <libakrypt.h>
@@ -35,6 +35,11 @@
   };
 
   size_t i;
+  printf("\nTEST1: ");
+  printf("\nX: ");
+  for (i = 0; i < sizeof( data ); ++i) { printf("%02X ", data[i]); }
+  printf("\nKey: ");
+  for (i = 0; i < 32; ++i) { printf("%02X ", key[i]); }
 
  /* инициализируем библиотеку */
   if( ak_libakrypt_create( NULL ) != ak_true ) {
@@ -53,8 +58,7 @@
 
 
 
-  printf("MAC:\n");
-  printf("\n mac: ");
+  printf("\nmac: ");
   for (i = 0; i < 8; ++i) { printf("%02X ", mac[i]); }
   printf("\n");
 
@@ -88,10 +92,14 @@
       ak_uint8 mac1[16] = {0};
       ak_bckey_create_belt( &ctx1 );
       ak_bckey_set_key( &ctx1, key1, 32 );
+      printf("\nTEST2: ");
+      printf("\nX: ");
+      for (i = 0; i < sizeof( data1 ); ++i) { printf("%02X ", data1[i]); }
+      printf("\nKey: ");
+      for (i = 0; i < 32; ++i) { printf("%02X ", key1[i]); }
       ak_belt_mac( &ctx1, data1, sizeof( data1 ), mac1, 8);
       
-      printf("MAC:\n");
-      printf("\n mac: ");
+      printf("\nmac: ");
       for (i = 0; i < 8; ++i) { printf("%02X ", mac1[i]); }
         printf("\n");
 

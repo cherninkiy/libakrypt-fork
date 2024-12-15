@@ -85,7 +85,6 @@ static inline void psi(const ak_uint8 *u, size_t u_len_bytes, ak_uint8 *result) 
 int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 *out, const size_t out_size ) 
 { 
     int error = ak_error_ok; 
-    printf("Starting ak_belt_mac...\n");
  
     // Проверяем корректность указателей 
     if (bkey == NULL) {
@@ -101,7 +100,6 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
         return ak_error_message( ak_error_zero_length, __func__, "using zero length of output buffer" ); 
     }
  
-    printf("Pointers and buffer sizes are valid.\n");
 
     // Проверка контрольной суммы ключа 
     if ( bkey->key.check_icode( &bkey->key ) != ak_true ) {
@@ -109,8 +107,6 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
         return ak_error_message( ak_error_wrong_key_icode, __func__, 
                                  "incorrect integrity code of secret key value" ); 
     }
- 
-    printf("Integrity code of the key is valid.\n");
 
     // Проверяем размер блока, для BELT это 128 бит (16 байт) 
     if (bkey->bsize != 16) {
@@ -119,7 +115,6 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
                                  "belt-mac requires 128-bit block cipher" ); 
     }
  
-    printf("Block size is valid.\n");
 
     // Подсчет ресурса ключа:  
     size_t n = (size == 0) ? 1 : ( (size + 15)/16 ); 
@@ -130,7 +125,6 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
     }
     bkey->key.resource.value.counter -= n; 
  
-    printf("Key resource updated. Remaining counter: %zd\n", bkey->key.resource.value.counter);
 
     // Переменные 
     ak_uint8 s[16];    // 128-битное состояние 
@@ -138,22 +132,17 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
     ak_uint8 temp[16]; // временный буфер 
     memset(s, 0, 16); 
  
-    printf("Initial state initialized.\n");
+
 
     // r = belt-block(s, K) 
     bkey->encrypt(&bkey->key, s, r); 
-    printf("Initial encryption done. r: \n");
-    for (int i = 0; i < 16; i++) printf("%02X ", r[i]);
-    printf("\n");
 
-        // Если X = ⊥ (пустое сообщение), то n = 1 и X1 = ⊥
+    // Если X = ⊥ (пустое сообщение), то n = 1 и X1 = ⊥
     if (size == 0) {
         n = 1;
-        printf("Message is empty. Setting n = 1.\n");
     } else {
         // Вычисляем n = количество 128-битных блоков (округление вверх)
         n = (size + 15) / 16; // 16 байт = 128 бит
-        printf("Message length: %zu bytes. Calculated n = %zu blocks.\n", size, n);
     }
 
     // Обрабатываем блоки от X1 до X_{n-1}
@@ -165,21 +154,14 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
         for (size_t j = 0; j < 16; j++) {
             temp[j] = s[j] ^ block[j];
         }
-        printf("Block %zu: temp (s XOR X_i):\n", i + 1);
-        for (int j = 0; j < 16; j++) printf("%02X ", temp[j]);
-        printf("\n");
 
         // s = belt-block(temp, K)
         bkey->encrypt(&bkey->key, temp, s); 
-        printf("Block %zu: s after encryption:\n", i + 1);
-        for (int j = 0; j < 16; j++) printf("%02X ", s[j]);
-        printf("\n");
     }
 
 
     // Обработка последнего блока 
     size_t last_block_len = size - (n - 1) * 16;
-    printf("Last block length: %zu bytes.\n", last_block_len);
  
     if (last_block_len == 16) { 
         const ak_uint8 *block = in + (n-1)*16; 
@@ -189,7 +171,6 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
         for (size_t j = 0; j < 16; j++) { 
             s[j] = s[j] ^ block[j] ^ phi1_r[j]; 
         } 
-        printf("Last block processed (full). s: \n");
     } else { 
         ak_uint8 psi_Xn[16]; 
         psi(in + (n-1)*16, last_block_len, psi_Xn); 
@@ -199,20 +180,16 @@ int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 
         for (size_t j = 0; j < 16; j++) { 
             s[j] = s[j] ^ psi_Xn[j] ^ phi2_r[j]; 
         } 
-        printf("Last block processed (partial). s: \n");
     } 
-    for (int i = 0; i < 16; i++) printf("%02X ", s[i]);
-    printf("\n");
+
 
     // Вычисляем belt-block(s, K) 
     bkey->encrypt(&bkey->key, s, temp); 
-    printf("Final encryption done. temp: \n");
-    for (int i = 0; i < 16; i++) printf("%02X ", temp[i]);
-    printf("\n");
+
 
     // Копируем нужное количество байт в out 
     memcpy(out, temp, (out_size > bkey->bsize) ? bkey->bsize : out_size); 
-    printf("Output written.\n");
+
 
     return ak_error_ok; 
 }
