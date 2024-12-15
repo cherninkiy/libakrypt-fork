@@ -82,6 +82,8 @@
  static const char *asn1_magma_i[] =       { "1.2.643.7.1.1.5.1", NULL };
  static const char *asn1_kuznechik_n[] =   { "kuznechik", "kuznyechik", "grasshopper", NULL };
  static const char *asn1_kuznechik_i[] =   { "1.2.643.7.1.1.5.2", NULL };
+ static const char *asn1_belt_n[] =        { "belt", NULL };
+ static const char *asn1_belt_i[] =        { "1.2.112.0.2.0.34.101.31.81", NULL };
 
  static const char *asn1_ctr_magma_n[] =   { "ctr-magma", NULL };
  static const char *asn1_ctr_magma_i[] =   { "1.2.643.2.52.1.5.1.1", NULL };
@@ -509,6 +511,12 @@
                           ( ak_function_create_object *) ak_verifykey_create_streebog512, \
                           ( ak_function_destroy_object *) ak_verifykey_destroy, \
                                                                                 NULL, NULL, NULL }
+ #define ak_object_bckey_belt { sizeof( struct bckey ), \
+                           ( ak_function_create_object *) ak_bckey_create_belt, \
+                           ( ak_function_destroy_object *) ak_bckey_destroy, \
+                           ( ak_function_set_key_object *)ak_bckey_set_key, \
+                           ( ak_function_set_key_random_object *)ak_bckey_set_key_random, \
+                      ( ak_function_set_key_from_password_object *)ak_bckey_set_key_from_password }
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! Константные значения OID библиотеки */
@@ -580,6 +588,9 @@ static struct oid libakrypt_oids[] =
  { block_cipher, algorithm, asn1_kuznechik_i, asn1_kuznechik_n, NULL,
                                    { ak_object_bckey_kuznechik, ak_object_undefined, NULL, NULL }},
 
+ { block_cipher, algorithm, asn1_belt_i, asn1_belt_n, NULL,
+                                   { ak_object_bckey_belt, ak_object_undefined, NULL, NULL }},
+
 /* базовые режимы блочного шифрования */
  { block_cipher, encrypt_mode, asn1_ctr_magma_i, asn1_ctr_magma_n, NULL,
   { ak_object_bckey_magma, ak_object_undefined, ( ak_function_run_object *) ak_bckey_ctr,
@@ -640,6 +651,11 @@ static struct oid libakrypt_oids[] =
  { block_cipher, mac, asn1_cmac_kuznechik_i, asn1_cmac_kuznechik_n, NULL,
   { ak_object_bckey_kuznechik, ak_object_undefined,
                                                 ( ak_function_run_object *) ak_bckey_cmac, NULL }},
+
+ { block_cipher, mac, asn1_belt_i, asn1_belt_n, NULL,
+    { ak_object_bckey_belt, ak_object_undefined,
+                                                ( ak_function_run_object *) ak_belt_mac, NULL }},                                              
+
 
 /* расширенные режимы блочного шифрования */
  { block_cipher, aead, asn1_mgm_magma_i, asn1_mgm_magma_n, NULL,

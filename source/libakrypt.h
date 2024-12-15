@@ -734,6 +734,8 @@ extern "C" {
 /*! \brief Присвоение ключу алгоритма блочного шифрования значения, выработанного из пароля. */
  dll_export int ak_bckey_set_key_from_password( ak_bckey ,
                                const ak_pointer , const size_t , const ak_pointer , const size_t );
+ /*! \brief Инициализация секретного ключа алгоритма блочного шифрования Belt. */
+  dll_export int ak_bckey_create_belt( ak_bckey );
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Функция вырабатывает пару ключей алгоритма блочного шифрования из заданного
@@ -829,6 +831,8 @@ extern "C" {
 /*! \brief Вычисление имитовставки для фрагмента заданного файла. */
  dll_export int ak_bckey_cmac_file_offset( ak_bckey , const char * ,
                                                   ak_int64 , ak_int64 , ak_pointer , const size_t );
+/*! \brief Вычисление имитовставки согласно СТБ 34.101.31-2020 */                                            
+ dll_export int ak_belt_mac( ak_bckey bkey, const ak_uint8 *in, const size_t size, ak_uint8 *out, const size_t out_size );
 
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Функция очистки контекста хеширования. */
