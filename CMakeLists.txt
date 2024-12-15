@@ -96,6 +96,7 @@ set( AKRYPT_SOURCES
    source/ak_kdf.c
    source/ak_encrypt.c
    source/ak_belt.c
+   source/ak_belt_mac.c
 )
 
 # -------------------------------------------------------------------------------------------------- #

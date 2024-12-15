@@ -652,6 +652,11 @@ static struct oid libakrypt_oids[] =
   { ak_object_bckey_kuznechik, ak_object_undefined,
                                                 ( ak_function_run_object *) ak_bckey_cmac, NULL }},
 
+ { block_cipher, mac, asn1_belt_i, asn1_belt_n, NULL,
+    { ak_object_bckey_belt, ak_object_undefined,
+                                                ( ak_function_run_object *) ak_belt_mac, NULL }},                                              
+
+
 /* расширенные режимы блочного шифрования */
  { block_cipher, aead, asn1_mgm_magma_i, asn1_mgm_magma_n, NULL,
   { ak_object_bckey_magma, ak_object_bckey_magma,
