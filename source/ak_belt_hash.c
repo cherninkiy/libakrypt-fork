@@ -368,7 +368,7 @@ ak_uint32 u32Rev(ak_uint32 w) {
                                                                        "input length is too huge" );
   // /* формируем временный текст */
   memset(m, 0, 32);
-  if(dt != NULL)
+  if(in != NULL)
     memcpy(m, dt, ( ak_uint32 )size);
 
   /* при финализации мы изменяем копию существующей структуры */
@@ -378,10 +378,6 @@ ak_uint32 u32Rev(ak_uint32 w) {
   beltBlockRevU32(m + 16);
 #endif
   beltCompress2(bx.ls + 4, bx.h, (ak_uint32*)m, bx.stack);
-#ifndef AK_LITTLE_ENDIAN
-  beltBlockRevU32(m + 16);
-  beltBlockRevU32(m);
-#endif
   beltCompress(bx.h, bx.ls, bx.stack);
   // ak_hash_context_streebog_g( &sx, sx.n, m );
   // ak_hash_context_streebog_add( &sx, size << 3 );
