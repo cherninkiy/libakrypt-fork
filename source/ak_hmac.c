@@ -712,7 +712,7 @@
  /* теперь контекст двойного алгоритма (шифрование + имитозащита) */
    ctx->tag_size = ((ak_hmac)ctx->authenticationKey)->ctx.data.sctx.hsize; /* размер имитовставки */
    ctx->block_size = ((ak_hmac)ctx->authenticationKey)->mctx.bsize; /* размер блока входных данных */
-   ctx->iv_size = ( crf == ak_true ) ? ((ak_bckey)ctx->encryptionKey)->size >> 1 : 0; /* размер синхропосылки */
+   ctx->iv_size = ( crf == ak_true ) ? ((ak_bckey)ctx->encryptionKey)->mctx.bsize >> 1 : 0; /* размер синхропосылки */
    ctx->auth_clean = ak_ctr_hmac_authentication_clean;
    ctx->auth_update = ak_ctr_hmac_authentication_update;
    ctx->auth_finalize = ak_ctr_hmac_authentication_finalize;
