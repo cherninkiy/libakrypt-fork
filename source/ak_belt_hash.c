@@ -381,8 +381,8 @@ ak_uint32 u32Rev(ak_uint32 w) {
                                                                        "input length is too huge" );
   // /* формируем временный текст */
   memset(m, 0, 32);
-  if(in != NULL)
-    memcpy(m, in, ( ak_uint32 )size);
+  if(dt != NULL)
+    memcpy(m, dt, ( ak_uint32 )size);
 
   /* при финализации мы изменяем копию существующей структуры */
   memcpy( &bx, cx, sizeof( struct belt_hash ));
@@ -390,12 +390,12 @@ ak_uint32 u32Rev(ak_uint32 w) {
   beltBlockRevU32(m);
   beltBlockRevU32(m + 16);
 #endif
-  beltCompress2(bx->ls + 4, bx->h, (uint32_t*)m, bx->stack);
+  beltCompress2(bx.ls + 4, bx.h, (ak_uint32*)m, bx.stack);
 #ifndef AK_LITTLE_ENDIAN
   beltBlockRevU32(m + 16);
   beltBlockRevU32(m);
 #endif
-  beltCompress(bx->h, bx->ls, bx->stack);
+  beltCompress(bx.h, bx.ls, bx.stack);
   // ak_hash_context_streebog_g( &sx, sx.n, m );
   // ak_hash_context_streebog_add( &sx, size << 3 );
   // ak_hash_context_streebog_sadd( &sx, m );
@@ -403,16 +403,13 @@ ak_uint32 u32Rev(ak_uint32 w) {
   // ak_hash_context_streebog_g( &sx, NULL, sx.sigma );
 
  /* копируем нужную часть результирующего массива или выдаем сообщение об ошибке */
-  memcpy(hash, st->h, ak_min(32, out_size));
+  memcpy(out, bx.h, ak_min(32, out_size));
 
  return ak_error_ok;
 }
 
  int ak_hash_create_belt_hash( ak_hash hctx )
 {
-  ak_uint8 out[32];
-  int error = ak_error_ok;
-
   if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                             "using null pointer to hash context" );
   if(( hctx->oid = ak_oid_find_by_name( "belt-hash" )) == NULL )
@@ -435,5 +432,5 @@ ak_uint32 u32Rev(ak_uint32 w) {
  //                                             "the 1st test from GOST R 34.11-2012 is wrong" );
  //  }
 
-  return ak_hash_context_streebog_clean( &hctx->data.bctx );
+  return ak_hash_context_belt_hash_clean( &hctx->data.bctx );
 }
