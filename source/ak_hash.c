@@ -1512,7 +1512,7 @@
   if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                        "destroying null pointer to hash context" );
   hctx->oid = NULL;
-  memset( &hctx->data.sctx, 0, sizeof( struct streebog ));
+  memset( &hctx->data.sctx, 0, sizeof (&hctx->data) );
   if( ak_mac_destroy( &hctx->mctx ) != ak_error_ok )
     ak_error_message( ak_error_get_value(), __func__,
                                                     "incorrect cleaning of internal mac context" );
