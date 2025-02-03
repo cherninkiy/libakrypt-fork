@@ -7,7 +7,7 @@
   0x##i, 0x##j, 0x##k, 0x##l, 0x##m, 0x##n, 0x##o, 0x##p
 
 int main( void ) {
-  const ak_uint8 X1[13] = { 
+  ak_uint8 X1[13] = { 
     0xB1, 0x94, 0xBA, 0xC8, 0x0A, 0x08, 0xF5, 0x3B,
     0x36, 0x6D, 0x00, 0x8E, 0x58
   };
@@ -15,7 +15,7 @@ int main( void ) {
     H16(AB,EF,97,25,D4,C5,A8,35,97,A3,67,D1,44,94,CC,25),
     H16(42,F2,0F,65,9D,DF,EC,C9,61,A3,EC,55,0C,BA,8C,75)
   };
-  const ak_uint8 X2[32] = { 
+  ak_uint8 X2[32] = { 
     H16(B1,94,BA,C8,0A,08,F5,3B,36,6D,00,8E,58,4A,5D,E4),
     H16(85,04,FA,9D,1B,B6,C7,AC,25,2E,72,C2,02,FD,CE,0D)
   };
@@ -23,7 +23,7 @@ int main( void ) {
     H16(74,9E,4C,36,53,AE,CE,5E,48,DB,47,61,22,77,42,EB),
     H16(6D,BE,13,F4,A8,0F,7B,EF,F1,A9,CF,8D,10,EE,77,86)
   };
-  const ak_uint8 X3[48] = { 
+  ak_uint8 X3[48] = { 
     H16(B1,94,BA,C8,0A,08,F5,3B,36,6D,00,8E,58,4A,5D,E4),
     H16(85,04,FA,9D,1B,B6,C7,AC,25,2E,72,C2,02,FD,CE,0D),
     H16(5B,E3,D6,12,17,B9,61,81,FE,67,86,AD,71,6B,89,0B)
