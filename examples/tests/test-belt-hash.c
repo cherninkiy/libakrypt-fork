@@ -37,6 +37,9 @@ int main( void ) {
   ak_uint8 A[32] = {0};
   struct hash ctx;
 
+  ak_log_set_level( ak_log_none );
+  ak_libakrypt_create( ak_function_log_stderr );
+
   printf("--------------------Testing belt-hash----------------------\n"
     "               -----------Test 1------------\n"
     "Input:\n"
@@ -149,6 +152,8 @@ int main( void ) {
   ak_hash_create_belt_hash( &ctx );
   ak_hash_ptr( &ctx, X2, 48, A, 32 );
   ak_hash_destroy( &ctx );
+
+  ak_libakrypt_destroy();
 
   printf("Output:\n"
     " > Y3 = %02x%02x%02x%02x %02x%02x%02x%02x "
