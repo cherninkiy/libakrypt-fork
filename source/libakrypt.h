@@ -891,8 +891,6 @@ extern "C" {
   ak_uint32 h[8];
   /*! \brief Блок данных для шифрования */
   ak_uint8 block[32];
-  /*! \brief Оставшиеся октеты в блоке */
-  size_t filled;
   /*! \brief Стек для работы beltCompr [12*4 байт] */
   ak_uint8 stack[12*4];
 } *ak_belt_hash;

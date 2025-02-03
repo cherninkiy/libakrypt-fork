@@ -301,17 +301,6 @@ ak_uint32 u32Rev(ak_uint32 w) {
   ((ak_uint32*)(block))[2] = u32Rev(((ak_uint32*)(block))[2]),\
   ((ak_uint32*)(block))[3] = u32Rev(((ak_uint32*)(block))[3])
 
-// size_t beltHash_keep()
-// {
-//  return sizeof(belt_hash_st)/* + 12*4*/;
-// }
-
-
-
-
-
-
-
  static int ak_hash_context_belt_hash_clean( ak_pointer bctx )
 {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
@@ -321,8 +310,6 @@ ak_uint32 u32Rev(ak_uint32 w) {
   beltBlockSetZero(cx->ls + 4);
   // h <- B194...0D
   memmove(cx->h, beltH(), 32);
-  // нет накопленнных данных
-  cx->filled = 0;
 
  return ak_error_ok;
 }
@@ -417,7 +404,7 @@ ak_uint32 u32Rev(ak_uint32 w) {
   if(( hctx->oid = ak_oid_find_by_name( "belt-hash" )) == NULL )
     return ak_error_message( ak_error_wrong_oid, __func__,
                                            "incorrect internal search of belt-hash identifier" );
-  if(( error = ak_mac_create( &hctx->mctx, 32, &hctx->data.sctx,
+  if(( error = ak_mac_create( &hctx->mctx, 32, &hctx->data.bctx,
                                              ak_hash_context_belt_hash_clean,
                                              ak_hash_context_belt_hash_update,
                                              ak_hash_context_belt_hash_finalize )) != ak_error_ok )
