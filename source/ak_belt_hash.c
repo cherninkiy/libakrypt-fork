@@ -364,7 +364,7 @@ ak_uint32 u32Rev(ak_uint32 w) {
   return ak_error_ok;
 }
 
- static int ak_hash_context_streebog_finalize( ak_pointer bctx,
+ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   const ak_pointer in, const size_t size, ak_pointer out,
   const size_t out_size )
 {
@@ -410,6 +410,8 @@ ak_uint32 u32Rev(ak_uint32 w) {
 
  int ak_hash_create_belt_hash( ak_hash hctx )
 {
+  int error = ak_error_ok;
+
   if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                             "using null pointer to hash context" );
   if(( hctx->oid = ak_oid_find_by_name( "belt-hash" )) == NULL )
