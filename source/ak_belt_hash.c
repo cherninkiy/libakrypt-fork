@@ -324,19 +324,12 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   if(( !size ) || ( in == NULL )) return ak_error_ok;
   if( size & 0x1F ) return ak_error_message( ak_error_wrong_length, __func__,
                                       "data length is not a multiple of the length of the block" );
-  
-  printf("\n1: %s\n   %i\n   %s\n",
-    ak_ptr_to_hexstr(cx->h, sizeof(cx->h), ak_false),
-    size,
-    ak_ptr_to_hexstr(in, size, ak_false));
 
   // обновить длину
   carry = (cx->ls[0] += carry) < carry;
   carry = (cx->ls[1] += carry) < carry;
   carry = (cx->ls[2] += carry) < carry;
   cx->ls[3] += carry;
-
-  printf("\n2: %i\n", cx->ls[0]);
 
   // накопленных данных на этот момент не предполагается,
   // потому сразу в цикл по блокам
@@ -353,8 +346,6 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
     dt += 32;
     count -= 32;
   }
-
-  printf("\n3: %i\n", count);
 
   return ak_error_ok;
 }
@@ -398,15 +389,15 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
     if (in != NULL) {
       memcpy(bx->block, in, size);
     }
+
+    printf("\n6: %s\n",
+      ak_ptr_to_hexstr(bx->block, 32, ak_false));
 #ifndef AK_LITTLE_ENDIAN
     beltBlockRevU32(bx->block);
     beltBlockRevU32(bx->block + 16);
 #endif
     beltCompress2(bx->ls + 4, bx->h, (ak_uint32*)bx->block, bx->stack);
   }
-
-  printf("\n6: %s\n",
-    ak_ptr_to_hexstr(bx->block, 32, ak_false));
 
   beltCompress(bx->h, bx->ls, bx->stack);
 
