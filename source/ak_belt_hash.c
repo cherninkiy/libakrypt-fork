@@ -331,9 +331,6 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   carry = (cx->ls[2] += carry) < carry;
   cx->ls[3] += carry;
 
-  // накопленных данных на этот момент не предполагается,
-  // потому сразу в цикл по блокам
-  // цикл по полным блокам
   while (count >= 32)
   {
     beltBlockCopy(cx->block, dt);
@@ -355,8 +352,6 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   const size_t out_size )
 {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
-  //const ak_uint8* dt = (const ak_uint8*) in;
-  //ak_uint8 m[32];
   struct belt_hash bx[1]; /* структура для хранения копии текущего состояния контекста */
   ak_uint32 carry = size << 3;
 
@@ -369,9 +364,9 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   
   memcpy( bx, cx, sizeof( struct belt_hash ));
 
-  printf("\n4: %s\n   %i\n   %s\n",
-    ak_ptr_to_hexstr(bx->h, sizeof(bx->h), ak_false),
-    size,
+  printf("\n4: %s\n",
+    ak_ptr_to_hexstr(bx->h, sizeof(bx->h), ak_false));
+  printf("   %i\n   %s\n", size,
     ak_ptr_to_hexstr(in, size, ak_false));
 
   // обновить длину
@@ -381,17 +376,15 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   bx->ls[3] += carry;
 
   printf("\n5: %i\n", bx->ls[0]);
-
-  /* при финализации мы изменяем копию существующей структуры */
   
   if(size) {
     memset(bx->block, 0, 32);
     if (in != NULL) {
       memcpy(bx->block, in, size);
     }
-
     printf("\n6: %s\n",
       ak_ptr_to_hexstr(bx->block, 32, ak_false));
+
 #ifndef AK_LITTLE_ENDIAN
     beltBlockRevU32(bx->block);
     beltBlockRevU32(bx->block + 16);
@@ -404,13 +397,6 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   printf("\n7: %s\n",
     ak_ptr_to_hexstr(bx->h, 32, ak_false));
 
-  // ak_hash_context_streebog_g( &sx, sx.n, m );
-  // ak_hash_context_streebog_add( &sx, size << 3 );
-  // ak_hash_context_streebog_sadd( &sx, m );
-  // ak_hash_context_streebog_g( &sx, NULL, sx.n );
-  // ak_hash_context_streebog_g( &sx, NULL, sx.sigma );
-
- /* копируем нужную часть результирующего массива или выдаем сообщение об ошибке */
   memcpy(out, bx->h, ak_min(32, out_size));
 
  return ak_error_ok;
