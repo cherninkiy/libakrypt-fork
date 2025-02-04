@@ -6,6 +6,7 @@
 /* ----------------------------------------------------------------------------------------------- */
 
 #include <libakrypt-internal.h>
+#include <stdio.h> //)))
 
 //---------------------------------------------------------
 //----------------------belt-block-------------------------
@@ -323,11 +324,19 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   if(( !size ) || ( in == NULL )) return ak_error_ok;
   if( size & 0x1F ) return ak_error_message( ak_error_wrong_length, __func__,
                                       "data length is not a multiple of the length of the block" );
+  
+  printf("\n1: %s\n   %i\n   %s\n",
+    ak_ptr_to_hexstr(cx->h, sizeof(cx->h), ak_false),
+    size,
+    ak_ptr_to_hexstr(in, size, ak_false));
+
   // обновить длину
   carry = (cx->ls[0] += carry) < carry;
   carry = (cx->ls[1] += carry) < carry;
   carry = (cx->ls[2] += carry) < carry;
   cx->ls[3] += carry;
+
+  printf("\n2: %i\n", cx->ls[0]);
 
   // накопленных данных на этот момент не предполагается,
   // потому сразу в цикл по блокам
@@ -345,6 +354,8 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
     count -= 32;
   }
 
+  printf("\n3: %i\n", count);
+
   return ak_error_ok;
 }
 
@@ -353,7 +364,7 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   const size_t out_size )
 {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
-  const ak_uint8* dt = (const ak_uint8*) in;
+  //const ak_uint8* dt = (const ak_uint8*) in;
   //ak_uint8 m[32];
   struct belt_hash bx[1]; /* структура для хранения копии текущего состояния контекста */
   ak_uint32 carry = size << 3;
@@ -365,15 +376,20 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   if( size >= 32 ) return ak_error_message( ak_error_wrong_length, __func__,
                                                                        "input length is too huge" );
   
-  // обновить длину
-  carry = (cx->ls[0] += carry) < carry;
-  carry = (cx->ls[1] += carry) < carry;
-  carry = (cx->ls[2] += carry) < carry;
-  cx->ls[3] += carry;
-
   memcpy( bx, cx, sizeof( struct belt_hash ));
 
-  
+  printf("\n4: %s\n   %i\n   %s\n",
+    ak_ptr_to_hexstr(bx->h, sizeof(bx->h), ak_false),
+    size,
+    ak_ptr_to_hexstr(in, size, ak_false));
+
+  // обновить длину
+  carry = (bx->ls[0] += carry) < carry;
+  carry = (bx->ls[1] += carry) < carry;
+  carry = (bx->ls[2] += carry) < carry;
+  bx->ls[3] += carry;
+
+  printf("\n5: %i\n", bx->ls[0]);
 
   /* при финализации мы изменяем копию существующей структуры */
   
@@ -389,7 +405,13 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
     beltCompress2(bx->ls + 4, bx->h, (ak_uint32*)bx->block, bx->stack);
   }
 
+  printf("\n6: %s\n",
+    ak_ptr_to_hexstr(bx->block, 32, ak_false));
+
   beltCompress(bx->h, bx->ls, bx->stack);
+
+  printf("\n7: %s\n",
+    ak_ptr_to_hexstr(bx->h, 32, ak_false));
 
   // ak_hash_context_streebog_g( &sx, sx.n, m );
   // ak_hash_context_streebog_add( &sx, size << 3 );
