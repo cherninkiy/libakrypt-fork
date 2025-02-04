@@ -356,6 +356,7 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   const ak_uint8* dt = (const ak_uint8*) in;
   //ak_uint8 m[32];
   struct belt_hash bx[1]; /* структура для хранения копии текущего состояния контекста */
+  ak_uint32 carry = size << 3;
 
   if( cx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                "using null pointer to internal streebog context" );
@@ -363,10 +364,12 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
                                                    "using null pointer to externl result buffer" );
   if( size >= 32 ) return ak_error_message( ak_error_wrong_length, __func__,
                                                                        "input length is too huge" );
-  // /* формируем временный текст */
-  //memset(m, 0, 32);
-  //if(in != NULL)
-  //  memcpy(m, dt, ( ak_uint32 )size);
+  
+  // обновить длину
+  carry = (cx->ls[0] += carry) < carry;
+  carry = (cx->ls[1] += carry) < carry;
+  carry = (cx->ls[2] += carry) < carry;
+  cx->ls[3] += carry;
 
   memcpy( bx, cx, sizeof( struct belt_hash ));
 
