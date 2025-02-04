@@ -44,6 +44,7 @@ const ak_uint8* beltH()
 //rotl
 #define ROTL32(a, r) \
   ((ak_uint32)0x##a << r | (ak_uint32)0x##a >> (32 - r))
+
 #define ROTL32x16(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p, r)\
   ROTL32(a, r), ROTL32(b, r), ROTL32(c, r), ROTL32(d, r),\
   ROTL32(e, r), ROTL32(f, r), ROTL32(g, r), ROTL32(h, r),\
@@ -172,8 +173,7 @@ static const ak_uint32 H29[256] = {
  * \param block [4*32 бит] Указатель на шифруемый блок данных.
  * \param key [8*32 бит] Указатель на ключ шифрования.
  */
-void beltBlockEncr2(ak_uint32 block[4], const ak_uint32 key[8])
-{
+void beltBlockEncr2(ak_uint32 block[4], const ak_uint32 key[8]) {
   E((block + 0), (block + 1), (block + 2), (block + 3), key);
 }
 
@@ -215,8 +215,7 @@ void beltBlockEncr2(ak_uint32 block[4], const ak_uint32 key[8])
  * \param X [8*32 бит] Указатель на входное значение первой половины данных X.
  * \param stack [12*32 бит] Указатель на промежуточный буфер работы функции.
  */
-void beltCompress(ak_uint32 h[8], const ak_uint32 X[8], void* stack)
-{
+void beltCompress(ak_uint32 h[8], const ak_uint32 X[8], void* stack) {
   // [12]buf = [4]buf0 || [4]buf1 || [4]buf2
   ak_uint32* buf = (ak_uint32*)stack;
   // буферы не пересекаются?
@@ -251,8 +250,7 @@ void beltCompress(ak_uint32 h[8], const ak_uint32 X[8], void* stack)
  * \param stack [12*32 бит] Указатель на промежуточный буфер работы функции.
  */
 static inline void beltCompress2(ak_uint32 s[4], ak_uint32 h[8],
-                   const ak_uint32 X[8], void* stack)
-{
+                   const ak_uint32 X[8], void* stack) {
   // [12]buf = [4]buf0 || [4]buf1 || [4]buf2
   ak_uint32* buf = (ak_uint32*)stack;
   // буферы не пересекаются?
@@ -301,8 +299,7 @@ ak_uint32 u32Rev(ak_uint32 w) {
   ((ak_uint32*)(block))[2] = u32Rev(((ak_uint32*)(block))[2]),\
   ((ak_uint32*)(block))[3] = u32Rev(((ak_uint32*)(block))[3])
 
- static int ak_hash_context_belt_hash_clean( ak_pointer bctx )
-{
+static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
   if( cx == NULL ) return ak_error_null_pointer;
 
@@ -311,12 +308,11 @@ ak_uint32 u32Rev(ak_uint32 w) {
   // h <- B194...0D
   memmove(cx->h, beltH(), 32);
 
- return ak_error_ok;
+  return ak_error_ok;
 }
 
  static int ak_hash_context_belt_hash_update(
-  ak_pointer bctx, const ak_pointer in, const size_t size )
-{
+  ak_pointer bctx, const ak_pointer in, const size_t size ) {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
   const ak_uint8* dt = (const ak_uint8*) in;
   ak_uint32 count = (ak_uint32) size;
@@ -325,7 +321,8 @@ ak_uint32 u32Rev(ak_uint32 w) {
   if( cx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                "using null pointer to internal streebog context" );
   if(( !size ) || ( in == NULL )) return ak_error_ok;
-
+  if( size & 0x1F ) return ak_error_message( ak_error_wrong_length, __func__,
+                                      "data length is not a multiple of the length of the block" );
   // обновить длину
   carry = (cx->ls[0] += carry) < carry;
   carry = (cx->ls[1] += carry) < carry;
@@ -357,8 +354,8 @@ ak_uint32 u32Rev(ak_uint32 w) {
 {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
   const ak_uint8* dt = (const ak_uint8*) in;
-  ak_uint8 m[32];
-  struct belt_hash bx; /* структура для хранения копии текущего состояния контекста */
+  //ak_uint8 m[32];
+  struct belt_hash bx[1]; /* структура для хранения копии текущего состояния контекста */
 
   if( cx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                "using null pointer to internal streebog context" );
@@ -367,18 +364,30 @@ ak_uint32 u32Rev(ak_uint32 w) {
   if( size >= 32 ) return ak_error_message( ak_error_wrong_length, __func__,
                                                                        "input length is too huge" );
   // /* формируем временный текст */
-  memset(m, 0, 32);
-  if(in != NULL)
-    memcpy(m, dt, ( ak_uint32 )size);
+  //memset(m, 0, 32);
+  //if(in != NULL)
+  //  memcpy(m, dt, ( ak_uint32 )size);
+
+  memcpy( bx, cx, sizeof( struct belt_hash ));
+
+  
 
   /* при финализации мы изменяем копию существующей структуры */
-  memcpy( &bx, cx, sizeof( struct belt_hash ));
+  
+  if(size) {
+    memset(bx->block, 0, 32);
+    if (in != NULL) {
+      memcpy(bx->block, in, size);
+    }
 #ifndef AK_LITTLE_ENDIAN
-  beltBlockRevU32(m);
-  beltBlockRevU32(m + 16);
+    beltBlockRevU32(bx->block);
+    beltBlockRevU32(bx->block + 16);
 #endif
-  beltCompress2(bx.ls + 4, bx.h, (ak_uint32*)m, bx.stack);
-  beltCompress(bx.h, bx.ls, bx.stack);
+    beltCompress2(bx->ls + 4, bx->h, (ak_uint32*)bx->block, bx->stack);
+  }
+
+  beltCompress(bx->h, bx->ls, bx->stack);
+
   // ak_hash_context_streebog_g( &sx, sx.n, m );
   // ak_hash_context_streebog_add( &sx, size << 3 );
   // ak_hash_context_streebog_sadd( &sx, m );
@@ -386,7 +395,7 @@ ak_uint32 u32Rev(ak_uint32 w) {
   // ak_hash_context_streebog_g( &sx, NULL, sx.sigma );
 
  /* копируем нужную часть результирующего массива или выдаем сообщение об ошибке */
-  memcpy(out, bx.h, ak_min(32, out_size));
+  memcpy(out, bx->h, ak_min(32, out_size));
 
  return ak_error_ok;
 }
