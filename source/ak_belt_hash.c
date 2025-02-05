@@ -410,6 +410,8 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   carry[0] = (cx->ls[2] += carry[0]) < carry[0];
   printf("8: %i\n", carry[0]);
   cx->ls[3] += carry[0];
+  printf("7: %i %i %i %i\n",
+    cx->ls[0], cx->ls[1], cx->ls[2], cx->ls[3]);
 /*
   carry = (bx->ls[0] += carry) < carry;
   carry = (bx->ls[1] += carry) < carry;
