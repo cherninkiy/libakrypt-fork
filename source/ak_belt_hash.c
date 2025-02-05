@@ -325,11 +325,18 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   if( size & 0x1F ) return ak_error_message( ak_error_wrong_length, __func__,
                                       "data length is not a multiple of the length of the block" );
 
+  printf("\n1: %s\n   %i\n   %s\n",
+    ak_ptr_to_hexstr(cx->h, sizeof(cx->h), ak_false),
+    size,
+    ak_ptr_to_hexstr(in, size, ak_false));
+
   // обновить длину
   carry = (cx->ls[0] += carry) < carry;
   carry = (cx->ls[1] += carry) < carry;
   carry = (cx->ls[2] += carry) < carry;
   cx->ls[3] += carry;
+
+  printf("\n2: %i\n", cx->ls[0]);
 
   while (count >= 32)
   {
@@ -347,7 +354,7 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   return ak_error_ok;
 }
 
- static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
+static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   const ak_pointer in, const size_t size, ak_pointer out,
   const size_t out_size )
 {
@@ -402,7 +409,7 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
  return ak_error_ok;
 }
 
- int ak_hash_create_belt_hash( ak_hash hctx )
+int ak_hash_create_belt_hash( ak_hash hctx )
 {
   int error = ak_error_ok;
 
@@ -416,17 +423,6 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
                                              ak_hash_context_belt_hash_update,
                                              ak_hash_context_belt_hash_finalize )) != ak_error_ok )
     return ak_error_message( error, __func__, "incorrect initialization of internal mac context" );
-
- // /* добавочная проверка корректной работы алгоритма хэширования */
- //  if( ak_libakrypt_get_option_by_name( "use_additional_algorithm_check_context" ) == ak_true ) {
- //    ak_hash_context_streebog_clean( &hctx->data.sctx );
- //    if(( error = ak_hash_ptr( hctx, streebog_M1_message, 63, out, sizeof( out ))) != ak_error_ok )
- //      return ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
-
- //    if( ak_ptr_is_equal_with_log( out, streebog256_testM1, sizeof( out )) != ak_true )
- //      return ak_error_message( ak_error_not_equal_data, __func__ ,
- //                                             "the 1st test from GOST R 34.11-2012 is wrong" );
- //  }
 
   return ak_hash_context_belt_hash_clean( &hctx->data.bctx );
 }

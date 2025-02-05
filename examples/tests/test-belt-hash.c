@@ -74,11 +74,9 @@ int main( void ) {
   if(strncmp(A, Y1, 32) == 0) {
     printf("Test 1 was successful\n\n");
     success += 1;
-    //return 0;
   }
   else {
     printf("Test 1 failed\n\n");
-    //return 1;
   }
 
   printf("               -----------Test 2------------\n"
@@ -118,11 +116,9 @@ int main( void ) {
   if(strncmp(A, Y2, 32) == 0) {
     printf("Test 2 was successful\n\n");
     success += 2;
-    //return 0;
   }
   else {
     printf("Test 2 failed\n\n");
-    //return 1;
   }
 
   printf("               -----------Test 3------------\n"
@@ -168,11 +164,9 @@ int main( void ) {
   if(strncmp(A, Y3, 32) == 0) {
     printf("Test 3, was successful\n");
     success += 4;
-    //return 0;
   }
   else {
     printf("Test 3 failed\n");
-    //return 1;
   }
 
   if(success == 7) {
