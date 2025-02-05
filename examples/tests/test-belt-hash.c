@@ -37,8 +37,12 @@ int main( void ) {
   ak_uint8 A[32] = {0};
   struct hash ctx;
 
-  ak_log_set_level( ak_log_none );
-  ak_libakrypt_create( ak_function_log_stderr );
+  //ak_log_set_level( ak_log_none );
+  //ak_libakrypt_create( ak_function_log_stderr );
+  if (ak_libakrypt_create(NULL) != ak_true) {
+    ak_libakrypt_destroy();
+    return EXIT_FAILURE;
+  }
 
   printf("--------------------Testing belt-hash----------------------\n"
     "               -----------Test 1------------\n"
