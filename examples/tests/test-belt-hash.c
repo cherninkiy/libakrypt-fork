@@ -146,7 +146,7 @@ int main( void ) {
     Y3[24], Y3[25], Y3[26], Y3[27], Y3[28], Y3[29], Y3[30], Y3[31]);
 
   ak_hash_create_belt_hash( &ctx );
-  ak_hash_ptr( &ctx, X2, 48, A, 32 );
+  ak_hash_ptr( &ctx, X3, 48, A, 32 );
   ak_hash_destroy( &ctx );
 
   ak_libakrypt_destroy();

@@ -6,7 +6,6 @@
 /* ----------------------------------------------------------------------------------------------- */
 
 #include <libakrypt-internal.h>
-#include <stdio.h> //)))
 
 //---------------------------------------------------------
 //----------------------belt-block-------------------------
@@ -325,22 +324,11 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   if( size & 0x1F ) return ak_error_message( ak_error_wrong_length, __func__,
                                       "data length is not a multiple of the length of the block" );
 
-  count += 16;
-  printf("\n1: %s\n   %i\n",
-    ak_ptr_to_hexstr(cx->h, sizeof(cx->h), ak_false),
-    size);
-  printf("   %i\n   %s\n",
-    count,
-    ak_ptr_to_hexstr(in, count, ak_false));
-  count -= 16;
-
   // обновить длину
   carry = (cx->ls[0] += carry) < carry;
   carry = (cx->ls[1] += carry) < carry;
   carry = (cx->ls[2] += carry) < carry;
   cx->ls[3] += carry;
-
-  printf("\n2: %i\n", cx->ls[0]);
 
   while (count >= 32)
   {
@@ -375,27 +363,17 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   
   memcpy( bx, cx, sizeof( struct belt_hash ));
 
-  printf("\n4: %s\n",
-    ak_ptr_to_hexstr(bx->h, sizeof(bx->h), ak_false));
-  printf("   %i\n   %s\n", size,
-    ak_ptr_to_hexstr(in, size, ak_false));
-
   // обновить длину
   carry = (bx->ls[0] += carry) < carry;
   carry = (bx->ls[1] += carry) < carry;
   carry = (bx->ls[2] += carry) < carry;
   bx->ls[3] += carry;
 
-  printf("\n5: %i\n", bx->ls[0]);
-  
   if(size) {
     memset(bx->block, 0, 32);
     if (in != NULL) {
       memcpy(bx->block, in, size);
     }
-    printf("\n6: %s\n",
-      ak_ptr_to_hexstr(bx->block, 32, ak_false));
-
 #ifndef AK_LITTLE_ENDIAN
     beltBlockRevU32(bx->block);
     beltBlockRevU32(bx->block + 16);
@@ -404,9 +382,6 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   }
 
   beltCompress(bx->h, bx->ls, bx->stack);
-
-  printf("\n7: %s\n",
-    ak_ptr_to_hexstr(bx->h, 32, ak_false));
 
   memcpy(out, bx->h, ak_min(32, out_size));
 
