@@ -6,7 +6,6 @@
 /* ----------------------------------------------------------------------------------------------- */
 
 #include <libakrypt-internal.h>
-#include <stdio.h>
 
 //---------------------------------------------------------
 //----------------------belt-block-------------------------
@@ -329,14 +328,6 @@ static int ak_hash_context_belt_hash_update(
                                       "data length is not a multiple of the length of the block" );
 
   // обновить длину
-    /*
-  count = size;
-  count_for_r = count << 3;
-  carry = (cx->ls[0] += carry) < carry;
-  carry = (cx->ls[1] += carry) < carry;
-  carry = (cx->ls[2] += carry) < carry;
-  cx->ls[3] += carry;
-  */
   count = size;
   count_for_r = count << 3;
   carry = (ak_uint32*) &count_for_r;
@@ -369,8 +360,7 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   const size_t out_size )
 {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
-  struct belt_hash bx[1]; //здесь должна изменяться копия, а не оригинал
-  //ak_uint32 carry = size << 3;
+  struct belt_hash bx[1]; //здесь должна изменяться копия контекста, а не оригинал
   ak_uint64 count_for_r;
   ak_uint32* carry;
 
@@ -384,13 +374,8 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   memcpy( bx, cx, sizeof( struct belt_hash ));
 
   // обновить длину
-
-  //count = size;
   count_for_r = size << 3;
   carry = (ak_uint32*) &count_for_r;
-
-  printf("1: %i %li %i %i\n",
-    bx->ls[0], count_for_r, carry[0], carry[1]);
 
   carry[0] = (bx->ls[0] += carry[0]) < carry[0];
   carry[0] = (bx->ls[1] += carry[0]) < carry[0];
@@ -404,34 +389,6 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   count_for_r = size >> 61;
   carry[0] = (bx->ls[2] += carry[0]) < carry[0];
   bx->ls[3] += carry[0];
-
-  /*
-  carry[0] = (cx->ls[0] += carry[0]) < carry[0];
-  printf("2: %i\n", carry[0]);
-  carry[0] = ( carry[1] += carry[0]) < carry[0];
-  printf("3: %i\n", carry[0]);
-  carry[1] = (cx->ls[1] += carry[1]) < carry[1];
-  printf("4: %i\n", carry[1]);
-  carry[0] = (cx->ls[2] += carry[0]) < carry[0];
-  printf("5: %i\n", carry[0]);
-  carry[1] = (cx->ls[2] += carry[1]) < carry[1];
-  printf("6: %i\n", carry[1]);
-  cx->ls[3] += carry[0] + carry[1];
-
-  count_for_r = size >> 61;
-  printf("7: %i %li %i %i\n",
-    cx->ls[0], count_for_r, carry[0], carry[1]);
-  carry[0] = (cx->ls[2] += carry[0]) < carry[0];
-  printf("8: %i\n", carry[0]);
-  cx->ls[3] += carry[0];
-  printf("7: %i %i %i %i\n",
-    cx->ls[0], cx->ls[1], cx->ls[2], cx->ls[3]);
-  */
-/*
-  carry = (bx->ls[0] += carry) < carry;
-  carry = (bx->ls[1] += carry) < carry;
-  carry = (bx->ls[2] += carry) < carry;
-  bx->ls[3] += carry;*/
 
   if(size) {
     memset(bx->block, 0, 32);
