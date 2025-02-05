@@ -75,7 +75,7 @@ int main() {
     A[16], A[17], A[18], A[19], A[20], A[21], A[22], A[23],
     A[24], A[25], A[26], A[27], A[28], A[29], A[30], A[31]);
   
-  if(strncmp(A, Y1, 32) == 0) {
+  if(strncmp( (const char*)A, (const char*)Y1, 32) == 0) {
     printf("Test 1 was successful\n\n");
     success += 1;
   }
@@ -117,7 +117,7 @@ int main() {
     A[16], A[17], A[18], A[19], A[20], A[21], A[22], A[23],
     A[24], A[25], A[26], A[27], A[28], A[29], A[30], A[31]);
   
-  if(strncmp(A, Y2, 32) == 0) {
+  if(strncmp((const char*)A, (const char*)Y2, 32) == 0) {
     printf("Test 2 was successful\n\n");
     success += 2;
   }
@@ -165,7 +165,7 @@ int main() {
     A[16], A[17], A[18], A[19], A[20], A[21], A[22], A[23],
     A[24], A[25], A[26], A[27], A[28], A[29], A[30], A[31]);
   
-  if(strncmp(A, Y3, 32) == 0) {
+  if(strncmp((const char*)A, (const char*)Y3, 32) == 0) {
     printf("Test 3, was successful\n");
     success += 4;
   }
