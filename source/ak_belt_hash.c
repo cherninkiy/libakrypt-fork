@@ -389,9 +389,14 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   carry = (ak_uint32*) &count_for_r;
 
   carry[0] = (cx->ls[0] += carry[0]) < carry[0];
-  carry[1] = (cx->ls[1] += carry[0] + carry[1]) < carry[1];
+  carry[0] = ( carry[1] += carry[0]) < carry[0];
+  carry[1] = (cx->ls[1] += carry[1]) < carry[1];
+  carry[0] = (cx->ls[2] += carry[0]) < carry[0];
+  carry[1] = (cx->ls[2] += carry[1]) < carry[1];
+  cx->ls[3] += carry[0] + carry[1];
+
   count_for_r = size >> 61;
-  carry[0] = (cx->ls[2] += carry[0] + carry[1]) < carry[0];
+  carry[0] = (cx->ls[2] += carry[0]) < carry[0];
   cx->ls[3] += carry[0];
 /*
   carry = (bx->ls[0] += carry) < carry;
