@@ -15,7 +15,7 @@ do
                 mkdir -p $name.build
                 cd $name.build
 # выполняем настройку
-                cmake -DCMAKE_C_COMPILER=$name -DAK_STATIC_LIB=ON -DAK_EXAMPLES=ON -DAK_TESTS=ON ../../libakrypt-0.x
+                cmake -DCMAKE_C_COMPILER=$name -DAK_STATIC_LIB=ON -DAK_EXAMPLES=ON -DAK_TESTS=ON ../../libakrypt-0-x-belt-hash
 # выполняем сборку
                 make
 # выполняем тестирование
