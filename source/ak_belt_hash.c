@@ -325,10 +325,11 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   if( size & 0x1F ) return ak_error_message( ak_error_wrong_length, __func__,
                                       "data length is not a multiple of the length of the block" );
 
+  count += 16
   printf("\n1: %s\n   %i\n   %s\n",
     ak_ptr_to_hexstr(cx->h, sizeof(cx->h), ak_false),
     size,
-    ak_ptr_to_hexstr(in, size+16, ak_false));
+    ak_ptr_to_hexstr(in, count, ak_false));
 
   // обновить длину
   carry = (cx->ls[0] += carry) < carry;
