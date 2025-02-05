@@ -132,9 +132,11 @@ static const ak_uint32 H29[256] = {
 #define G5(x)\
   H5[(x) & 255] ^ H13[(x) >> 8 & 255] ^ \
   H21[(x) >> 16 & 255] ^ H29[(x) >> 24]
+
 #define G13(x)\
   H13[(x) & 255] ^ H21[(x) >> 8 & 255] ^ \
   H29[(x) >> 16 & 255] ^ H5[(x) >> 24]
+
 #define G21(x)\
   H21[(x) & 255] ^ H29[(x) >> 8 & 255] ^ \
   H5[(x) >> 16 & 255] ^ H13[(x) >> 24]
@@ -169,7 +171,7 @@ static const ak_uint32 H29[256] = {
   *b ^= *c, *c ^= *b, *b ^= *c;\
 
 /**
- * \brief Алгоритм шифрования belt-block.
+ * \brief Алгоритм зашифрования belt-block.
  * \param block [4*32 бит] Указатель на шифруемый блок данных.
  * \param key [8*32 бит] Указатель на ключ шифрования.
  */
@@ -210,7 +212,7 @@ void beltBlockEncr2(ak_uint32 block[4], const ak_uint32 key[8]) {
   ((ak_uint32*)(dest))[3] = ((const ak_uint32*)(src))[3]
 
 /**
- * \brief Алгоритм сжатия belt-compress без обработки S
+ * \brief Алгоритм сжатия belt-compress <b>без обработки S</b>.
  * \param h [8*32 бит] Указатель на выходное значение Y <b>и второй половины входного значения X</b>.
  * \param X [8*32 бит] Указатель на входное значение первой половины данных X.
  * \param stack [12*32 бит] Указатель на промежуточный буфер работы функции.
@@ -311,12 +313,13 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
   return ak_error_ok;
 }
 
- static int ak_hash_context_belt_hash_update(
-  ak_pointer bctx, const ak_pointer in, const size_t size ) {
+static int ak_hash_context_belt_hash_update(
+    ak_pointer bctx, const ak_pointer in, const size_t size ) {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
   const ak_uint8* dt = (const ak_uint8*) in;
-  ak_uint32 count = (ak_uint32) size;
-  ak_uint32 carry = count << 3;
+  ak_uint64 count;
+  ak_uint64 count_for_r;
+  ak_uint32* carry;
 
   if( cx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                "using null pointer to internal streebog context" );
@@ -325,10 +328,24 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
                                       "data length is not a multiple of the length of the block" );
 
   // обновить длину
+    /*
+  count = size;
+  count_for_r = count << 3;
   carry = (cx->ls[0] += carry) < carry;
   carry = (cx->ls[1] += carry) < carry;
   carry = (cx->ls[2] += carry) < carry;
   cx->ls[3] += carry;
+  */
+  count = size;
+  count_for_r = count << 3;
+  carry = &count_for_r
+
+  cx->ls[0] = carry[0];
+  cx->ls[1] = carry[1];
+  count_for_r = count >> 61;
+  cx->ls[2] = carry[0];
+  cx->ls[3] = 0;
+  
 
   while (count >= 32)
   {
@@ -351,8 +368,10 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   const size_t out_size )
 {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
-  struct belt_hash bx[1]; /* структура для хранения копии текущего состояния контекста */
-  ak_uint32 carry = size << 3;
+  struct belt_hash bx[1]; //здесь должна изменяться копия, а не оригинал
+  //ak_uint32 carry = size << 3;
+  ak_uint64 count_for_r;
+  ak_uint32* carry;
 
   if( cx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                "using null pointer to internal streebog context" );
@@ -364,10 +383,21 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   memcpy( bx, cx, sizeof( struct belt_hash ));
 
   // обновить длину
+
+  //count = size;
+  count_for_r = size << 3;
+  carry = &count_for_r
+
+  carry[0] = (cx->ls[0] += carry[0]) < carry[0];
+  carry[1] = (cx->ls[1] += carry[0] + carry[1]) < carry[1];
+  count_for_r = size >> 61;
+  carry[0] = (cx->ls[2] += carry[0] + carry[1]) < carry[0];
+  cx->ls[3] += carry[0];
+/*
   carry = (bx->ls[0] += carry) < carry;
   carry = (bx->ls[1] += carry) < carry;
   carry = (bx->ls[2] += carry) < carry;
-  bx->ls[3] += carry;
+  bx->ls[3] += carry;*/
 
   if(size) {
     memset(bx->block, 0, 32);
