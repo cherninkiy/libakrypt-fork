@@ -338,7 +338,7 @@ static int ak_hash_context_belt_hash_update(
   */
   count = size;
   count_for_r = count << 3;
-  carry = &count_for_r
+  carry = (ak_uint32*) &count_for_r;
 
   cx->ls[0] = carry[0];
   cx->ls[1] = carry[1];
@@ -386,7 +386,7 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
 
   //count = size;
   count_for_r = size << 3;
-  carry = &count_for_r
+  carry = (ak_uint32*) &count_for_r
 
   carry[0] = (cx->ls[0] += carry[0]) < carry[0];
   carry[1] = (cx->ls[1] += carry[0] + carry[1]) < carry[1];
