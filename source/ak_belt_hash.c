@@ -393,22 +393,22 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
     cx->ls[0], count_for_r, carry[0], carry[1]);
 
   carry[0] = (cx->ls[0] += carry[0]) < carry[0];
-  printf("2: %i\n", count[0]);
+  printf("2: %i\n", carry[0]);
   carry[0] = ( carry[1] += carry[0]) < carry[0];
-  printf("3: %i\n", count[0]);
+  printf("3: %i\n", carry[0]);
   carry[1] = (cx->ls[1] += carry[1]) < carry[1];
-  printf("4: %i\n", count[1]);
+  printf("4: %i\n", carry[1]);
   carry[0] = (cx->ls[2] += carry[0]) < carry[0];
-  printf("5: %i\n", count[0]);
+  printf("5: %i\n", carry[0]);
   carry[1] = (cx->ls[2] += carry[1]) < carry[1];
-  printf("6: %i\n", count[1]);
+  printf("6: %i\n", carry[1]);
   cx->ls[3] += carry[0] + carry[1];
 
   count_for_r = size >> 61;
   printf("7: %i %li %i %i\n",
     cx->ls[0], count_for_r, carry[0], carry[1]);
   carry[0] = (cx->ls[2] += carry[0]) < carry[0];
-  printf("8: %i\n", count[0]);
+  printf("8: %i\n", carry[0]);
   cx->ls[3] += carry[0];
 /*
   carry = (bx->ls[0] += carry) < carry;
