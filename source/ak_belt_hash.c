@@ -326,9 +326,11 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
                                       "data length is not a multiple of the length of the block" );
 
   count += 16
-  printf("\n1: %s\n   %i\n   %s\n",
+  printf("\n1: %s\n   %i\n",
     ak_ptr_to_hexstr(cx->h, sizeof(cx->h), ak_false),
-    size,
+    size);
+  printf("   %i\n   %s\n",
+    count,
     ak_ptr_to_hexstr(in, count, ak_false));
 
   // обновить длину
