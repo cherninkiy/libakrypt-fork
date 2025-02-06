@@ -1513,7 +1513,8 @@
                                                        "destroying null pointer to hash context" );
   hctx->oid = NULL;
   memset( &hctx->data.sctx, 0,
-    ak_max(sizeof( struct streebog ), sizeof( struct belt_hash )));
+    sizeof (&hctx->data) );
+  //  ak_max(sizeof( struct streebog ), sizeof( struct belt_hash )));
   // memset( &hctx->data.bctx, 0, sizeof( struct belt_hash ));
   if( ak_mac_destroy( &hctx->mctx ) != ak_error_ok )
     ak_error_message( ak_error_get_value(), __func__,
