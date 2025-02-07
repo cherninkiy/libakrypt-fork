@@ -803,7 +803,7 @@
    SetConsoleMode( ih, mode & ~( ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT ));
 
    memset( pass, 0, psize );
-   while( ReadConsoleA( ih, &c, 1, &count, NULL) && (c != '\r') && (c != '\n') && (len < psize-1) ) {
+   while( ReadConsoleA( ih, &c, 1, &count, NULL) && (c != '\r') && (c != '\n') && ((size_t)len < psize-1) ) {
      pass[len]=c;
      len++;
    }

@@ -34,7 +34,7 @@
   if( bkey == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                         "using null pointer to block cipher key" );
   if( bkey->key.key_size != 32 ) return ak_error_message_fmt( ak_error_wrong_length, __func__,
-                                 "using block cipher key with unexpected length %u", bkey->bsize );
+                  "using block cipher key with unexpected length %u", (unsigned int) bkey->bsize );
  /* целостность ключа */
   if( bkey->key.check_icode( &bkey->key ) != ak_true )
     return ak_error_message( ak_error_wrong_key_icode,

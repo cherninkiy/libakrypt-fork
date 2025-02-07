@@ -831,7 +831,7 @@
   if(( error =
            ak_hmac_ptr( &hkey, buffer, sizeof( buffer ), out, sizeof( out ))) != ak_error_ok ) {
     ak_error_message_fmt( error, __func__,
-                               "incorrect hmac evaluation for %u random octets", sizeof( buffer ));
+              "incorrect hmac evaluation for %u random octets", (unsigned int) sizeof( buffer ));
     result = ak_false;
     goto lab_exit;
   }
@@ -899,7 +899,7 @@
   if(( error =
            ak_hmac_ptr( &hkey, buffer, sizeof( buffer ), out, sizeof( out ))) != ak_error_ok ) {
     ak_error_message_fmt( error, __func__,
-                               "incorrect hmac evaluation for %u random octets", sizeof( buffer ));
+              "incorrect hmac evaluation for %u random octets", (unsigned int) sizeof( buffer ));
     result = ak_false;
     goto lab_exit;
   }

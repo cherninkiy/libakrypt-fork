@@ -6,6 +6,8 @@
 #ifndef    __LIBAKRYPT_BASE_H__
 #define    __LIBAKRYPT_BASE_H__
 
+#include "libakrypt-config.h"
+
 /* ----------------------------------------------------------------------------------------------- */
 #ifdef __cplusplus
 extern "C" {
@@ -33,94 +35,68 @@ extern "C" {
    Данное множество зависит от используемой операционной системы, компилятора и
    формируется при вызове программы cmake                                                          */
 /* ----------------------------------------------------------------------------------------------- */
-#cmakedefine AK_HAVE_STDIO_H
 #ifdef AK_HAVE_STDIO_H
  #include <stdio.h>
 #else
  #error Library cannot be compiled without stdio.h header (required to determine vsnprintf() function)
 #endif
 
-#cmakedefine AK_HAVE_STRING_H
 #ifdef AK_HAVE_STRING_H
  #include <string.h>
 #else
  #error Library cannot be compiled without string.h header (required to determine strlen() & memset() functions)
 #endif
 
-#cmakedefine AK_HAVE_STDARG_H
 #ifdef AK_HAVE_STDARG_H
  #include <stdarg.h>
 #else
  #error Library cannot be compiled without string.h header (required to determine ak_snprintf() function)
 #endif
 
-#cmakedefine AK_HAVE_CTYPE_H
 #ifdef AK_HAVE_CTYPE_H
  #include <ctype.h>
 #else
  #error Library cannot be compiled without ctype.h header (required to determine isspace() function)
 #endif
 
-#cmakedefine AK_HAVE_STDLIB_H
 #ifdef AK_HAVE_STDLIB_H
  #include <stdlib.h>
 #else
  #error Library cannot be compiled without stdlib.h header (required to determine malloc() function)
 #endif
 
-#cmakedefine AK_HAVE_SYSENDIAN_H
 #ifdef AK_HAVE_SYSENDIAN_H
  #include <sys/endian.h>
 #endif
 
-#cmakedefine AK_HAVE_BYTESWAP_H
 #ifdef AK_HAVE_BYTESWAP_H
  #include <byteswap.h>
 #endif
 
-#cmakedefine AK_HAVE_STDALIGN_H
 #ifdef AK_HAVE_STDALIGN_H
  #include <stdalign.h>
 #endif
 
-#cmakedefine AK_HAVE_TIME_H
 #ifdef AK_HAVE_TIME_H
  #include <time.h>
 #endif
 
-#cmakedefine AK_HAVE_SYSMMAN_H
 #ifdef AK_HAVE_SYSMMAN_H
  #include <sys/mman.h>
 #endif
 
-#cmakedefine AK_HAVE_SYSTYPES_H
 #ifdef AK_HAVE_SYSTYPES_H
  #include <sys/types.h>
 #endif
 
 /* ----------------------------------------------------------------------------------------------- */
-#cmakedefine AK_HAVE_ERRNO_H
-#cmakedefine AK_HAVE_STRINGS_H
-#cmakedefine AK_HAVE_ENDIAN_H
-#cmakedefine AK_HAVE_SYSTIME_H
-#cmakedefine AK_HAVE_SYSLOG_H
-#cmakedefine AK_HAVE_UNISTD_H
-#cmakedefine AK_HAVE_FCNTL_H
-#cmakedefine AK_HAVE_LIMITS_H
-#cmakedefine AK_HAVE_SYSSTAT_H
-#cmakedefine AK_HAVE_SYSSOCKET_H
-#cmakedefine AK_HAVE_SYSUN_H
-#cmakedefine AK_HAVE_SYSSELECT_H
-#cmakedefine AK_HAVE_TERMIOS_H
-#cmakedefine AK_HAVE_DIRENT_H
-#cmakedefine AK_HAVE_FNMATCH_H
-#cmakedefine AK_HAVE_LOCALE_H
-#cmakedefine AK_HAVE_SIGNAL_H
-#cmakedefine AK_HAVE_GETOPT_H
-#cmakedefine AK_HAVE_LIBINTL_H
+#ifdef AK_HAVE_ATTRIBUTE_FORMAT_PRINTF
+#define AK_ATTRIBUTE_FORMAT_PRINTF(FPOS, ARGPOS) __attribute__((format(printf, FPOS, ARGPOS)))
+#else
+#define AK_ATTRIBUTE_FORMAT_PRINTF(FPOS, ARGPOS)
+#endif
 
 /* ----------------------------------------------------------------------------------------------- */
-#cmakedefine AK_HAVE_WINDOWS_H
 #ifdef AK_HAVE_WINDOWS_H
  #include <windows.h>
  #include <io.h>
@@ -164,7 +140,6 @@ extern "C" {
  typedef unsigned long long int ak_uint64;
 #endif
 
-#cmakedefine AK_HAVE_SSIZE_T
 #ifndef AK_HAVE_SSIZE_T
  typedef ak_int64 ssize_t;
 #endif
@@ -172,6 +147,7 @@ extern "C" {
 /* ----------------------------------------------------------------------------------------------- */
  typedef signed char ak_int8;
  typedef unsigned char ak_uint8;
+
 #ifndef _WIN32
  typedef char tchar;
 #else
@@ -280,6 +256,9 @@ extern "C" {
 /*! \brief Ошибка, возникающая при появлении в хеш-таблице элемента с null-указателем на данные */
  #define ak_error_htable_null_element         (-36)
 
+/*! \brief Ошибка вызова внешней функции. */
+#define ak_error_external                     (-37)
+
 /* ----------------------------------------------------------------------------------------------- */
  #define ak_null_string                  ("(null)")
 
@@ -314,7 +293,7 @@ extern "C" {
 /*! \brief Вывод сообщений о возникшей в процессе выполнения ошибке. */
  dll_export int ak_error_message( const int, const char *, const char * );
 /*! \brief Вывод сообщений о возникшей в процессе выполнения ошибке. */
- dll_export int ak_error_message_fmt( const int , const char *, const char *, ... );
+ dll_export int ak_error_message_fmt( const int , const char *, const char *, ... ) AK_ATTRIBUTE_FORMAT_PRINTF(3, 4);
 /*! \brief Функция устанавливает значение переменной, хранящей ошибку выполнения программы. */
  dll_export int ak_error_set_value( const int );
 /*! \brief Функция возвращает код последней ошибки выполнения программы. */
@@ -589,7 +568,7 @@ extern "C" {
 /*! \brief Функция сдвигает файловый указатель на заданное количество байт. */
  dll_export ak_int64 ak_file_lseek( ak_file , ak_int64 , int );
 /*! \brief Функция записывает в файл строку символов. */
- dll_export ssize_t ak_file_printf( ak_file , const char * , ... );
+ dll_export ssize_t ak_file_printf( ak_file , const char * , ... ) AK_ATTRIBUTE_FORMAT_PRINTF(2, 3);
 /*! \brief Отображение заданного файла в память. */
  dll_export ak_pointer ak_file_mmap( ak_file , void * , size_t , int , int , size_t );
 /*! \brief Закрытие файла, отбраженног в память. */
@@ -624,10 +603,13 @@ extern "C" {
 /** @} */
 
 /* ----------------------------------------------------------------------------------------------- */
+#ifndef __cplusplus
 #ifndef __STDC_VERSION__
   #define inline
   int snprintf(char *str, size_t size, const char *format, ... );
 #endif
+#endif // __cplusplus
+
 #ifdef _MSC_VER
  #define __func__  __FUNCTION__
  #define strtoll _strtoi64
@@ -713,9 +695,9 @@ extern "C" {
  dll_export void ak_base64_encodeblock( ak_uint8 *, ak_uint8 *, int );
 
 /*! \brief Обобщенная реализация функции snprintf для различных компиляторов. */
- dll_export int ak_snprintf( char *str, size_t size, const char *format, ... );
+ dll_export int ak_snprintf( char *str, size_t size, const char *format, ... ) AK_ATTRIBUTE_FORMAT_PRINTF(3, 4);
 /*! \brief Форматированный вывод (аналогичный printf) через пользовательскую функцию. */
- dll_export int ak_printf( ak_function_log *function, const char *format, ... );
+ dll_export int ak_printf( ak_function_log *function, const char *format, ... ) AK_ATTRIBUTE_FORMAT_PRINTF(2, 3);
 /*! \brief Чтение строки из консоли. */
  dll_export int ak_string_read( const char * , char * , size_t * );
 /*! \brief Чтение пароля из консоли. */

@@ -1,11 +1,17 @@
 # -------------------------------------------------------------------------------------------------- #
 # вырабатываем и подключаем файл с ресурсами библиотеки
 if( WIN32 )
-  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/libakrypt.rc.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt.rc @ONLY )
-  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/libakrypt-base.rc.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.rc @ONLY )
-  set( AKRYPT_SOURCES ${AKRYPT_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/libakrypt.rc )
-  set( AKBASE_SOURCES ${AKBASE_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.rc )
   set( CMAKE_BUILD_TYPE "Release" )
+  if( AK_BASE )
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/libakrypt.rc.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt.rc @ONLY )
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/libakrypt-base.rc.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.rc @ONLY )
+    set( AKRYPT_SOURCES ${AKRYPT_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/libakrypt.rc )
+    set( AKBASE_SOURCES ${AKBASE_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.rc )
+    message(  STATUS "Generation of ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-base.rc is done")
+  else()
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/libakrypt.rc.in ${CMAKE_CURRENT_BINARY_DIR}/libakrypt.rc @ONLY )
+    set( AKRYPT_SOURCES ${AKRYPT_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/libakrypt.rc )
+  endif()
   message(  STATUS "Generation of ${CMAKE_CURRENT_BINARY_DIR}/libakrypt.rc is done")
 endif()
 

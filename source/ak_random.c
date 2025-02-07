@@ -33,14 +33,9 @@
 {
   if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
                                                       "use a null pointer to a random generator" );
-  rnd->oid = NULL;
-  rnd->next = NULL;
-  rnd->randomize_ptr = NULL;
-  rnd->random = NULL;
-  rnd->free = NULL;
-  memset( &rnd->data, 0, sizeof( rnd->data ));
+  memset(rnd, 0, sizeof(struct random));
 
- return ak_error_ok;
+  return ak_error_ok;
 }
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -53,11 +48,7 @@
   if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
                                                       "use a null pointer to a random generator" );
   if( rnd->free != NULL ) rnd->free( rnd );
-  rnd->oid = NULL;
-  rnd->next = NULL;
-  rnd->randomize_ptr = NULL;
-  rnd->random = NULL;
-  memset( &rnd->data, 0, sizeof( rnd->data ));
+  memset(rnd, 0, sizeof(struct random));
 
  return ak_error_ok;
 }
@@ -123,20 +114,54 @@
                                                              "use a null pointer to output data" );
  if( size <= 0 ) return ak_error_message( ak_error_wrong_length, __func__,
                                                               "using a buffer with wrong length" );
- if( rnd->random == NULL ) return ak_error_message( ak_error_undefined_function, __func__,
-                                                "this generator has undefined random() function" );
- return rnd->random( rnd, out, size );
+ if (rnd->random == NULL && rnd->random_external == NULL) {
+   return ak_error_message(ak_error_undefined_function, __func__,
+                           "generator has undefined random functions");
+ }
+
+ if (rnd->random != NULL) {
+   return rnd->random(rnd, out, size);
+ }
+ if (rnd->random_external(out, size) != 0) {
+   return ak_error_external;
+ }
+
+ return ak_error_ok;
 }
 
-/* ----------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------*/
+/*! @param rnd указатель на контекст генератора псевдо-случайных чисел
+    @param fn_rng Указатель на внешнюю функцию-источник псевдо-случайных чисел.
+
+ @return В случае успеха функция возвращает \ref ak_error_ok. В противном случае
+ возвращается код ошибки. */
+/* ---------------------------------------------------------------------------*/
+int ak_random_create_external_rng(ak_random rnd,
+                                  ak_function_external_rng* fn_rng) {
+  if (fn_rng == NULL) {
+    return ak_error_message(
+        ak_error_undefined_function, __func__,
+        "null pointer to external random generator function");
+  }
+
+  int error = ak_random_create(rnd);
+  if (error != ak_error_ok) {
+    return ak_error_message(error, __func__,
+                            "wrong initialization of random generator");
+  }
+
+  rnd->random_external = fn_rng;
+  return error;
+}
+
+/* -----------------------------------------------------------------------------------------------*/
 /*! @param rnd указатель на контекст генератора псевдо-случайных чисел
     @param oid OID генератора.
 
-    @return В случае успеха возвращается ak_error_ok (ноль). В случае возникновения ошибки
-    возвращается ее код.                                                                           */
-/* ----------------------------------------------------------------------------------------------- */
- int ak_random_create_oid( ak_random rnd, ak_oid oid )
-{
+    @return В случае успеха возвращается ak_error_ok (ноль). В случае
+   возникновения ошибки возвращается ее код. */
+/* -----------------------------------------------------------------------------------------------*/
+int ak_random_create_oid(ak_random rnd, ak_oid oid) {
   int error = ak_error_ok;
 
  /* выполняем проверку */
@@ -371,8 +396,6 @@ slabel:
   }
 
   // для данного генератора oid не определен
-  rnd->next = NULL;
-  rnd->randomize_ptr = NULL;
   rnd->random = ak_random_file_ptr;
   rnd->free = ak_random_file_free;
 
@@ -499,15 +522,14 @@ slabel:
   size_t idx = 0;
   int error = ak_error_ok;
 
-  if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
-                                                "using null pointer to random generator context" );
-  if( rnd->random == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
-                                                  "using uninitialized random generator context" );
-  if( size > (((size_t)-1) >> 1 )) return ak_error_message( ak_error_wrong_length, __func__,
-                                                                   "using very large size value" );
   if(( ptr == NULL ) || ( size == 0 )) return ak_error_ok;
 
-  if( rnd->random( rnd, ptr, (ssize_t) size ) != ak_error_ok ) {
+  if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
+                                                "using null pointer to random generator context" );
+  if( size > (((size_t)-1) >> 1 )) return ak_error_message( ak_error_wrong_length, __func__,
+                                                                   "using very large size value" );
+
+  if( ak_random_ptr(rnd, ptr, size) != ak_error_ok ) {
     memset( ptr, 0, size );
     ak_error_message( error = ak_error_write_data, __func__, "incorrect memory wiping" );
   }
@@ -523,12 +545,15 @@ slabel:
                                                                "using null pointer to file name" );
   if( rnd == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
                                                 "using null pointer to random generator context" );
-  if( rnd->random == NULL ) return ak_error_message( ak_error_null_pointer, __func__ ,
-                                                  "using uninitialized random generator context" );
- /* пропущен фрагмент с очищением кармы */
-  #ifdef AK_HAVE_SYSMMAN_H
-    /* здесь надо немного поработать ))) */
-  #endif
+  if (rnd->random == NULL && rnd->random_external == NULL) {
+    return ak_error_message(ak_error_null_pointer, __func__,
+                            "using uninitialized random generator context");
+  }
+
+  /* пропущен фрагмент с очищением кармы */
+#ifdef AK_HAVE_SYSMMAN_H
+  /* здесь надо немного поработать ))) */
+#endif
 
   #ifdef AK_HAVE_UNISTD_H
    unlink( file );
@@ -1000,8 +1025,12 @@ slabel:
 /*! В ходе выполнения функции выполняется проверка статистической гипотезы о равномерном
     распределении нулей и единиц в заданном массиве данных.
 
+    @note Сообщения о результате статистического тестирования
+    выводятся начиная с уровня аудита ak_log_maximum.
+
     @param data указатель на область данных
     @param size размер данных (в байтах), допустимые значения 32, 64 и 128.
+    При других значениях size возвращается ошибка.
     @return В случае, если гипотеза о равномерном распределении не отвергается,
     возвращается истина, в противном случае - ложь.                                                */
 /* ----------------------------------------------------------------------------------------------- */
@@ -1027,33 +1056,166 @@ slabel:
     chi += (bigrsum[3] - size )*(bigrsum[3] - size );
     chi /= (long double) size;
 
-    if( ak_log_get_level() >= ak_log_maximum )
-    {
-        ak_error_message_fmt( ak_error_ok, __func__, "size: %u, binarySum: %u",
-                                                        (unsigned int)size, (unsigned int)binsum );
-        ak_error_message_fmt( ak_error_ok, __func__,
-                   "s[0]: %u, s[1]: %u, s[2]: %u, s[3]: %u, chi: %.6Lf", (unsigned int)bigrsum[0],
-               (unsigned int)bigrsum[1], (unsigned int)bigrsum[2], (unsigned int)bigrsum[3], chi );
-    }
-
    /* проверяем граничные условия */
     switch( size )
     {
        case 32:
-         if(( binsum < 102 ) || ( binsum > 154 )) return ak_false;
+         if(( binsum < 102 ) || ( binsum > 154 )) {
+           if( ak_log_get_level() >= ak_log_maximum )
+             ak_error_message_fmt( ak_error_monobit_test, __func__,
+                                           "monobit test fault, binsum: %u", (unsigned int)binsum );
+           return ak_false;
+         }
          break;
        case 64:
-         if(( binsum < 219 ) || ( binsum > 293 )) return ak_false;
+         if(( binsum < 219 ) || ( binsum > 293 )) {
+           if( ak_log_get_level() >= ak_log_maximum )
+             ak_error_message_fmt( ak_error_monobit_test, __func__,
+                                           "monobit test fault, binsum: %u", (unsigned int)binsum );
+           return ak_false;
+         }
          break;
        case 128:
-         if(( binsum < 460 ) || ( binsum > 564 )) return ak_false;
+         if(( binsum < 460 ) || ( binsum > 564 )) {
+           if( ak_log_get_level() >= ak_log_maximum )
+             ak_error_message_fmt( ak_error_monobit_test, __func__,
+                                           "monobit test fault, binsum: %u", (unsigned int)binsum );
+           return ak_false;
+         }
          break;
        default:
          return ak_false;
     }
 
-    if( chi > 16.266 ) return ak_false;
+    if( ak_log_get_level() >= ak_log_maximum )
+      ak_error_message_fmt( ak_error_ok, __func__,
+                                              "monobit test Ok, binsum: %u", (unsigned int)binsum );
+
+    if( chi > 16.266 ) {
+      if( ak_log_get_level() >= ak_log_maximum )
+        ak_error_message_fmt( ak_error_chi_square_bigramm_test, __func__,
+                                           "bigramm chi-square test fault, chi-square: %Lf", chi  );
+      return ak_false;
+    }
+     else {
+       if( ak_log_get_level() >= ak_log_maximum )
+         ak_error_message_fmt( ak_error_ok, __func__,
+                                              "bigramm chi-square test Ok, chi-square: %Lf", chi  );
+     }
+
   return ak_true;
+}
+
+/* ----------------------------------------------------------------------------------------------- */
+/*! В ходе выполнения функции выполняется проверка статистической гипотезы о равномерном
+    распределении нулей и единиц в заданном массиве данных.
+
+    @note Сообщения о неудачном окончании статистического тестирования
+    выводятся начиная с уровня аудита ak_log_standard. Сообщения об успешном окончании
+    статистического тестирования выводятся начиная с уровня аудита ak_log_maximum.
+
+    @param data указатель на область данных
+    @param size размер данных (в байтах), допустимое значение 4096.
+    При других значениях size возвращается ошибка.
+    @return В случае, если гипотеза о равномерном распределении не отвергается,
+    возвращается истина, в противном случае - ложь.                                                */
+/* ----------------------------------------------------------------------------------------------- */
+ bool_t ak_random_start_test( ak_uint8 *data, size_t size )
+{
+    size_t idx = 0;
+    size_t binsum = 0; /* сумма единиц */
+    ak_uint8 nu[256];
+    long double chi = 0; /* значение статистики хи-квадрат */
+    int previous_bit = -1;
+    int change_count = 0; /* число знакоперемен */
+    int current_length = 0, max_length = 0;
+
+    if( size != 4096 ) {
+      ak_error_message_fmt( ak_error_wrong_length, __func__,
+                                         "wrong size of input data, size: %u", (unsigned int)size );
+      return ak_false;
+    }
+
+    memset( nu, 0, sizeof( nu ));
+    for( idx = 0; idx < size; idx++ )
+    {
+        int i = 0;
+        ak_uint8 byte = data[idx];
+
+       /* подсчитываем количество единиц */
+        binsum += ak_hamming_weight_table[byte];
+       /* вычисляем частоты для теста хи-квадрат */
+        nu[byte]++;
+
+       /* определяем количество знакоперемен
+          и максимальную длину фиксированной последовательности */
+        for( i = 0; i < 8; i++ ) {
+           int k = byte&0x1;
+           if( k == previous_bit ) { /* последовательность продолжается */
+             current_length++;
+             if( current_length > max_length ) max_length = current_length;
+           }
+            else {
+              current_length = 1;
+              change_count++;
+            }
+           previous_bit = k;
+           byte >>= 1;
+        }
+    }
+
+   /* проверка гипотезы для частотного теста  */
+    if(( binsum < 16087 ) || ( binsum > 16681 )) {
+      if( ak_log_get_level() >= ak_log_standard )
+        ak_error_message_fmt( ak_error_monobit_test, __func__,
+                                           "monobit test fault, binsum: %u", (unsigned int)binsum );
+      return ak_false;
+    }
+     else {
+      if( ak_log_get_level() >= ak_log_maximum )
+        ak_error_message_fmt( ak_error_ok, __func__,
+                                              "monobit test Ok, binsum: %u", (unsigned int)binsum );
+     }
+   /* проверка гипотезы для теста хи-квадрат */
+    for( idx = 0; idx < 256; idx++ ) chi += ( nu[idx] - 16 )*( nu[idx] - 16 );
+    if( chi > 4968 ) { /* 16*310.5 = 4968 */
+      if( ak_log_get_level() >= ak_log_standard )
+        ak_error_message_fmt( ak_error_chi_square_byte_test, __func__,
+                                              "byte chi-square test fault, chi-square: %Lf", chi  );
+      return ak_false;
+    }
+     else {
+      if( ak_log_get_level() >= ak_log_maximum )
+        ak_error_message_fmt( ak_error_ok, __func__,
+                                                 "byte chi-square test Ok, chi-square: %Lf", chi  );
+     }
+   /* проверка числа знакоперемен */
+    if(( change_count < 16087 ) || ( change_count > 16681 )) {
+      if( ak_log_get_level() >= ak_log_standard )
+        ak_error_message_fmt( ak_error_changebit_test, __func__,
+                             "changebit test fault, change_count: %u", (unsigned int)change_count );
+      return ak_false;
+    }
+     else {
+      if( ak_log_get_level() >= ak_log_maximum )
+        ak_error_message_fmt( ak_error_ok, __func__,
+                               "changebit test Ok, change_count: %u", (unsigned int)change_count );
+     }
+
+   /* проверка фиксированного отрезка максимальной длины */
+    if( max_length > 20 ) {
+      if( ak_log_get_level() >= ak_log_standard )
+        ak_error_message_fmt( ak_error_maxlength_test, __func__,
+                                   "maxlen test fault, max_length: %u", (unsigned int)max_length );
+      return ak_false;
+    }
+     else {
+      if( ak_log_get_level() >= ak_log_maximum )
+        ak_error_message_fmt( ak_error_ok, __func__,
+                                      "maxlen test Ok, max_length: %u", (unsigned int)max_length );
+     }
+
+ return ak_true;
 }
 
 /* ----------------------------------------------------------------------------------------------- */

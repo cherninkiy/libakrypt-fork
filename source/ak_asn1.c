@@ -549,8 +549,8 @@ int ak_asn1_get_length_from_der( ak_uint8** pp_data, size_t *p_len )
     memset( tmp, 0, sizeof( tmp ));
     memcpy( tmp, prefix, ak_min( sizeof(tmp)-1, strlen( prefix )));
     if( tlv->next == NULL )
-      ak_snprintf( prefix, sizeof( prefix ), "%s%s%*s", tmp, " ", strlen(dp), " " );
-     else ak_snprintf( prefix, sizeof( prefix ), "%s%s%*s", tmp, VER_LINE, strlen(dp), " " );
+      ak_snprintf( prefix, sizeof( prefix ), "%s%s%*s", tmp, " ", (int) strlen(dp), " " );
+     else ak_snprintf( prefix, sizeof( prefix ), "%s%s%*s", tmp, VER_LINE, (int) strlen(dp), " " );
 
     ak_asn1_print( tlv->data.constructed );
     prefix[plen] = 0;

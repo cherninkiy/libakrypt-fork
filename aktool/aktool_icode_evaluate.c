@@ -356,8 +356,8 @@
    /* финальное сообщение об ошибках */
     if( ki->statistical_data.skiped_files ) {
       exit_status = EXIT_FAILURE;
-      aktool_error(_("aktool found %d error(s), try aktool with \"--audit-file stderr --audit 2\""
-                           " options or see syslog messages"), ki->statistical_data.skiped_files );
+      aktool_error(_("aktool found %lu error(s), try aktool with \"--audit-file stderr --audit 2\""
+       " options or see syslog messages"), (long unsigned int) ki->statistical_data.skiped_files );
     }
 
    /* вывод статистики */
@@ -481,8 +481,8 @@
 
    /* финальное предупреждение */
     if( ki->statistical_data.skiped_files ) {
-      aktool_error(_("aktool found %d error(s), try aktool with \"--audit-file stderr --audit 2\""
-                           " options or see syslog messages"), ki->statistical_data.skiped_files );
+      aktool_error(_("aktool found %lu error(s), try aktool with \"--audit-file stderr --audit 2\""
+       " options or see syslog messages"), (long unsigned int) ki->statistical_data.skiped_files );
       exit_status = EXIT_FAILURE;
     }
      else exit_status = EXIT_SUCCESS;
@@ -606,8 +606,8 @@
                                ki->statistical_data.deleted_files + ki->statistical_data.new_files;
     if( total_errors ) {
       exit_status = EXIT_FAILURE;
-      aktool_error(_("aktool found %d error(s), try aktool with \"--audit-file stderr --audit 2\""
-                                                " options or see syslog messages"), total_errors );
+      aktool_error(_("aktool found %lu error(s), try aktool with \"--audit-file stderr --audit 2\""
+                            " options or see syslog messages"), (long unsigned int) total_errors );
     }
      else exit_status = EXIT_SUCCESS;
 
@@ -862,7 +862,7 @@
            {
              tmp = fp.size - ki->curmem.offset;
 	         memset( value, 0, sizeof( value ));
-	         ak_snprintf( value, sizeof( value ), "%x", ki->curmem.offset );
+                 ak_snprintf( value, sizeof( value ), "%x", (unsigned int) ki->curmem.offset ); /* надо проверить */
                  ak_htable_add_str_str( &ki->fragments_lens, filename, value );
            }
             else

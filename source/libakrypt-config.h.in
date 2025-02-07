@@ -1,0 +1,47 @@
+/* ----------------------------------------------------------------------------------------------- */
+/*  Copyright (c) 2024 by Axel Kenzo, axelkenzo@mail.ru                                            */
+/*                                                                                                 */
+/*  Файл libakrypt-config.h                                                                        */
+/*  (определение макросов для конкретной плафтормы на которой собирается библиотека)               */
+/* ----------------------------------------------------------------------------------------------- */
+#ifndef    __LIBAKRYPT_CONFIG_H__
+#define    __LIBAKRYPT_CONFIG_H__
+
+#cmakedefine AK_HAVE_STDIO_H
+#cmakedefine AK_HAVE_STRING_H
+#cmakedefine AK_HAVE_STDARG_H
+#cmakedefine AK_HAVE_CTYPE_H
+#cmakedefine AK_HAVE_STDLIB_H
+#cmakedefine AK_HAVE_SYSENDIAN_H
+#cmakedefine AK_HAVE_BYTESWAP_H
+#cmakedefine AK_HAVE_STDALIGN_H
+#cmakedefine AK_HAVE_TIME_H
+#cmakedefine AK_HAVE_SYSMMAN_H
+#cmakedefine AK_HAVE_SYSTYPES_H
+#cmakedefine AK_HAVE_ERRNO_H
+#cmakedefine AK_HAVE_STRINGS_H
+#cmakedefine AK_HAVE_ENDIAN_H
+#cmakedefine AK_HAVE_SYSTIME_H
+#cmakedefine AK_HAVE_SYSLOG_H
+#cmakedefine AK_HAVE_UNISTD_H
+#cmakedefine AK_HAVE_FCNTL_H
+#cmakedefine AK_HAVE_LIMITS_H
+#cmakedefine AK_HAVE_SYSSTAT_H
+#cmakedefine AK_HAVE_SYSSOCKET_H
+#cmakedefine AK_HAVE_SYSUN_H
+#cmakedefine AK_HAVE_SYSSELECT_H
+#cmakedefine AK_HAVE_TERMIOS_H
+#cmakedefine AK_HAVE_DIRENT_H
+#cmakedefine AK_HAVE_FNMATCH_H
+#cmakedefine AK_HAVE_LOCALE_H
+#cmakedefine AK_HAVE_SIGNAL_H
+#cmakedefine AK_HAVE_GETOPT_H
+#cmakedefine AK_HAVE_LIBINTL_H
+#cmakedefine AK_HAVE_ATTRIBUTE_FORMAT_PRINTF
+#cmakedefine AK_HAVE_WINDOWS_H
+#cmakedefine AK_HAVE_SSIZE_T
+
+#endif
+/* ----------------------------------------------------------------------------------------------- */
+/*                                                                             libakrypt-config.h  */
+/* ----------------------------------------------------------------------------------------------- */

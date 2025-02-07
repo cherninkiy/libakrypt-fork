@@ -1783,7 +1783,7 @@
   ak_random_ptr( &rnd, buffer, sizeof( buffer ));
   if(( error = ak_hash_ptr( &ctx, buffer, sizeof( buffer ), out, sizeof( out ))) != ak_error_ok ) {
     ak_error_message_fmt( error, __func__,
-                                        "incorrect hashing of random %u octets", sizeof( buffer ));
+                          "incorrect hashing of random %u octets", (unsigned int) sizeof( buffer ));
     result = ak_false;
     goto lab_exit;
   }
@@ -1897,7 +1897,7 @@
   ak_random_ptr( &rnd, buffer, sizeof( buffer ));
   if(( error = ak_hash_ptr( &ctx, buffer, sizeof( buffer ), out, sizeof( out ))) != ak_error_ok ) {
     ak_error_message_fmt( error, __func__,
-                                        "incorrect hashing of random %u octets", sizeof( buffer ));
+                          "incorrect hashing of random %u octets", (unsigned int) sizeof( buffer ));
     result = ak_false;
     goto lab_ex;
   }

@@ -9,6 +9,7 @@
 /*  Copyright (c) 2019 by Anton Sakharov                                                           */
 /*  Copyright (c) 2022 by Yasmin Yurovskikh, yaeyurovskikh@edu.hse.ru                              */
 /*  Copyright (c) 2022 by AlexVCh66                                                                */
+/*  Copyright (c) 2024 by Yuri Epstein, y.epshtein@kryptonite.ru                                   */
 /*                                                                                                 */
 /* ----------------------------------------------------------------------------------------------- */
 /*  Файл libakrypt.h                                                                               */
@@ -135,6 +136,18 @@ extern "C" {
  #define ak_error_encrypt_scheme              (-180)
 /*! \brief Ошибка использования не инициализированного aead контекста */
  #define ak_error_aead_initialization         (-181)
+
+/*! \brief Ошибка при прохождении частотного теста */
+ #define ak_error_monobit_test                (-201)
+/*! \brief Ошибка при прохождении теста хи-квадрат для биграмм */
+ #define ak_error_chi_square_bigramm_test     (-202)
+/*! \brief Ошибка при прохождении теста хи-квадрат для байт */
+ #define ak_error_chi_square_byte_test        (-203)
+/*! \brief Ошибка при прохождении теста знакоперемен */
+ #define ak_error_changebit_test              (-204)
+/*! \brief Ошибка при прохождении теста максимальной длины фиксированной последовательности */
+ #define ak_error_maxlength_test              (-205)
+
 
 /* ----------------------------------------------------------------------------------------------- */
 /** \defgroup options-doc Инициализация и настройка параметров библиотеки
@@ -420,6 +433,12 @@ extern "C" {
 /*! \brief Функция обработки данных заданного размера. */
  typedef int ( ak_function_random_ptr_const )( ak_random , const ak_pointer, const ssize_t );
 
+/*! \brief Внешняя функция выработки массива случайных данных заданного размера,
+    не связанная с библиотекой. Потребовалось для интеграции в библиотеку в
+    качестве источника случайных данных системного блокнота ЛСМ. */
+ typedef int(ak_function_external_rng)(void* out_buf, size_t out_buf_size);
+
+
 /* ----------------------------------------------------------------------------------------------- */
 /*! \brief Класс, реализующий произвольный генератор псевдо-случайных чисел. */
 /* ----------------------------------------------------------------------------------------------- */
@@ -432,6 +451,8 @@ extern "C" {
    ak_function_random_ptr_const *randomize_ptr;
   /*! \brief Указатель на функцию выработки последователности псевдо-случайных байт */
    ak_function_random_ptr_const *random;
+  /*! \brief Указатель на внешнюю функцию-источник последователности псевдо-случайных байт */
+   ak_function_external_rng* random_external;
   /*! \brief Указатель на функцию освобождения внутреннего состояния */
    ak_function_random *free;
   /*! \brief Объединение, определяющее внутренние данные генератора */
@@ -452,7 +473,13 @@ extern "C" {
  };
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Инициализация контекста линейного конгруэнтного генератора псевдо-случайных чисел. */
+ /*! \brief Инициализация контекста генератора указателем на внешнюю по
+    отношению к библиотеке функцию генерации случайных чисел. */
+ dll_export int ak_random_create_external_rng(ak_random rnd,
+                                              ak_function_external_rng* fn_rng);
+
+ /*! \brief Инициализация контекста линейного конгруэнтного генератора
+  * псевдо-случайных чисел. */
  dll_export int ak_random_create_lcg( ak_random );
  /*! \brief Инициализация контекста генератора, считывающего случайные значения из заданного файла. */
  dll_export int ak_random_create_file( ak_random , const char * );
@@ -489,8 +516,11 @@ extern "C" {
 /*! \brief Функция очистки и последующего удаления файла. */
  dll_export int ak_file_delete( const char * , ak_random );
 
-/*! \brief Статистическая проверка двоичной последовательности */
+/*! \brief Статистическая проверка короткой двоичной последовательности (32, 64 или 128 байт) */
  dll_export bool_t ak_random_dynamic_test( ak_uint8 * , size_t );
+/*! \brief Статистическая проверка двоичной последовательности (4096 байт) */
+ bool_t ak_random_start_test( ak_uint8 * , size_t );
+
 /** @}*/
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -2151,6 +2181,18 @@ extern "C" {
 /*! \brief открытого ключа асимметричного криптографического алгоритма значением,
     предварительно сохраненном в простом текстовом файле */
  dll_export int ak_verifykey_create_from_file( ak_verifykey , const char * );
+
+ /*! \brief Функция сохраняет координаты X, Y открытого ключа в область памяти.
+   Размер области памяти должен быть не менее 144 байт (sizeof(uint64_t) *
+   ak_mpznmax_size). Параметры кривой не сохраняются. */
+ dll_export int ak_verifykey_export_to_xy_ptr(ak_verifykey vk, void* buffer,
+                                              size_t buffer_size,
+                                              size_t* data_size);
+ /*! \brief Функция, обратная к ak_verifykey_export_to_xy_ptr. */
+ dll_export int ak_verifykey_create_from_xy_ptr(ak_verifykey out_vk,
+                                                void* buffer, size_t data_size,
+                                                ak_wcurve wc);
+
 /** @}*/
 
 /* ----------------------------------------------------------------------------------------------- */

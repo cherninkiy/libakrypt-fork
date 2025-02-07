@@ -1969,8 +1969,8 @@
          #endif
   , sptr );
   if( ak_asn1_export_to_derfile( root, certname ) != ak_error_ok ) {
-    aktool_error("wrong moving the certificate to repository, "
-                                                 "maybe you need root privileges ... ", certname );
+    aktool_error("wrong moving the certificate (%s) to repository, "
+                                           "maybe you need root privileges ... ", certname );
     goto lab2;
   }
 

@@ -300,7 +300,7 @@
 
   if(( oid = ak_oid_find_by_id( ptr )) == NULL )
     return ak_error_message_fmt( ak_error_oid_id, __func__,
-                                                   "using unsupported object identifier %s", ptr );
+                                                           "using unsupported object identifier" );
   if(( oid->engine != verify_function ) || ( oid->mode != algorithm ))
     return ak_error_message( ak_error_oid_engine, __func__, "using wrong object identifier" );
 
@@ -322,7 +322,7 @@
 
   if(( oid = ak_oid_find_by_id( ptr )) == NULL )
     return ak_error_message_fmt( ak_error_oid_id, __func__,
-                            "import an unsupported object identifier %s for elliptic curve", ptr );
+                                    "import an unsupported object identifier for elliptic curve" );
   if(( oid->engine != identifier ) || ( oid->mode != wcurve_params ))
     return ak_error_message( ak_error_oid_engine, __func__, "using wrong object identifier" );
 
@@ -2379,7 +2379,7 @@
 
                   ak_snprintf( fileca, sizeof( fileca ), "%s/%s.cer", ca_repository_path,
                     ak_ptr_to_hexstr( vptr->subject->opts.issuer_serialnum,
-                                 vptr->subject->opts.issuer_serialnum_length, ak_false ), ".cer" );
+                                          vptr->subject->opts.issuer_serialnum_length, ak_false ));
 
                   ak_certificate_opts_create( &vptr->real_issuer.opts );
                   if( ak_certificate_import_from_file( &vptr->real_issuer,
@@ -2429,25 +2429,21 @@
 /* ----------------------------------------------------------------------------------------------- */
  int ak_certificate_set_repository( const char *path )
 {
-  char str[FILENAME_MAX];
+  char home[FILENAME_MAX];
 
   if( path == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                     "using null pointer to CA repository's path" );
  /* обрабатываем символ ~ в начале строки */
   if( strchr( path, '~' ) == path ) {
-    char home[FILENAME_MAX];
     ak_homepath( home, sizeof( home ));
-    ak_snprintf( str, sizeof( str ), "%s%s", home, ++path );
+    ak_snprintf( ca_repository_path, sizeof(ca_repository_path), "%s%s", home, ++path );
   }
-   else memcpy( str, path, strlen( path ));
+   else ak_snprintf( ca_repository_path, sizeof(ca_repository_path), "%s", path );
 
- /* проверяем существование заказанного каталога */
-  if( ak_file_or_directory( str ) != DT_DIR )
+/* проверяем существование заказанного каталога */
+  if( ak_file_or_directory( ca_repository_path ) != DT_DIR )
     return ak_error_message_fmt( ak_error_not_directory,
-                                                       __func__,  "directory %s not exists", str );
-  memset( ca_repository_path, 0, sizeof( ca_repository_path ));
-  strncpy( ca_repository_path, str, sizeof( ca_repository_path ));
-
+                                        __func__,  "directory %s not exists", ca_repository_path );
  return ak_error_ok;
 }
 
@@ -2721,8 +2717,7 @@
   }
   ak_tlv_get_oid( tlv, &ptr );
   if(( oid = ak_oid_find_by_id( ptr )) == NULL ) {
-    ak_error_message_fmt( ak_error_null_pointer, __func__,
-                                                   "using unsupported object identifier %s", ptr );
+    ak_error_message_fmt( ak_error_null_pointer, __func__, "using unsupported object identifier" );
     return NULL;
   }
   if( strncmp( oid->id[0], "1.2.840.113549.1.7.2", strlen( oid->id[0] )) != 0 ) {
@@ -2804,8 +2799,7 @@
     }
     ak_tlv_get_oid( tlv, &ptr );
     if(( oid = ak_oid_find_by_id( ptr )) == NULL ) {
-      ak_error_message_fmt( ak_error_oid_id, __func__,
-                                                   "using unsupported object identifier %s", ptr );
+      ak_error_message_fmt( ak_error_oid_id, __func__, "using unsupported object identifier");
       return NULL;
     }
     if( strncmp( oid->id[0], "1.2.840.113549.1.7.1", strlen( oid->id[0] )) != 0 ) {

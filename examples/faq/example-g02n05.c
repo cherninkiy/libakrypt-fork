@@ -88,8 +88,8 @@
 
    /* создаем новый файл */
     printf(" create: %d\n", ak_file_create_to_write( &fp, "new-file.txt" ));
-    printf(" write: %u\n",
-                (unsigned int )ak_file_printf( &fp, "Created with block_size: %u\n", fp.blksize ));
+    printf(" write: %u\n", (unsigned int )ak_file_printf( &fp,
+                                      "Created with block_size: %lld\n", fp.blksize ));
     printf(" close: %d\n", ak_file_close( &fp ));
 
    /* выводим сообщение */

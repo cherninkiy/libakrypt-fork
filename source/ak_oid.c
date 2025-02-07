@@ -888,7 +888,7 @@ static struct oid libakrypt_oids[] =
 {
   if( engine > undefined_engine ) {
     ak_error_message_fmt( ak_error_oid_engine, __func__, "incorrect value of engine: %d", engine );
-    return ak_null_string;
+    return libakrypt_engine_names[undefined_engine];
   }
  return libakrypt_engine_names[engine];
 }
@@ -901,7 +901,7 @@ static struct oid libakrypt_oids[] =
 {
   if( mode > undefined_mode ) {
     ak_error_message_fmt( ak_error_oid_mode, __func__, "incorrect value of engine mode: %d", mode );
-    return ak_null_string;
+    return libakrypt_mode_names[undefined_mode];
   }
  return libakrypt_mode_names[mode];
 }

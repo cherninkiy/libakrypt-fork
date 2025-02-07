@@ -198,8 +198,7 @@
 {
   #define buffer_length ( FILENAME_MAX + 160 )
 
-  struct stat st;
-  size_t idx = 0, off = 0;
+  size_t off = 0;
   int fd = 0, error = ak_error_ok;
   char ch, localbuffer[buffer_length];
 
@@ -207,42 +206,56 @@
   if(( fd = open( filename, O_RDONLY | O_BINARY )) < 0 )
     return ak_error_message_fmt( ak_error_open_file,
                              __func__, "wrong open file \"%s\" - %s", filename, strerror( errno ));
-  if( fstat( fd, &st ) ) {
-    close( fd );
-    return ak_error_message_fmt( ak_error_access_file, __func__ ,
-                              "wrong stat file \"%s\" with error %s", filename, strerror( errno ));
-  }
 
  /* нарезаем входные на строки длиной не более чем buffer_length - 2 символа */
   memset( localbuffer, 0, buffer_length );
   do{
-     idx++;
-     if( read( fd, &ch, 1 ) != 1 ) {
-       close(fd);
+     int r = read( fd, &ch, 1 );
+     if (r == 0) {
+       /* EOF, not an error */
+
+#ifdef _WIN32
+       if( off ) localbuffer[off-1] = 0;  /* удаляем второй символ перехода на новую строку */
+#endif
+       /* не теряем остаток, если последняя строка файла была без символа перевода строки */
+       error = function( localbuffer, ptr );
+
+       break;
+     }
+     if( r != 1 ) {
       /* if( idx != st.st_size ) {  ???  }
          - при чтении служебных файлов может выполняться условие idx != st.st_size,
            например, функция stat возвращает длину файла равной нулю.
          - в настоящее время, мы ни как не сигнализируем об этом событии */
-       return error;
+       error = ak_error_message_fmt( ak_error_read_data, __func__ ,
+                                   "failed to read file: \"%s\": %s", filename, strerror( errno ));
+       break;
      }
+
     /* проверка длины считанной строки */
      if( off > buffer_length - 2 ) {
-       close( fd );
-       return ak_error_message_fmt( ak_error_read_data, __func__ ,
+       error = ak_error_message_fmt( ak_error_read_data, __func__ ,
                           "%s has a line with more than %d symbols", filename, buffer_length - 2 );
+       break;
      }
+
     if( ch == '\n' ) {
-      #ifdef _WIN32
+#ifdef _WIN32
        if( off ) localbuffer[off-1] = 0;  /* удаляем второй символ перехода на новую строку */
-      #endif
+#endif
       error = function( localbuffer, ptr );
-     /* далее мы очищаем строку независимо от ее содержимого */
+
       off = 0;
       memset( localbuffer, 0, buffer_length );
+
+      if( error != ak_error_ok ) {
+        /* выходим из цикла если процедура проверки нарушена */
+        break;
+      }
+
     } else localbuffer[off++] = ch;
-   /* выходим из цикла если процедура проверки нарушена */
-    if( error != ak_error_ok ) return error;
-  } while( 1 ); /*  удалено: ch != EOF */
+
+  } while( 1 );
 
   close( fd );
  return error;
@@ -509,6 +522,13 @@
   return file->addr;
  #else
  /* в ситуациях, когда mmap не определена, сразу выходим */
+
+  (void) start;
+  (void) length;
+  (void) prot;
+  (void) flags;
+  (void) offset;
+
   ak_error_message( ak_error_undefined_function, __func__, "this function is'nt well developed" );
   return NULL;
  #endif
@@ -525,6 +545,8 @@
   return ak_error_ok;
  #else
  /* в ситуациях, когда mmap не определена, сразу выходим */
+
+  (void) file;
   return ak_error_message( ak_error_undefined_function, __func__,
                                                             "this function is'nt well developed" );
  #endif
