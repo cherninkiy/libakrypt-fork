@@ -220,8 +220,6 @@ void beltBlockEncr2(ak_uint32 block[4], const ak_uint32 key[8]) {
 void beltCompress(ak_uint32 h[8], const ak_uint32 X[8], void* stack) {
   // [12]buf = [4]buf0 || [4]buf1 || [4]buf2
   ak_uint32* buf = (ak_uint32*)stack;
-  // буферы не пересекаются?
-  //ASSERT(memIsDisjoint3(h, 32, X, 32, buf, 48));
   // buf0, buf1 <- h0 + h1
   beltBlockXor(buf, h, h + 4);
   beltBlockCopy(buf + 4, buf);
@@ -255,8 +253,6 @@ static inline void beltCompress2(ak_uint32 s[4], ak_uint32 h[8],
                    const ak_uint32 X[8], void* stack) {
   // [12]buf = [4]buf0 || [4]buf1 || [4]buf2
   ak_uint32* buf = (ak_uint32*)stack;
-  // буферы не пересекаются?
-  //ASSERT(memIsDisjoint4(s, 16, h, 32, X, 32, buf, 48));
   // buf0, buf1 <- h0 + h1
   beltBlockXor(buf, h, h + 4);
   beltBlockCopy(buf + 4, buf);
@@ -307,7 +303,6 @@ static int ak_hash_context_belt_hash_clean( ak_pointer bctx ) {
 
   beltBlockSetZero(cx->ls);
   beltBlockSetZero(cx->ls + 4);
-  // h <- B194...0D
   memmove(cx->h, beltH(), 32);
 
   return ak_error_ok;
@@ -361,8 +356,7 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
 {
   ak_belt_hash cx = ( ak_belt_hash ) bctx;
   struct belt_hash bx[1]; //здесь должна изменяться копия контекста, а не оригинал
-  ak_uint64 count_for_r;
-  ak_uint32* carry;
+  ak_uint32 carry;
 
   if( cx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                "using null pointer to internal streebog context" );
@@ -373,24 +367,15 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
   
   memcpy( bx, cx, sizeof( struct belt_hash ));
 
-  // обновить длину
-  count_for_r = size << 3;
-  carry = (ak_uint32*) &count_for_r;
-
-  carry[0] = (bx->ls[0] += carry[0]) < carry[0];
-  carry[0] = (bx->ls[1] += carry[0]) < carry[0];
-  carry[0] = (bx->ls[2] += carry[0]) < carry[0];
-  bx->ls[3] += carry[0];
-
-  carry[1] = (bx->ls[1] += carry[1]) < carry[1];
-  carry[1] = (bx->ls[2] += carry[1]) < carry[1];
-  bx->ls[3] += carry[1];
-
-  count_for_r = size >> 61;
-  carry[0] = (bx->ls[2] += carry[0]) < carry[0];
-  bx->ls[3] += carry[0];
-
   if(size) {
+    // обновить длину
+    carry = (ak_uint32) size << 3;
+    carry = (bx->ls[0] += carry) < carry;
+    carry = (bx->ls[1] += carry) < carry;
+    carry = (bx->ls[2] += carry) < carry;
+    bx->ls[3] += carry;
+
+    //отработать последний блок
     memset(bx->block, 0, 32);
     if (in != NULL) {
       memcpy(bx->block, in, size);
@@ -401,14 +386,18 @@ static int ak_hash_context_belt_hash_finalize( ak_pointer bctx,
 #endif
     beltCompress2(bx->ls + 4, bx->h, (ak_uint32*)bx->block, bx->stack);
   }
-
   beltCompress(bx->h, bx->ls, bx->stack);
 
   memcpy(out, bx->h, ak_min(32, out_size));
 
- return ak_error_ok;
+  return ak_error_ok;
 }
 
+/**
+ * \brief Инициализация контекста функции бесключевого хеширования СТБ 34.101.31-2020 (belt-hash).
+ * \param hctx Контекст функции хеширования, который будет заполнен
+ * \return Функция возвращает код ошибки или \ref ak_error_ok (в случае успеха)
+ */
 int ak_hash_create_belt_hash( ak_hash hctx )
 {
   int error = ak_error_ok;
