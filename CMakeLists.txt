@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------- #
-# Copyright (c) 2014 - 2024 by Axel Kenzo, axelkenzo@mail.ru
+# Copyright (c) 2014 - 2025 by Axel Kenzo, axelkenzo@mail.ru
 #
 # CMakeLists.txt
 # -------------------------------------------------------------------------------------------------- #
@@ -28,7 +28,7 @@ option( AK_EXAMPLES "Build examples for libakrypt" OFF )
 option( AK_TESTS "Build tests for libakrypt" OFF )
 option( AK_TESTS_GMP "Build comparison tests for gmp and libakrypt" OFF )
 option( AK_TOOL "Build aktool utility" ON )
-option( AK_LOAD_OPTIONS "Loading library options from config file every time as library starts" ON )
+option( AK_LOAD_OPTIONS "Loading libakrypt options from config file every time as library starts" ON )
 string( COMPARE EQUAL ${CMAKE_HOST_SYSTEM_NAME} "FreeBSD" AK_FREEBSD )
 
 # -------------------------------------------------------------------------------------------------- #

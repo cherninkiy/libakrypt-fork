@@ -1,7 +1,7 @@
 /* ----------------------------------------------------------------------------------------------- */
 /*  Copyright (c) 2024 by Axel Kenzo, axelkenzo@mail.ru                                            */
 /*                                                                                                 */
-/*  Прикладной модуль, реализующий процедуры вычисления сохранения контрольных сумм                */
+/*  Прикладной модуль, реализующий процедуры проверки контрольных сумм                             */
 /*                                                                                                 */
 /*  aktool_icode_evaluate.c                                                                        */
 /* ----------------------------------------------------------------------------------------------- */
@@ -849,6 +849,7 @@
         ki->statistical_data.skipped_links++;
         goto exlabx;
       }
+
       if(( kp = ak_htable_get_keypair_str( &ki->icodes, filename )) == NULL ) {
         aktool_error(_("process: %d, link to non-controlled file %s"), ki->pid, filename );
         error = ak_error_message_fmt( ak_error_htable_key_not_found, __func__,
@@ -883,14 +884,25 @@
        if(( !ki->quiet ) && ( ki->verbose )) printf(_("found segment: %s\n"), segment_value );
 
        if(( kp = ak_htable_get_keypair_str( &ki->icodes, segment_value )) == NULL ) {
-         aktool_error(_("process: %d, link to non-controlled segment %s"),
+         /* вот здесь появляется сегмент с неожиданным смещением
+            пытаемся его как-то обработать */
+           ak_snprintf( segment_value, sizeof( segment_value ) -1, "%s/%08x", filename, 0 );
+           if( ak_htable_get_keypair_str( &ki->icodes, segment_value ) == NULL ) {
+             /* такого даже и в помине не было */
+              aktool_error(_("process: %d, link to non-controlled segment %s"),
                                                                           ki->pid, segment_value );
-         error = ak_error_message_fmt( ak_error_htable_key_not_found, __func__,
+              error = ak_error_message_fmt( ak_error_htable_key_not_found, __func__,
                      _("process: %d, link to non-controlled segment %s"), ki->pid, segment_value );
+           }
+            else { /* сегмент есть, но мы получили ссылку на его часть
+                      поскольку сегмент проверялся ранее или чуть позже,
+                      повторная проверка не выполняется */
+                      error = ak_error_ok;
+                 }
        }
         else {
           size_t length = ((ak_uint64 *)(kp->data + kp->key_length))[0];
-          error = aktool_icode_check_maps_segment( length, kp, ki );
+          error = aktool_icode_check_maps_segment( length, kp, ki ); /* здесь длины достаются из базы данных */
         }
      }
 
@@ -999,7 +1011,7 @@
       goto labstat;
     }
 
-   /* последовательно тестируем все найденные процессы */
+   /* последовательно тестируем все процессы, найденные в каталоге /proc */
     errno = 0;
     if(( dp = opendir( "/proc" )) == NULL ) {
       if( errno == EACCES ) {

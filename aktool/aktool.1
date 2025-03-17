@@ -1,4 +1,3 @@
-'\" t
 .\" Man page generated from reStructuredText.
 .
 .
@@ -28,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "AKTOOL" "1" "янв. 09, 2025" "версия библиотеки 0.9.18" "libakrypt"
+.TH "AKTOOL" "1" "февр. 16, 2025" "версия библиотеки 0.9.18" "libakrypt"
 .SH NAME
 aktool \- Правила пользования
 .sp
@@ -44,9 +43,11 @@ aktool \- Правила пользования
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool команда [опции] [файл или каталог]
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -54,8 +55,9 @@ aktool команда [опции] [файл или каталог]
 преобразований и функциональных возможностей. В настоящее время
 доступны следующие команды.
 .TS
-box center;
-l|l|l.
+center;
+|l|l|l|.
+_
 T{
 Краткая форма
 T}	T{
@@ -119,6 +121,7 @@ test
 T}	T{
 Тестирование корректности и скорости работы
 T}
+_
 .TE
 .sp
 Получить информацию о доступных опциях и параметрах любой
@@ -126,9 +129,11 @@ T}
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool команда \-\-help
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -137,9 +142,11 @@ aktool команда \-\-help
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool \-\-version
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .SH УПРАВЛЕНИЕ КЛЮЧЕВОЙ ИНФОРМАЦИЕЙ
@@ -585,13 +592,15 @@ aktool \-\-version
 (в расширение \fBKeyUsage\fP добавляется бит \fBCRL Sign\fP)
 .SS Примеры выработки ключей симметричных криптографических алгоритмов
 .sp
-Создать секретный ключ алгоритма блочного шифрования «Магма» можно с помощью следующей команды:
+Создать секретный ключ алгоритма блочного шифрования \(dqМагма\(dq можно с помощью следующей команды:
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-nt magma \-o magma.key
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -600,15 +609,17 @@ aktool k \-nt magma \-o magma.key
 можно определить пароль доступа к созданному ключу прямо в командной строке.
 .sp
 Аналогично, создание нового секретного ключа выработки имитовставки для алгоритма HMAC,
-основанного на использовании функции хеширования «Стрибог256»,
+основанного на использовании функции хеширования \(dqСтрибог256\(dq,
 можно выполнить с помощью следующего вызова:
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-nt hmac\-streebog256 \-o secret\-hmac256.key \e\e
    \-\-label \(dqused for testing purpose\(dq \-\-random\-file /dev/random
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -621,10 +632,12 @@ aktool k \-nt hmac\-streebog256 \-o secret\-hmac256.key \e\e
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-s secret\-hmac256.key
 aktool a secret\-hmac256.key
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -632,7 +645,8 @@ aktool a secret\-hmac256.key
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 Тип:
   Симметричный секретный ключ
 Алгоритм:
@@ -644,7 +658,8 @@ aktool a secret\-hmac256.key
   до: 25 янв 2023 23:03:51 (Вторник) MSK
 Метка:
   used for testing purpose
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -658,9 +673,11 @@ aktool a secret\-hmac256.key
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-nt sign256 \-o aktool256.key \-\-op aktool256_request.csr \-\-to pem
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -671,10 +688,12 @@ aktool k \-nt sign256 \-o aktool256.key \-\-op aktool256_request.csr \-\-to pem
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-\-show aktool256.key
 aktool k \-v aktool256_request.csr \-\-verbose
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -688,10 +707,12 @@ aktool k \-v aktool256_request.csr \-\-verbose
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-nt sign512 \-\-curve ec512b \-o aktool512.key \-\-op aktool512_ca.crt \e\e
    \-\-to certificate \-\-id \(dq/cn=Aktool CA Team\(dq
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -699,10 +720,12 @@ aktool k \-nt sign512 \-\-curve ec512b \-o aktool512.key \-\-op aktool512_ca.crt
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-s aktool256_request.csr \-\-ca\-key aktool512.key \e\e
    \-\-ca\-cert aktool512_ca.crt \-\-op aktool256_certificate.crt \-\-to pem
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -710,10 +733,12 @@ aktool k \-s aktool256_request.csr \-\-ca\-key aktool512.key \e\e
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-v aktool256_request.csr \-\-verbose
 aktool k \-v aktool256_certificate.crt \-\-ca\-cert aktool512_ca.crt \-\-verbose
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -727,9 +752,11 @@ aktool k \-v aktool256_certificate.crt \-\-ca\-cert aktool512_ca.crt \-\-verbose
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-\-repo\-add aktool512_ca.crt
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -738,12 +765,14 @@ aktool k \-\-repo\-add aktool512_ca.crt
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-\-p7b\-create ca*.cer \-\-op cacer.p7b \-\-to pem
 aktool k \-\-p7b\-ls cacer.p7b
 aktool k \-v cacer.p7b
 aktool k \-\-repo\-add cacer.p7b
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -781,9 +810,11 @@ aktool k \-\-repo\-add cacer.p7b
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-na blom\-master \-\-size 640 \-\-field 256 \-o master.key
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -802,9 +833,11 @@ aktool k \-na blom\-master \-\-size 640 \-\-field 256 \-o master.key
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-na blom\-user \-\-key master.key \-o IDa.key \-\-id IDa
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -817,9 +850,11 @@ aktool k \-na blom\-user \-\-key master.key \-o IDa.key \-\-id IDa
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-na blom\-pairwise \-\-key IDa.key \-\-id IDb \-o pairwise\-ab.plain \-\-target undefined
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -829,10 +864,12 @@ aktool k \-na blom\-pairwise \-\-key IDa.key \-\-id IDb \-o pairwise\-ab.plain \
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-na blom\-pairwise \-\-key IDa.key \-\-id IDb \-o pairwise\-ab.key \e\e
    \-\-target kuznechik \-\-to pem \-\-label \(dqused for testing purpose\(dq
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -842,7 +879,8 @@ aktool k \-na blom\-pairwise \-\-key IDa.key \-\-id IDb \-o pairwise\-ab.key \e\
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 \-\-\-\-\-BEGIN ENCRYPTED SYMMETRIC KEY\-\-\-\-\-
 MIIBOQYJKoUDAjQBfwEBMEkGCSqFAwI0AX8CATA8BggqhQMHAQEFAjAwBggqhQMH
 AQEEAgQgAHB+xvFnuFDcr1hjTVoOzg9mrjHog+W2YMkA2nuFqiQCAgfQMIHgBgkq
@@ -852,7 +890,8 @@ MDEyMTkyMjU3NTdaFw0yMTEyMTkyMjU3NTdaMGACAQECAQAEWGA2LJdbqSbk99Wu
 vjPwoBcA/PmKb1hI8cIj9GwbbZljdGkDUvjwO1DgnfAsc7u/Fkumtvy/i/ejQEu/
 o2Mg5v5P8bJwA0SCk+XRLluRmNYVsAYS8egjFXM=
 \-\-\-\-\-END ENCRYPTED SYMMETRIC KEY\-\-\-\-\-
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -862,10 +901,12 @@ o2Mg5v5P8bJwA0SCk+XRLluRmNYVsAYS8egjFXM=
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-na blom\-user \-\-key master.key \-o IDb.key \-\-id IDb
 aktool k \-na blom\-pairwise \-\-key IDb.key \-\-id IDa \-o pairwise\-ba.plain \-\-target undefined
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -875,7 +916,8 @@ aktool k \-na blom\-pairwise \-\-key IDb.key \-\-id IDa \-o pairwise\-ba.plain \
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 xxd \-g1 pairwise\-ab.plain
 00000000: e2 fd af 33 30 55 22 b3 45 fd 2f 06 2b 91 45 50  ...30U\(dq.E./.+.EP
 00000010: f5 70 a6 0d 3f 78 f7 0d 9e c4 41 b2 7b 5b f1 6b  .p..?x....A.{[.k
@@ -883,12 +925,13 @@ xxd \-g1 pairwise\-ab.plain
 xxd \-g1 pairwise\-ba.plain
 00000000: e2 fd af 33 30 55 22 b3 45 fd 2f 06 2b 91 45 50  ...30U\(dq.E./.+.EP
 00000010: f5 70 a6 0d 3f 78 f7 0d 9e c4 41 b2 7b 5b f1 6b  .p..?x....A.{[.k
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
 Реализация схемы Блома соотвествует рекомендациям
-\X'tty: link https://tc26.ru/standarts/rekomendatsii-po-standartizatsii/r-1323565-1-028-2019-informatsionnaya-tekhnologiya-kriptograficheskaya-zashchita-informatsii-kriptograficheskie-mekhanizmy-zashchishchennogo-vzaimodeystviya-kontrolnykh-i-izmeritelnykh-ustroystv.html'\fI\%Р 1323565.1.028\-2019\fP\X'tty: link',
+\fI\%Р 1323565.1.028\-2019\fP,
 см. приложение Б.
 .SH КОНТРОЛЬ ЦЕЛОСТНОСТИ
 .sp
@@ -990,7 +1033,7 @@ xxd \-g1 pairwise\-ba.plain
 .UNINDENT
 .sp
 По\-умолчанию, для вычисления имитовставки вырабатывается производный ключ,
-зависящий от указанного опцией :option::\fI–key\fP исходного ключа и имени имитозащищаемого файла. Использование данной опции
+зависящий от указанного опцией :option::\fI\-\-key\fP исходного ключа и имени имитозащищаемого файла. Использование данной опции
 приводит к запрету вычисления производного ключа и вычислению имитовставки на исходном ключе.
 .INDENT 0.0
 .TP
@@ -1051,14 +1094,16 @@ xxd \-g1 pairwise\-ba.plain
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool i file.txt \-o result.txt
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
 Следующая последовательность вызовов позволяет
-создать секретный ключ блочного алгоритма шифрования «Кузнечик»,
+создать секретный ключ блочного алгоритма шифрования \(dqКузнечик\(dq,
 а после, вычислить имитовставки всех файлов,
 удовлетворяющих шаблону \fB*.t??\fP (файлы, имеющие расширение из трех
 символов, начинающееся с символа \fIt\fP) в текущем каталоге (на это указывает
@@ -1067,10 +1112,12 @@ aktool i file.txt \-o result.txt
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool k \-nt kuznechik \-o kuznechik.key
 aktool i \-rp \(dq*.t??\(dq \-\-key kuznechik.key \-m cmac\-kuznechik .
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1079,9 +1126,11 @@ aktool i \-rp \(dq*.t??\(dq \-\-key kuznechik.key \-m cmac\-kuznechik .
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool i \-c result.txt
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1097,9 +1146,9 @@ aktool i \-c result.txt
 .INDENT 3.5
 .INDENT 0.0
 .IP \(bu 2
-\X'tty: link https://github.com/gost-engine/engine'\fI\%gost12sum\fP\X'tty: link', которая входит в состав дополнительного модуля (engine) для хорошо известной программы \fIopenssl\fP,
+\fI\%gost12sum\fP, которая входит в состав дополнительного модуля (engine) для хорошо известной программы \fIopenssl\fP,
 .IP \(bu 2
-\X'tty: link https://github.com/rhash/RHash'\fI\%rhash\fP\X'tty: link'\&.
+\fI\%rhash\fP\&.
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -1109,7 +1158,8 @@ aktool i \-c result.txt
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 echo \-n hello > test.file
 aktool i test.file
 3fb0700a41ce6e41413ba764f98bf2135ba6ded516bea2fae8429cc5bdd46d6d test.file
@@ -1119,7 +1169,8 @@ rhash \-G test.file
 
 gost12sum test.file
 3fb0700a41ce6e41413ba764f98bf2135ba6ded516bea2fae8429cc5bdd46d6d test.file
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1128,11 +1179,13 @@ gost12sum test.file
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 gost12sum \-l test.file
 rhash \-\-gost12\-512 test.file
 aktool i \-a streebog512 test.file
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1142,12 +1195,14 @@ aktool i \-a streebog512 test.file
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 openssl dgst \-md_gost12_256 test.file > result.txt
 cat result
 md_gost12_256(test.file)=
      3fb0700a41ce6e41413ba764f98bf2135ba6ded516bea2fae8429cc5bdd46d6d
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1156,11 +1211,13 @@ md_gost12_256(test.file)=
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool i \-\-tag test.file
 streebog256 (test.file) =
      3fb0700a41ce6e41413ba764f98bf2135ba6ded516bea2fae8429cc5bdd46d6d
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1169,9 +1226,11 @@ streebog256 (test.file) =
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool i \-c result.txt \-\-dont\-show\-stat
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1182,7 +1241,8 @@ aktool i \-c result.txt \-\-dont\-show\-stat
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 openssl dgst \-md_gost12_256 \-mac hmac \-macopt hexkey:acabdcab0137 test.file
 HMAC\-md_gost12_256(test.file)=
      31d56cc082c4cd57955119f4cde662b4554f867fcc08ee4d59ba32d0e604180d
@@ -1190,7 +1250,8 @@ HMAC\-md_gost12_256(test.file)=
 aktool i \-a hmac\-streebog256 \-\-hexkey acabdcab0137 \-\-tag \-\-no\-derive test.file
 hmac\-streebog256 (test.file) =
      31d56cc082c4cd57955119f4cde662b4554f867fcc08ee4d59ba32d0e604180d
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1262,7 +1323,8 @@ hmac\-streebog256 (test.file) =
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 \-\-\-\-\-BEGIN CERTIFICATE\-\-\-\-\-
 MIHKMHkCAQAwEjEQMA4GA1UEAxMHRXhhbXBsZTBeMBcGCCqFAwcBAQEBMAsGCSqF
 AwcBAgEBAQNDAARAdCeV1L7ohN3yhQ/sA+o/rxhE4B2dpgtkUJOlXibfw5l49ZbP
@@ -1270,7 +1332,8 @@ TU0MbPHRiUPZRJPRa57AoW1RLS4SfMRpGmMY4qAAMAoGCCqFAwcBAQMCA0EAG9wq
 Exdnm2YjL2PqFv98ZMyqua2FX8bhgJFmHbedSBIdDh2lvjR8bxtSVseurCAK1krH
 em9bOg4Jcxjnrm7naQ==
 \-\-\-\-\-END CERTIFICATE\-\-\-\-\-
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1278,9 +1341,11 @@ em9bOg4Jcxjnrm7naQ==
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool a request_edw.pem
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1289,7 +1354,8 @@ aktool a request_edw.pem
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 SEQUENCE
         ├SEQUENCE
         │        ├INTEGER 0x0
@@ -1318,7 +1384,8 @@ SEQUENCE
            CC AA B9 AD 85 5F C6 E1 80 91 66 1D B7 9D 48 12
            1D 0E 1D A5 BE 34 7C 6F 1B 52 56 C7 AE AC 20 0A
            D6 4A C7 7A 6F 5B 3A 0E 09 73 18 E7 AE 6E E7 69
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1328,9 +1395,11 @@ SEQUENCE
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool a \-\-convert request_edw.p10 \-\-to pem \-\-pem request \-o request_edw.pem
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1339,9 +1408,11 @@ aktool a \-\-convert request_edw.p10 \-\-to pem \-\-pem request \-o request_edw.
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool a \-\-split ca\-bundle.crt \-\-to pem \-\-pem certificate
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .SH ВЫВОД СЛУЖЕБНОЙ И ВСПОМОГАТЕЛЬНОЙ ИНФОРМАЦИИ
@@ -1421,9 +1492,11 @@ aktool a \-\-split ca\-bundle.crt \-\-to pem \-\-pem certificate
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool s \-\-oids
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1434,13 +1507,15 @@ aktool s \-\-oids
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
  N  oid                 name(s)          engine            mode
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 10  1.2.643.7.1.1.5.2   kuznechik        block cipher      algorithm
                         kuznyechik
                         grasshopper
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1464,13 +1539,15 @@ aktool s \-\-oids
 .sp
 Выборочный поиск идентификаторов можно осуществить с помощью опции \fI\%\-\-oid\fP (без \fIs\fP на конце). Например,
 следующий вызов позволяет найти все идентификаторы, имена которых
-регламентированы Техническим комитетом «Криптографическая защита информации» (ТК26):
+регламентированы Техническим комитетом \(dqКриптографическая защита информации\(dq (ТК26):
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool s \-\-oid tc26
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1478,9 +1555,11 @@ aktool s \-\-oid tc26
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool s \-\-curve axeln0
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1488,7 +1567,8 @@ aktool s \-\-curve axeln0
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 curve: id\-axel\-gost\-3410\-2012\-256\-paramSetN0
        axeln0
 oid:   1.2.643.2.52.1.12.1.1
@@ -1503,7 +1583,8 @@ parameters:
 point:
   px =  0x0000000000000000000000000000000000000000000000000000000000000002
   py =  0x011e47b6e40dc7f783b9f4fc84d085884b9b88ca9ec7da8c5567c9d87f68a17f
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1512,9 +1593,11 @@ point:
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool s \-\-oid curve
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .SH ТЕСТИРОВАНИЕ КРИПТОГРАФИЧЕСКИХ АЛГОРИТМОВ
@@ -1531,7 +1614,7 @@ aktool s \-\-oid curve
 всех реализованных в библиотеке \fIlibakrypt\fP
 криптографических преобразований. В ходе тестирования
 проверяется совпадение вычисляемых значений со значениями, приведенными в различных
-регламетирующих документах (см., далее, раздел «Стандарты»).
+регламетирующих документах (см., далее, раздел \(dqСтандарты\(dq).
 В ряде случае проверяется
 совпадение результатов, полученных при помощи нескольких доступных реализаций.
 .INDENT 0.0
@@ -1606,9 +1689,11 @@ aktool s \-\-oid curve
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool test \-\-crypto \-\-audit 2 \-\-audit\-file stderr
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1616,12 +1701,14 @@ aktool test \-\-crypto \-\-audit 2 \-\-audit\-file stderr
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool t \-n magma \-\-verbose
 aktool t \-e hmac
 aktool t \-m aead
 aktool t \-n sign
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1691,7 +1778,7 @@ aktool t \-n sign
 .sp
 Опция позволяет использовать нестандартизированные форматы представления данных
 для некоторых криптографических алгоритмов, аналогично тому,
-как они реализованы в \X'tty: link https://github.com/gost-engine/engine'\fI\%gost\-engine\fP\X'tty: link' библиотеки \fIopenssl\fP\&.
+как они реализованы в \fI\%gost\-engine\fP библиотеки \fIopenssl\fP\&.
 .INDENT 0.0
 .TP
 .B \-\-quiet
@@ -1715,9 +1802,11 @@ aktool t \-n sign
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool a 0408435EB90E5C8796A160E69E4BFAC453435D1D.cer \-\-dont\-use\-colors | less
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .sp
@@ -1726,16 +1815,18 @@ aktool a 0408435EB90E5C8796A160E69E4BFAC453435D1D.cer \-\-dont\-use\-colors | le
 .INDENT 0.0
 .INDENT 3.5
 .sp
-.EX
+.nf
+.ft C
 aktool test \-\-crypto \-\-audit 2 \-\-audit\-file stderr
-.EE
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
 .SH СТАНДАРТЫ
 .sp
 Реализованные утилитой \fIaktool\fP криптографические преобразования и форматы данных
 соотвествуют следующим стандартам Российской Федерации и рекомендациям по стандартизации
-Технического комитета РФ «\X'tty: link https://tc26.ru/standarts/'\fI\%Криптографическая защита информации\fP\X'tty: link'».
+Технического комитета РФ \(dq\fI\%Криптографическая защита информации\fP\(dq.
 .INDENT 0.0
 .INDENT 3.5
 .INDENT 0.0
@@ -1783,6 +1874,6 @@ RFC 5652. Cryptographic Message Syntax (CMS).
 .SH AUTHOR
 Алексей Юрьевич Нестеренко
 .SH COPYRIGHT
-2014 - 2024, Алексей Юрьевич Нестеренко, МИЭМ
+2014 - 2025, Алексей Юрьевич Нестеренко, МИЭМ
 .\" Generated by docutils manpage writer.
 .
