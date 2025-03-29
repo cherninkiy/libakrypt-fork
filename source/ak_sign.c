@@ -998,6 +998,32 @@
   ak_mpzn_set_little_endian( r, pctx->wc->size, ( ak_uint64* )sign + pctx->wc->size,
                                                       sizeof(ak_uint64)*pctx->wc->size, ak_true );
 
+ /* согласно ГОСТ Р 34.10-2012, см. раздел 6.2, шаг 1,
+    должны быть выполнены неравества 0 < r < q, 0 < s < q
+    (в противном случае появляется возможность получить информацию о секретных значениях k, d */
+
+  if( memcmp( r, zero, sizeof(ak_uint64)*pctx->wc->size ) == 0 ) {
+     ak_error_message( ak_error_signature, __func__, "using a zero value of r in signature" );
+     return ak_false;
+  }
+
+ /* при равенстве значений, опять получаем ноль после приведения по модулю,
+    следовательно, должно быть строго меньше */
+  if( ak_mpzn_cmp( pctx->wc->q, r, pctx->wc->size ) != 1 ) {
+     ak_error_message( ak_error_signature, __func__, "using an unexpected value of r in signature" );
+     return ak_false;
+  }
+
+ /* выполняем точно такие же проверки, только теперь для второй половинки подписи s */
+  if( memcmp( s, zero, sizeof(ak_uint64)*pctx->wc->size ) == 0 ) {
+     ak_error_message( ak_error_signature, __func__, "using a zero value of s in signature" );
+     return ak_false;
+  }
+  if( ak_mpzn_cmp( pctx->wc->q, s, pctx->wc->size ) != 1 ) {
+     ak_error_message( ak_error_signature, __func__, "using an unexpected value of s in signature" );
+     return ak_false;
+  }
+
   memcpy( h, hash, sizeof( ak_uint64 )*pctx->wc->size );
 #ifndef AK_LITTLE_ENDIAN
   for( i = 0; i < pctx->wc->size; i++ ) h[i] = bswap_64( h[i] );
