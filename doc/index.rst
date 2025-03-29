@@ -31,8 +31,15 @@
 
    10-annotation.rst
    20-install-guide.rst
-   30-faq.rst
    90-aktool.rst
+
+.. toctree::
+   :caption: Книга о libakrypt
+   :maxdepth: 2
+   :hidden:
+
+   book/book-index.rst
+
 
 .. toctree::
    :maxdepth: 2
