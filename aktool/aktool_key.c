@@ -137,6 +137,9 @@
      { NULL,                  0, NULL,   0  },
   };
 
+ /* начинаем работу с криптографическими примитивами */
+  if( !aktool_create_libakrypt( )) return EXIT_FAILURE;
+
  /* разбираем опции командной строки */
   do {
        next_option = getopt_long( argc, argv, aktool_common_letters_definition"hna:o:t:vs", long_options, NULL );
@@ -148,6 +151,7 @@
         case 'n' : /* --new */
                    work = do_new;
                    break;
+
         case 'v' : /* --verify */
                    work = do_verify;
                    break;
@@ -165,6 +169,7 @@
                      ak_realpath( optarg, ki.key_file, sizeof( ki.key_file ) -1 );
                    #endif
                    break;
+
         case 164: /* --show-label */
                    work = do_show;
                    what_show = show_label;
@@ -174,6 +179,7 @@
                      ak_realpath( optarg, ki.key_file, sizeof( ki.key_file ) -1 );
                    #endif
                    break;
+
         case 165: /* --show-algorithm */
                    work = do_show;
                    what_show = show_algoid;
@@ -183,6 +189,7 @@
                      ak_realpath( optarg, ki.key_file, sizeof( ki.key_file ) -1 );
                    #endif
                    break;
+
         case 166: /* --show-curve */
                    work = do_show;
                    what_show = show_curveoid;
@@ -192,6 +199,7 @@
                      ak_realpath( optarg, ki.key_file, sizeof( ki.key_file ) -1 );
                    #endif
                    break;
+
         case 167: /* --show-number */
                    work = do_show;
                    what_show = show_number;
@@ -201,6 +209,7 @@
                      ak_realpath( optarg, ki.key_file, sizeof( ki.key_file ) -1 );
                    #endif
                    break;
+
         case 168: /* --show-public-key */
                    work = do_show;
                    what_show = show_public_key;
@@ -210,6 +219,7 @@
                      ak_realpath( optarg, ki.key_file, sizeof( ki.key_file ) -1 );
                    #endif
                    break;
+
         case 169: /* --show-resource */
                    work = do_show;
                    what_show = show_resource;
@@ -224,13 +234,15 @@
                    if(( ki.method = ak_oid_find_by_ni( optarg )) == NULL ) {
                      aktool_error(_("using unsupported name or identifier \"%s\""), optarg );
                      printf(_("try \"aktool s --oids\" for list of all available identifiers\n"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    if( ki.method->mode != algorithm ) {
                      aktool_error(_("%s is not valid identifier for algorithm"), optarg );
                      printf(
                      _("try \"aktool s --oid algorithm\" for list of all available algorithms\n"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    break;
 
@@ -244,14 +256,16 @@
                    if(( ki.oid_of_target = ak_oid_find_by_ni( optarg )) == NULL ) {
                       aktool_error(_("using unsupported name or identifier (%s) "), optarg );
                       printf(_("try \"aktool s --oids\" for list of all available identifiers\n"));
-                     return EXIT_FAILURE;
+                      exit_status = EXIT_FAILURE;
+                      goto exitlab;
                    }
                    if( ki.oid_of_target->mode != algorithm ) {
                      aktool_error(_("%s (%s) is not valid identifier for algorithm"),
                                      optarg, ak_libakrypt_get_mode_name( ki.oid_of_target->mode ));
                      printf(
                      _("try \"aktool s --oid algorithm\" for list of all available algorithms\n"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    break;
 
@@ -265,7 +279,8 @@
                           else {
                             aktool_error(_("incorrect value of field size,"
                                                 " use \"--field 256\" or \"--field 512\" option"));
-                            return EXIT_FAILURE;
+                            exit_status = EXIT_FAILURE;
+                            goto exitlab;
                           }
                    }
                    break;
@@ -295,8 +310,9 @@
                      aktool_error(_("user identifier cannot be of zero length, "
                                                 "maybe input error, check option --hexid %s%s%s"),
                                   ak_error_get_start_string(), optarg, ak_error_get_end_string( ));
-                       return EXIT_FAILURE;
-                     }
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
+                   }
                    break;
 
       /* устанавливаем имя генератора ключевой информации */
@@ -307,14 +323,16 @@
                                                                                           optarg );
                      printf(
                         _("try \"aktool s --oid random\" for list of all available algorithms\n"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    if(( ki.oid_of_generator->engine != random_generator ) ||
                                                      ( ki.oid_of_generator->mode != algorithm )) {
                      aktool_error(_("%s is not valid identifier for random generator"), optarg );
                      printf(
                        _("try \"aktool s --oid random\" for list of all available algorithms\n"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    break;
 
@@ -329,7 +347,8 @@
                    strncpy( ki.outpass, optarg, sizeof( ki.outpass ) -1 );
                    if(( ki.lenoutpass = strlen( ki.outpass )) == 0 ) {
                      aktool_error(_("the password cannot be zero length"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    break;
 
@@ -342,7 +361,8 @@
                    strncpy( ki.inpass, optarg, sizeof( ki.inpass ) -1 );
                    if(( ki.leninpass = strlen( ki.inpass )) == 0 ) {
                      aktool_error(_("the password cannot be zero length"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    break;
 
@@ -359,7 +379,8 @@
                        aktool_error(_("the password cannot be zero length, "
                                                    "maybe input error, see --outpass-hex %s%s%s"),
                                   ak_error_get_start_string(), optarg, ak_error_get_end_string( ));
-                       return EXIT_FAILURE;
+                       exit_status = EXIT_FAILURE;
+                       goto exitlab;
                      }
                    break;
 
@@ -375,7 +396,8 @@
                        aktool_error(_("the password cannot be zero length, "
                                                     "maybe input error, see --inpass-hex %s%s%s"),
                                   ak_error_get_start_string(), optarg, ak_error_get_end_string( ));
-                       return EXIT_FAILURE;
+                       exit_status = EXIT_FAILURE;
+                       goto exitlab;
                      }
                    break;
 
@@ -398,13 +420,15 @@
                                                                                           optarg );
                      printf(
                         _("try \"aktool s --oid curve\" for list of all available identifiers\n"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    if(( ki.curve->engine != identifier ) || ( ki.curve->mode != wcurve_params )) {
                       aktool_error(_("%s is not valid identifier for elliptic curve"), optarg );
                       printf(
                         _("try \"aktool s --oid curve\" for list of all available identifiers\n"));
-                       return EXIT_FAILURE;
+                      exit_status = EXIT_FAILURE;
+                      goto exitlab;
                      }
                    break;
 
@@ -461,7 +485,8 @@
                             ki.format = aktool_magic_number;
                            else {
                              aktool_error(_("%s is not valid format of output data"), optarg );
-                             return EXIT_FAILURE;
+                             exit_status = EXIT_FAILURE;
+                             goto exitlab;
                            }
                    }
                    break;
@@ -470,9 +495,11 @@
         case 190:  ki.cert.opts.ext_key_usage.bits ^= bit_digitalSignature;
                    ki.cert.opts.ext_key_usage.is_present = ak_true;
                    break;
+
         case 191:  ki.cert.opts.ext_key_usage.bits ^= bit_contentCommitment;
                    ki.cert.opts.ext_key_usage.is_present = ak_true;
                    break;
+
                   /* --key-encipherment */
         case 192:  ki.cert.opts.ext_key_usage.bits ^= bit_keyEncipherment;
                    ki.cert.opts.ext_key_usage.is_present = ak_true;
@@ -481,15 +508,19 @@
                    memset( ki.cert.opts.ext_secret_key_number.number, 0,
                                               sizeof( ki.cert.opts.ext_secret_key_number.number ));
                    break;
+
         case 193:  ki.cert.opts.ext_key_usage.bits ^= bit_dataEncipherment;
                    ki.cert.opts.ext_key_usage.is_present = ak_true;
                    break;
+
         case 194:  ki.cert.opts.ext_key_usage.bits ^= bit_keyAgreement;
                    ki.cert.opts.ext_key_usage.is_present = ak_true;
                    break;
+
         case 195:  ki.cert.opts.ext_key_usage.bits ^= bit_keyCertSign;
                    ki.cert.opts.ext_key_usage.is_present = ak_true;
                    break;
+
         case 196:  ki.cert.opts.ext_key_usage.bits ^= bit_cRLSign;
                    ki.cert.opts.ext_key_usage.is_present = ak_true;
                    break;
@@ -505,7 +536,8 @@
                       else {
                              aktool_error(
                               _("%s is not valid value of certificate authority option"), optarg );
-                             return EXIT_FAILURE;
+                             exit_status = EXIT_FAILURE;
+                             goto exitlab;
                            }
                    break;
 
@@ -514,7 +546,8 @@
                      int value = 0;
                      if(( value = atoi( optarg )) < 0 ) {
                        aktool_error(_("the value of pathlenConstraints must be non negative integer"));
-                       return EXIT_FAILURE;
+                       exit_status = EXIT_FAILURE;
+                       goto exitlab;
                      }
                      ki.cert.opts.ext_ca.is_present = ki.cert.opts.ext_ca.value = ak_true;
                      ki.cert.opts.ext_ca.pathlenConstraint = ak_min( 100, value );
@@ -538,14 +571,16 @@
                    if( ak_hexstr_to_ptr( optarg, ki.cert.opts.ext_secret_key_number.number,
                                            sizeof( ki.cert.opts.ext_secret_key_number.number ), ak_false ) != ak_error_ok ) {
                      aktool_error(_("incorrect value of secret key number, see the argument of --secret-key-number option"));
-                     return EXIT_FAILURE;
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    break;
 
         case 170:  /* --repo */
                    if( ak_certificate_set_repository( optarg ) != ak_error_ok ) {
-                     aktool_error(_("incorrect value of certificate's repository path, see the argument of --repo option"));
-                     return EXIT_FAILURE;
+                     aktool_error(_("incorrect value of certificate's repository path, check the argument of --repo option"));
+                     exit_status = EXIT_FAILURE;
+                     goto exitlab;
                    }
                    break;
 
@@ -588,9 +623,6 @@
   } while( next_option != -1 );
   if( work == do_nothing ) return aktool_key_help();
 
- /* начинаем работу с криптографическими примитивами */
-  if( !aktool_create_libakrypt( )) return EXIT_FAILURE;
-
  /* теперь вызов соответствующей функции */
   switch( work ) {
     case do_new: /* создаем секретный и, при необходимости, открытый ключ */
@@ -631,11 +663,11 @@
       exit_status = aktool_key_repo_add( argc, argv );
       break;
 
-    case do_repo_rm: /* добавляем один или несколько сертификатов в хранилище доверенных сертификатов */
+    case do_repo_rm: /* удаляем один или несколько сертификатов из хранилища доверенных сертификатов */
       exit_status = aktool_key_repo_rm( argc, argv );
       break;
 
-    case do_repo_check: /* добавляем один или несколько сертификатов в хранилище доверенных сертификатов */
+    case do_repo_check: /* проверяем хранилище доверенных сертификатов */
       exit_status = aktool_key_repo_check();
       break;
 
@@ -660,6 +692,7 @@
   }
 
  /* завершаем работу и выходим */
+  exitlab:
    aktool_destroy_libakrypt();
  return exit_status;
 }
@@ -1969,7 +2002,7 @@
          #endif
   , sptr );
   if( ak_asn1_export_to_derfile( root, certname ) != ak_error_ok ) {
-    aktool_error("wrong moving the certificate (%s) to repository, "
+    aktool_error("wrong export the certificate (%s) to repository, "
                                            "maybe you need root privileges ... ", certname );
     goto lab2;
   }

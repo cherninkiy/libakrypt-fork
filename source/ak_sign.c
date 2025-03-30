@@ -653,9 +653,9 @@
 #ifndef AK_LITTLE_ENDIAN
   int i = 0;
 #endif
-  size_t lb = 0;
-  ak_mpzn512 k, h;
+  size_t lb = 0, diff = 0;
   int error = ak_error_ok;
+  ak_mpznmax k, h, zero = ak_mpznmax_zero;
 
   if( sctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                       "using null pointer to secret key context" );
@@ -670,6 +670,7 @@
                                                        "using small buffer for digital sigature" );
 
  /* вырабатываем случайное число */
+  nextk:
   memset( k, 0, sizeof( ak_uint64 )*ak_mpzn512_size );
   if(( error = ak_mpzn_set_random_modulo( k, (( ak_wcurve )sctx->key.data)->q,
                                 (( ak_wcurve )sctx->key.data)->size, generator )) != ak_error_ok )

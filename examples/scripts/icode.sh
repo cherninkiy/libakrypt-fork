@@ -1,39 +1,60 @@
 ##########################################################################
 #! /bin/bash
-# проверка способов выработки и проверки контрольных сумм и имитовставок
+# проверка различных  способов выработки и проверки контрольных сумм и имитовставок
 #
-export AKTOOL=aktool
-#
-# может использоваться, например, так
-# export AKTOOL="qemu-mips64 -L /usr/mips64-linux-gnuabi64/ ./aktool"
-##########################################################################
+akt=aktool
+if [ -n "$1" ]
+then
+akt=$1
+fi
 #
 run() {
-${AKTOOL} $1
+$akt $1
 if [[ $? -ne 0 ]]
-then echo "${AKTOOL} не может выполнить $1"; exit;
+then 
+  echo "$akt не может выполнить $1"; exit;
 fi
 }
+
+##########################################################################
+# подготовительный этап
+mkdir -p cat
+cp *.sh cat
 #
-echo "Тестируем функции хэширования"
-run "i * --tag -o result.streebog256"
-echo "Ok (Стрибог256)";
-cat result.streebog256
-run "i -c result.streebog256 --ignore-errors"
+##########################################################################
+echo "Тест первый: фомируем базу и проверяем контрольные суммы"
+run "i -r *.sh --database db.streebog256"
+echo
+run "i -v --database db.streebog256 --dont-show-stat"
+rm -f db.streebog256
+
 #
-run "i -a streebog512 -p "*.s?" . -o result.streebog512"
-echo "Ok (Стрибог512)";
-cat result.streebog512
-run "i -c result.streebog512 -a streebog512 --ignore-errors"
-#
+##########################################################################
+echo "Тест второй: используем явно указанный алгоритм хеширования"
+run "i -r *.sh -a streebog512 --format linux"
+run "i -v -a streebog512 --format linux"
+run "i --clean"
+echo
+run "i -r *.sh -a crc64 --tag"
+run "i -v -a crc64 --format bsd --dont-show-stat"
+run "i --clean"
+
+##########################################################################
+echo "Удаляем временные файлы"
+rm cat/*.sh
+rmdir -f cat
+echo "Тест пройден"
+exit
 #
 echo; echo "Тестируем алгоритмы hmac"
 run "k -nt hmac-streebog256 -o hmac256.key --outpass 132a"
 echo;
-run "i --key hmac256.key --inpass 132a --tag . -o result.hmac-streebog256"
-cat result.hmac-streebog256
-run "i -c result.hmac-streebog256 --key hmac256.key --inpass 132a"
-echo;
+run "i --key hmac256.key --inpass 132a . -d result.hmac-streebog256"
+run "i --list -d result.hmac-streebog256"
+run "i -v result.hmac-streebog256 --key hmac256.key --inpass 132a"
+echo
+exit
+
 #
 #
 run "k -nt hmac-streebog512 -o hmac512.key --outpass 132a"

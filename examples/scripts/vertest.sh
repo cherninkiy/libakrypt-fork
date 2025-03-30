@@ -6,131 +6,148 @@
 # (используется доступ к сети Интернет)
 #
 ##########################################################################
+akt=aktool
+if [ -n "$1" ]
+then
+akt=$1
+fi
+
+##########################################################################
 # 1. В начале создаем самоподписанный сертификат УЦ
 #
-aktool k -nt sign512 --curve ec512c -o secret-ca.key --op public-ca.crt --ca --to certificate --id "Aktool CA" --outpass 321azO --days 1
+echo "Шаг первый: создаем самоподписанный сертификат УЦ"
+$akt k -nt sign512 --curve ec512c -o secret-ca.key --op public-ca.crt --ca --to certificate --id "Aktool CA" --outpass 321azO --days 1
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать корневой сертификат"; exit;
 fi
-aktool k -v public-ca.crt
+$akt k -v public-ca.crt --verbose
+echo
 #
 #
 
 ##########################################################################
-# 2. Помещаем созданный сертификат во временный репозиторий сертификатов
-mkdir .ca
-aktool k --repo-add public-ca.crt --repo .ca
+# 2. Помещаем созданный сертификат во временный репозиторий сертификатов\
+echo "Шаг второй: помещаем сертификат во временный репозиторий"
+mkdir -p .ca
+$akt k --repo-add public-ca.crt --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может добавить корневой сертификат в хранилище"; exit;
 fi
 echo "Проверяем репозиторий"
-aktool k --repo-check --repo .ca # проверяем, что в хранидище находятся валидные сертификаты
+$akt k --repo-check --repo .ca # проверяем, что в хранидище находятся валидные сертификаты
+echo
 #
 #
 
 ##########################################################################
-# 3. Вырабатываем сертификат УЦ первого уровня 
-aktool k -nt sign512 --curve ec512b -o secret-l1.key --op public-l1.csr --id "Aktool Level I" --to pem --outpass 321azO
+# 3. Вырабатываем сертификат УЦ первого уровня
+echo "Шаг третий: вырабатываем сертификат УЦ первого уровня" 
+$akt k -nt sign512 --curve ec512b -o secret-l1.key --op public-l1.csr --id "Aktool Level I" --to pem --outpass 321azO
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать запрос на сертификат"; exit;
 fi
-aktool k -v public-l1.csr
-echo;
+$akt k -v public-l1.csr
+echo
 #
-aktool k -s public-l1.csr --op public-l1.crt --to pem --ca-key secret-ca.key --inpass 321azO --ca-cert public-ca.crt --days 1 --ca-ext true --key-cert-sign
+$akt k -s public-l1.csr --op public-l1.crt --to pem --ca-key secret-ca.key --inpass 321azO --ca-cert public-ca.crt --days 1 --ca-ext true --key-cert-sign
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать сертификат !!!"; exit;
 fi
-aktool k -v public-l1.crt --repo .ca
+$akt k -v public-l1.crt --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может верифицировать сертификат удостоверяющего центра первого уровня"; exit;
 fi
-aktool k --repo-add public-l1.crt --repo .ca
+$akt k --repo-add public-l1.crt --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может добавить сертификат удостоверяющего центра первого уровня в хранилище"; exit;
 fi
+echo
 #
 #
 ##########################################################################
 # 4. Вырабатываем сертификат УЦ второго уровня 
-aktool k -nt sign512 --curve ec512b -o secret-l2.key --op public-l2.csr --id "Aktool Level II" --to pem --outpass 321azO
+echo "Шаг четвертый: вырабатываем сертификат УЦ второго уровня" 
+$akt k -nt sign512 --curve ec512b -o secret-l2.key --op public-l2.csr --id "Aktool Level II" --to pem --outpass 321azO
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать запрос на сертификат"; exit;
 fi
-aktool k -v public-l2.csr
+$akt k -v public-l2.csr
 echo;
 #
-aktool k -s public-l2.csr --op public-l2.crt --to pem --ca-key secret-l1.key --inpass 321azO --ca-cert public-l1.crt --days 1 --ca --repo .ca
+$akt k -s public-l2.csr --op public-l2.crt --to pem --ca-key secret-l1.key --inpass 321azO --ca-cert public-l1.crt --days 1 --ca --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать сертификат !!!"; exit;
 fi
-aktool k -v public-l2.crt --repo .ca 
+$akt k -v public-l2.crt --repo .ca 
 if [[ $? -ne 0 ]]
 then echo "aktool не может верифицировать сертификат удостоверяющего центра второго уровня"; exit;
 fi
-aktool k --repo-add public-l2.crt --repo .ca
+$akt k --repo-add public-l2.crt --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может добавить сертификат удостоверяющего центра второго уровня в хранилище"; exit;
 fi
 
 ##########################################################################
 # 5. Вырабатываем сертификат УЦ третьего уровня 
-aktool k -nt sign512 --curve ec512b -o secret-l3.key --op public-l3.csr --id "Aktool Level III" --to pem --outpass 321azO
+echo "Шаг пятый: вырабатываем сертификат УЦ третьего уровня" 
+$akt k -nt sign512 --curve ec512b -o secret-l3.key --op public-l3.csr --id "Aktool Level III" --to pem --outpass 321azO
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать запрос на сертификат"; exit;
 fi
-aktool k -v public-l3.csr
+$akt k -v public-l3.csr
 echo;
 #
-aktool k -s public-l3.csr --op public-l3.crt --to pem --ca-key secret-l2.key --inpass 321azO --ca-cert public-l2.crt --days 1 --ca --repo .ca
+$akt k -s public-l3.csr --op public-l3.crt --to pem --ca-key secret-l2.key --inpass 321azO --ca-cert public-l2.crt --days 1 --ca --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать сертификат (уровень три)"; exit;
 fi
-aktool k -v public-l3.crt --repo .ca 
+$akt k -v public-l3.crt --repo .ca 
 if [[ $? -ne 0 ]]
 then echo "aktool не может верифицировать сертификат удостоверяющего центра третьего уровня"; exit;
 fi
-aktool k --repo-add public-l3.crt --repo .ca
+$akt k --repo-add public-l3.crt --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может добавить сертификат удостоверяющего центра третьего уровня в хранилище"; exit;
 fi
 
 ##########################################################################
 # 6. Вырабатываем сертификат УЦ четвертого уровня 
-aktool k -nt sign512 --curve ec512b -o secret-l4.key --op public-l4.csr --id "Aktool Level IV" --to pem --outpass 321azO
+echo "Шаг шестой: вырабатываем сертификат УЦ четвертого уровня" 
+$akt k -nt sign512 --curve ec512b -o secret-l4.key --op public-l4.csr --id "Aktool Level IV" --to pem --outpass 321azO
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать запрос на сертификат"; exit;
 fi
-aktool k -v public-l4.csr
+$akt k -v public-l4.csr
 echo;
 #
-aktool k -s public-l4.csr --op public-l4.crt --to pem --ca-key secret-l3.key --inpass 321azO --ca-cert public-l3.crt --days 1 --ca --repo .ca
+$akt k -s public-l4.csr --op public-l4.crt --to pem --ca-key secret-l3.key --inpass 321azO --ca-cert public-l3.crt --days 1 --ca --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать сертификат (уровень 4)"; exit;
 fi
-aktool k -v public-l4.crt --repo .ca 
+$akt k -v public-l4.crt --repo .ca 
 if [[ $? -ne 0 ]]
 then echo "aktool не может верифицировать сертификат удостоверяющего центра четвертого уровня"; exit;
 fi
-aktool k --repo-add public-l4.crt --repo .ca
+$akt k --repo-add public-l4.crt --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может добавить сертификат удостоверяющего центра четвертого уровня в хранилище"; exit;
 fi
 
 ##########################################################################
 # 7. Завершаем собственный эксерсиз и вырабатываем сертификат пользователя 
-aktool k -nt sign256 -o secret-user.key --op public-user.csr --id "/cn=Aktool User Certificate/em=user@mail.mail" --to pem --outpass 321azO
+echo "Шаш седьмой: вырабатываем сертификат конечного пользователя"
+$akt k -nt sign256 -o secret-user.key --op public-user.csr --id "/cn=Aktool User Certificate/em=user@mail.mail" --to pem --outpass 321azO
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать запрос на сертификат"; exit;
 fi
-aktool k -v public-user.csr
+$akt k -v public-user.csr
 echo;
 #
-aktool k -s public-user.csr --op public-user.crt --to pem --ca-key secret-l4.key --inpass 321azO --ca-cert public-l4.crt --days 1 --repo .ca
+$akt k -s public-user.csr --op public-user.crt --to pem --ca-key secret-l4.key --inpass 321azO --ca-cert public-l4.crt --days 1 --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может создать сертификат"; exit;
 fi
-aktool k -v public-user.crt --repo .ca --verbose
+$akt k -v public-user.crt --repo .ca --verbose
 if [[ $? -ne 0 ]]
 then echo "aktool не может верифицировать сертификат пользователя"; exit;
 fi
@@ -146,7 +163,7 @@ then echo "wget не найден или нет подключения к гло
 fi
 #
 wget http://testca2012.cryptopro.ru/cert/subca.cer
-aktool k --repo-add rootca.cer subca.cer --repo .ca
+$akt k --repo-add rootca.cer subca.cer --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может добавить в хранилище сертификаты тестового УЦ от КриптоПро"; exit;
 fi
@@ -162,7 +179,7 @@ then echo "wget не найден или нет подключения к гло
 fi
 #
 wget http://ca-infotecs.ru/ca/CA-INFOTECS-1-2021.cer
-aktool k --repo-add guc2021.crt CA-INFOTECS-1-2021.cer --repo .ca
+$akt k --repo-add guc2021.crt CA-INFOTECS-1-2021.cer --repo .ca
 if [[ $? -ne 0 ]]
 then echo "aktool не может добавить в хранилище сертификаты тестового УЦ от КриптоПро"; exit;
 fi
@@ -183,13 +200,18 @@ wget https://tlsca.cryptopro.ru/tlscaroot.p7b https://tlsca.cryptopro.ru/tlsca.p
 # при вызове этой команды могут быть ошибки
 # из-за отсутствия поддержки сертификатов 2001 года
 ls -la *.p7b
-aktool k --repo-add *.p7b --repo .ca
+$akt k --repo-add *.p7b --repo .ca
 #
 #
 ##########################################################################
 # на-последок, показываем, что натворили и удаляем созданные файлы
-aktool k --repo-ls --repo .ca
-aktool k --repo-check --repo .ca
+echo ""
+echo "Вывод информации о созданных/загруженных сертификатах, перед из удалением"
+$akt k --repo-ls --repo .ca
+#
+echo
+echo "Проверка корректности сертификатов, находящихся в хранилище"
+$akt k --repo-check --repo .ca
 #
 rm -f secret-ca.key public-ca.crt
 rm -f secret-l1.key public-l1.csr public-l1.crt
