@@ -684,6 +684,12 @@
 
  /* и только теперь вычисляем электронную подпись */
   ak_signkey_sign_const_values( sctx, k, h, out );
+
+ /* проверем, что каждая из половинок подписи отлична о нуля */
+  diff = sizeof(ak_uint64)*(( ak_wcurve )sctx->key.data)->size;
+  if( memcmp( (ak_uint8 *)out, zero, diff ) == 0 ) goto nextk;
+  if( memcmp( (ak_uint8 *)out +diff, zero, diff ) == 0 ) goto nextk;
+
   ak_ptr_wipe( k, sizeof( ak_uint64 )*ak_mpzn512_size, &sctx->key.generator );
  return ak_error_ok;
 }

@@ -228,8 +228,8 @@
                                      _("trying to read %s file in text format"), ki->pubkey_file );
           break;
       }
-
-      /* return error; */
+      /* в случае ошибки разбора
+         пробуем разобрать как массив строк в формате linux или bsd */
     }
 
    /* создаем таблицу для хранения контрольных сумм */
