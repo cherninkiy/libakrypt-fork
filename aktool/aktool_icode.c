@@ -482,7 +482,6 @@
      /* аудит */
       if( ak_log_get_level() > ak_log_standard )
          ak_error_message( ak_error_ok, __func__, _("listing procedure"));
-
      /* считываем таблицу с сохраненными значениями контрольных сумм */
       if( aktool_icode_import_checksum( &ki ) != ak_error_ok ) goto exitlab;
      /* выводим все, что есть */

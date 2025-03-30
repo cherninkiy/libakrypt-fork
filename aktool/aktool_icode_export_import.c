@@ -142,6 +142,10 @@
     tchar *substr = NULL, *filename = NULL, *icode = NULL;
     int error = ak_error_ok, reterror = ak_error_undefined_value;
 
+   /* просто пустые строки удаляем из анализа */
+    if( string == NULL ) return ak_error_ok;
+    if( !strlen( string )) return ak_error_ok;
+
    /* строку нашли - увеличиваем счетчик */
     ki->statistical_data.total_lines++;
 
@@ -224,6 +228,8 @@
                                      _("trying to read %s file in text format"), ki->pubkey_file );
           break;
       }
+
+      /* return error; */
     }
 
    /* создаем таблицу для хранения контрольных сумм */
@@ -235,7 +241,7 @@
     if(( error = ak_file_read_by_lines( ki->pubkey_file,
                                        aktool_icode_import_checksum_line, ki )) != ak_error_ok ) {
       ak_htable_destroy( &ki->icodes );
-      aktool_error(_("incorrect loading predefined values from %s file"), ki->os_file );
+      aktool_error(_("incorrect loading predefined values from %s file"), ki->pubkey_file );
     }
      else {
       /* выводим статистику  */
