@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "AKTOOL" "1" "мар. 19, 2025" "версия библиотеки 0.9.18" "libakrypt"
+.TH "AKTOOL" "1" "мар. 31, 2025" "версия библиотеки 0.9.18" "libakrypt"
 .SH NAME
 aktool \- Правила пользования
 .sp
@@ -72,22 +72,6 @@ T}	T{
 asn1parse
 T}	T{
 Декодирование и печать ASN.1 данных
-T}
-_
-T{
-e
-T}	T{
-encrypt
-T}	T{
-Зашифрование данных пользователя
-T}
-_
-T{
-d
-T}	T{
-decrypt
-T}	T{
-Расшифрование данных пользователя
 T}
 _
 T{
@@ -935,14 +919,41 @@ xxd \-g1 pairwise\-ba.plain
 см. приложение Б.
 .SH КОНТРОЛЬ ЦЕЛОСТНОСТИ
 .sp
-Команда \fIicode\fP (короткая форма \fIi\fP) позволяет вычислять контрольные суммы или имитовставки
-для одного или нескольких файлов.
+Команда \fIicode\fP (короткая форма \fIi\fP) предназначена для контроля целостности
+файлов, расположенных на файловых носителях, а также сегментов исполняемого кода, расположенных в памяти вычислительного средства.
+Контроль целостности производится методом выработки и последующей
+проверки кодов целостности или кодов аутентификации (имитовставок).
 .sp
-Для вычисления контрольных сумм могут быть использованы любые реализованные в библиотеке алгоритмы хеширования (бесключевого сжатия).
-Для вычисления имитовставки необходимо использовать секретный ключ.
-Данный ключ должен быть предварительно создан пользователем с использованием команды \fIkey\fP\&.
+Команда \fIicode\fP может исполняться в двух режимах:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+в режиме выработки кодов целостности или кодов аутентификации, помещаемых в заданную пользователем базу данных,
+.IP \(bu 2
+в режиме проверки кодов целостности или кодов аутентификации, выработанных ранее.
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .sp
-В настоящее время для вычисления имитовставки могут быть использованы следующие алгоритмы:
+Для вычисления кодов целостности применяются алгоритмы бесключевого сжатия (функции хэширования).
+Перечень доступных алгоритмов может быть получен при помощи вызова:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+aktool show \-\-oid \(dqhash function\(dq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Для вычисления кодов аутентификации (имитовставок) применяются алгоритмы ключевого сжатия,
+поэтому, пользователем должен быть предварительно создан исходный секретный ключ. Данный ключ
+вырабатывается с использованием команды \fIkey\fP\&.
+.sp
+В настоящее время для вычисления имитовставок могут быть использованы следующие алгоритмы:
 .INDENT 0.0
 .INDENT 3.5
 .INDENT 0.0
@@ -952,140 +963,118 @@ xxd \-g1 pairwise\-ba.plain
 .UNINDENT
 .UNINDENT
 .sp
-Поскольку некоторые алгоритмы вычисления имитовставки накладывают
-ограничения на объем информации, обрабатываемой на одном ключе, то для таких алгоритмов вычисление имитоставки от очень больших
-файлов может приводить к ошибке. Если Вам необходимо вычислять
-имитовставки файлов с произвольной, сколь угодно большой длиной, то
-используйте следующие алгоритмы: \fIhmac\-streebog256\fP, \fIhmac\-streebog512\fP\&.
+Поскольку некоторые алгоритмы вычисления имитовставок накладывают
+ограничения на объем информации, обрабатываемой на одном ключе, то при вычислении имитовставки
+для каждого файла вычисляется свой уникальный производный ключ.
+Если есть необходимо вычислять
+имитовставки для файлов с произвольной, сколь угодно большой длиной, то
+необходимо использовать следующие алгоритмы: \fIhmac\-streebog256\fP, \fIhmac\-streebog512\fP\&.
 .SS Опции команды icode
 .INDENT 0.0
 .TP
-.B \-a, \-\-algorithm=метод
-.UNINDENT
-.sp
-Опция позволяет указать метод вычисления контрольной суммы (алгоритма бесключевого хеширования).
-В качестве параметра опции может выступать имя алгоритма, например \fIstreebog512\fP, или его идентификатор.
-В случае, когда опция не определена, для вычисления контрольной суммы
-используется бесключевая функция хеширования \fIstreebog256\fP\&.
-В случае выработки имитовставки данная опция может быть опущена.
-.INDENT 0.0
+.B  \-\-add
+add new (коды аутентификации или целостности) to an existing database
 .TP
-.B \-c, \-\-check=файл
-.UNINDENT
-.sp
-Опция позволяет проверить контрольные суммы или имитовставки для
-одного или нескольких файлов. Данные суммы должны быть вычислены
-заранее и сохранены в указанном \fIфайле\fP\&. Если при проверке используется
-алгоритм, отличный от установленного по\-умолчанию, необходимо указать
-его имя или идентификатор (для алгоритмов хеширования), а также, при необходимости,
-используемый секретный ключ.
-.INDENT 0.0
+.B  \-a\fP,\fB  \-\-algorithm
+set the name or identifier of keyless integrity mechanism
+[ enabled values: streebog256 streebog512 crc64, default: streebog256 ]
+for keyed authentication mechanism use –key option
 .TP
-.B \-\-dont\-show\-stat
-.UNINDENT
-.sp
-Опция запрещает вывод в консоль статистической информации об общем
-количестве проверенных файлов, количестве успешных или неуспешных
-проверок и т.п. Используется только совместно с опцией \fI\%\-\-check\fP\&.
-.INDENT 0.0
+.B  \-\-clean
+cleaning the existing database with authentication or integrity codes
 .TP
-.B \-\-ignore\-errors
-.UNINDENT
-.sp
-Опция запрещает останавливать процесс проверки контрольных сумм или
-имитовставок в случае возникновения ошибок доступа или чтения
-файлов, отсутствия файлов, содержащихся в списке и т.п.
-Используется только совместно с опцией \fI\%\-\-check\fP\&.
-.INDENT 0.0
+.B  \-c\fP,\fB  \-\-config
+specify the name of the configuration file
 .TP
-.B \-\-inpass=строка
-.UNINDENT
-.sp
-Опция позволяет указать пароль доступа к считываемому секретному ключу в командной строке.
-Использование данной опции может привести к компрометации ключевой информации.
-.INDENT 0.0
+.B  \-d\fP,\fB  \-\-database
+specify the name of database with authentication or integrity codes
+[ default name: /var/tmp/aktool.icodes]
 .TP
-.B \-\-inpass\-hex=строка
-.UNINDENT
-.sp
-Опция позволяет указать пароль доступа к считываемому секретному ключу в командной строке
-в виде шестнадцатеричной последовательности.
-Использование данной опции может привести к компрометации ключевой информации.
-.INDENT 0.0
+.B  \-\-dont\-show\-icode
+do not output calculated authentication or integrity codes to the console
 .TP
-.B \-\-key=файл
-.UNINDENT
-.sp
-Опция позволяет указать имя файла, содержащего используемый секретный ключ
-алгоритма выработки имитовставки.
-.INDENT 0.0
+.B  \-\-dont\-show\-stat
+do not show a statistical results after creation or verification of integrity codes
 .TP
-.B \-m, \-\-mode=режим
-.UNINDENT
-.sp
-Опция позволяет уточнить алгоритм вычисления имитовставки (\fIcmac\fP, \fIomac\-acpkm\fP и т.п.),
-реализуемый с использованием определяемого секретным ключом алгоритма блочного шифрования.
-При вычислении контрольных сумм, а также при использовании алгоритмов семейства \fIhmac\fP,
-данная опция не применяется.
-.INDENT 0.0
+.B  \-e\fP,\fB  \-\-exclude
+specify the name of excluded files or directories
 .TP
-.B \-\-no\-derive
-.UNINDENT
-.sp
-По\-умолчанию, для вычисления имитовставки вырабатывается производный ключ,
-зависящий от указанного опцией :option::\fI–key\fP исходного ключа и имени имитозащищаемого файла. Использование данной опции
-приводит к запрету вычисления производного ключа и вычислению имитовставки на исходном ключе.
-.INDENT 0.0
+.B  \-\-exclude\-link
+specify a link to the file in the memory of the process that should be excluded
 .TP
-.B \-o, \-\-output=файл
-.UNINDENT
-.sp
-Опция определяет имя файла, в который записываются вычисленные
-значения контрольных сумм или имитовставок. Данный файл может быть
-указан в качестве параметра опции \fI\%\-\-check\fP\&.
-.INDENT 0.0
+.B  \-\-format
+set the format of output hash table [ enabled values: binary linux bsd, default: binary ]
 .TP
-.B \-p, \-\-pattern=строка
-.UNINDENT
-.sp
-Опция указывает шаблон (маску) поиска файлов, к которым применяется процедура
-вычисления контрольной суммы или имитовставки.
-.INDENT 0.0
+.B  \-\-hash\-table\-nodes
+number of high\-level nodes in the generated hash table [ default: 1024 ]
 .TP
-.B \-r, \-\-recursive
-.UNINDENT
-.sp
-Опция указывает, что при вычислении контрольных сумм или
-имитовставок, должна выполняться рекурсивная процедура обхода
-текущего и всех вложенных каталогов. Опция имеет смысл только в том
-случае, когда в аргументах вызова утилиты указано имя каталога.
-.INDENT 0.0
+.B  \-\-inpass
+set the password for the secret key to be read directly in command line
 .TP
-.B \-\-reverse\-order
-.UNINDENT
-.sp
-Опция указывает, что все выводимые и вводимые последовательности
-октетов, должны обрабатываться в обратном порядке. Использование
-данной опции целесообразно для вывода результатов в \fIbig endian\fP
-порядке следования октетов. По\-умолчанию, используется \fIlitte\-endian\fP порядок.
-.INDENT 0.0
+.B  \-\-inpass\-hex
+set the password for the secret key to be read directly in command line as hexademal string
 .TP
-.B \-\-seed=строка
-.UNINDENT
-.sp
-При генерации производных ключей используется криптографическая функция, инициализируемая двумя значениями \- именем файла и
-заданной \fIстрокой\fP\&. В случае, если данная опция не указана, то используется определяемое утилитой
-фиксированное значение.
-.INDENT 0.0
+.B  \-i\fP,\fB  \-\-input
+set the name of file with previously created authentication or integrity codes
 .TP
-.B \-\-tag
+.B  \-\-key
+specify the name of file with the secret key
+this option also sets the type of keyed authentication mechanism
+.TP
+.B  \-l\fP,\fB  \-\-list
+list the table of previously created authentication or integrity codes
+.TP
+.B  \-\-max\-pid
+set the maximal identifier of verified process [default: 2147483647]
+.TP
+.B  \-\-min\-pid
+set the minimal identifier of verified process [default: 1]
+.TP
+.B  \-n\fP,\fB  \-\-no\-database
+do not save the calculated authentication or integrity codes to the database
+.TP
+.B  \-\-no\-derive
+do not use the keyed authentication mechanism’s derived key for each controlled entity
+this may cause an error due to the exhaustion of a key resource
+.TP
+.B  \-\-offset
+set the offset from the beginning of the file
+defines the beginning of the file fragment being processed
+.TP
+.B  \-\-only\-one\-pid
+verify only one process with given identifier (pid)
+.TP
+.B  \-\-only\-segments
+create or verify authentication or integrity codes only for downloadable segments
+.TP
+.B  \-p\fP,\fB  \-\-pattern
+set the pattern which is used to find files
+.TP
+.B  \-\-pid
+short form of –only\-one\-pid option
+.TP
+.B  \-r\fP,\fB  \-\-recursive
+recursive search of files
+.TP
+.B  \-\-reverse\-order
+output of authentication or integrity code in reverse byte order
+.TP
+.B  \-\-search\-deleted
+additional search for deleted files in the process of verifying directories
+.TP
+.B  \-\-size
+set the size of the file fragment being processed
+the value \-1 determines the size of the data to the end of the file
+.TP
+.B  \-\-tag
+create a BSD\-style hash table format
+.TP
+.B  \-v\fP,\fB  \-\-verify
+verify previously created authentication or integrity codes
+.TP
+.B  \-\-with\-segments
+create or verify authentication or integrity codes for downloadable segments
 .UNINDENT
-.sp
-Опция указывает, что значения контрольных сумм или имитовставок
-должны выводиться в формате, принятом в операционных системах
-семейства BSD. В таком формате указывается не только имя файла и его
-контрольная сумма или имитовставка, но и алгоритм, с помощью которого данная сумма
-была посчитана.
 .SS Примеры использования команды icode
 .sp
 Приведимый ниже вызов утилиты позволяет вычислить контрольную сумму файла
@@ -1096,7 +1085,7 @@ xxd \-g1 pairwise\-ba.plain
 .sp
 .nf
 .ft C
-aktool i file.txt \-o result.txt
+aktool i file.txt \-d result.txt
 .ft P
 .fi
 .UNINDENT
