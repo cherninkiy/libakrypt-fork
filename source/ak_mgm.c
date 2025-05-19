@@ -83,6 +83,14 @@
   authenticationKey->encrypt( &authenticationKey->key, ivector, &ctx->zcount );
   authenticationKey->key.resource.value.counter--;
 
+#ifdef LIBAKRYPT_HAVE_DEBUG_FUNCTIONS
+  /* отладочный вывод */
+  printf("    15                             0               15                             0\n");
+  printf("   ----------------------------------             ----------------------------------\n");
+  printf("IV: %s = E(IV) =>", ak_ptr_to_hexstr( ivector, 16, ak_true ));
+  printf(" Z: %s\n", ak_ptr_to_hexstr( &ctx->zcount, 16, ak_true ));
+#endif
+
  return ak_error_ok;
 }
 
@@ -93,24 +101,26 @@
                         ctx->sum.q[0] ^= h.q[0]; \
                         ctx->zcount.w[1]++;
 
-/* реализация преобразования для консольной отладки
- #define astep128(DATA) printf("zc: %s =>", ak_ptr_to_hexstr(&ctx->zcount, 16, ak_true ));\
+#ifdef LIBAKRYPT_HAVE_DEBUG_FUNCTIONS
+ /* реализация преобразования для консольной отладки */
+ #define astep128(DATA) printf(" Z: %s =  E(Z) =>", ak_ptr_to_hexstr(&ctx->zcount, 16, ak_true ));\
                         authenticationKey->encrypt( &authenticationKey->key, &ctx->zcount, &h ); \
-                        printf(" h: %s\n", ak_ptr_to_hexstr(&h, 16, ak_true ));\
-                        printf("dt: %s =>", ak_ptr_to_hexstr( (DATA), 16, ak_true ));\
+                        printf(" H: %s\n", ak_ptr_to_hexstr(&h, 16, ak_true ));\
                         ak_gf128_mul( &h, &h, (DATA) ); \
-                        printf("hm: %s\n", ak_ptr_to_hexstr(&h, 16, ak_true ));\
+                        printf(" A: %s => AxH  =>   ", ak_ptr_to_hexstr( (DATA), 16, ak_true ));\
+                        printf(" %s\n", ak_ptr_to_hexstr(&h, 16, ak_true ));\
                         ctx->sum.q[0] ^= h.q[0]; \
                         ctx->sum.q[1] ^= h.q[1]; \
-                        printf("sm: %s\n\n", ak_ptr_to_hexstr(&ctx->sum, 16, ak_true ));\
+                        printf(" S: %s [S = S+(AxH)]\n\n", ak_ptr_to_hexstr(&ctx->sum, 16, ak_true ));\
                         ctx->zcount.q[1]++;
-*/
 
+#else
  #define astep128(DATA) authenticationKey->encrypt( &authenticationKey->key, &ctx->zcount, &h ); \
                         ak_gf128_mul( &h, &h, (DATA) ); \
                         ctx->sum.q[0] ^= h.q[0]; \
                         ctx->sum.q[1] ^= h.q[1]; \
                         ctx->zcount.q[1]++;
+#endif
 
 #else
  #define astep64(DATA)  authenticationKey->encrypt( &authenticationKey->key, &ctx->zcount, &h ); \
@@ -267,8 +277,19 @@
      astep64( temp.b );
   }
 
+#ifdef LIBAKRYPT_HAVE_DEBUG_FUNCTIONS
+ /* отладочный вывод */
+  printf(" S: %s => E(S) =>", ak_ptr_to_hexstr( &ctx->sum, 16, ak_true ));
+#endif
+
  /* последнее шифрование и завершение работы */
   authenticationKey->encrypt( &authenticationKey->key, &ctx->sum, &ctx->sum );
+
+#ifdef LIBAKRYPT_HAVE_DEBUG_FUNCTIONS
+ /* отладочный вывод */
+  printf(" S: %s\n", ak_ptr_to_hexstr( &ctx->sum, 16, ak_true ));
+#endif
+
  /* если памяти много (out_size >= absize), то копируем все, */
       /* в противном случае - только ту часть, что вмещается */
   memcpy( out, ctx->sum.b+(out_size >= absize ? 0 : absize - out_size), ak_min( out_size, absize ));
@@ -325,6 +346,12 @@
   encryptionKey->encrypt( &encryptionKey->key, ivector, &ctx->ycount );
   encryptionKey->key.resource.value.counter--;
 
+#ifdef LIBAKRYPT_HAVE_DEBUG_FUNCTIONS
+ /* отладочный вывод */
+  printf("IV: %s = E(IV) =>", ak_ptr_to_hexstr( ivector, 16, ak_true ));
+  printf(" Y: %s\n", ak_ptr_to_hexstr( &ctx->ycount, 16, ak_true ));
+#endif
+
  return ak_error_ok;
 }
 
@@ -334,19 +361,23 @@
                   outp[0] = inp[0] ^ e.q[0]; \
                   ctx->ycount.w[0]++;
 
-/* реализация преобразования для консольной отладки
- #define estep128 printf("yc: %s =>", ak_ptr_to_hexstr( &ctx->ycount, 16, ak_true )); \
+#ifdef LIBAKRYPT_HAVE_DEBUG_FUNCTIONS
+ /* реализация преобразования для консольной отладки */
+ #define estep128 printf(" Y: %s = E(IV) =>", ak_ptr_to_hexstr( &ctx->ycount, 16, ak_true )); \
                   encryptionKey->encrypt( &encryptionKey->key, &ctx->ycount, &e ); \
-                  printf(" e: %s\n", ak_ptr_to_hexstr( &e, 16, ak_true )); \
+                  printf(" E: %s\n", ak_ptr_to_hexstr( &e, 16, ak_true )); \
+                  printf(" P: %s + E     = ", ak_ptr_to_hexstr( inp, 16, ak_true ));\
                   outp[0] = inp[0] ^ e.q[0]; \
                   outp[1] = inp[1] ^ e.q[1]; \
+                  printf(" C: %s\n\n", ak_ptr_to_hexstr( outp, 16, ak_true ));\
                   ctx->ycount.q[0]++;
-*/
 
+#else
  #define estep128 encryptionKey->encrypt( &encryptionKey->key, &ctx->ycount, &e ); \
                   outp[0] = inp[0] ^ e.q[0]; \
                   outp[1] = inp[1] ^ e.q[1]; \
                   ctx->ycount.q[0]++;
+#endif
 
 #else
  #define estep64  encryptionKey->encrypt( &encryptionKey->key, &ctx->ycount, &e ); \
