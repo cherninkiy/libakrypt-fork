@@ -64,7 +64,7 @@
  #endif
 
   val.x[0] = 0; val.x[1] = 1; val.x[2] = 2; val.x[3] = 3;
-  if( strcmp( AK_ENDIANNESS, "LITTLE_ENDIAN" ) == 0 ) {
+  if( strncmp( AK_ENDIANNESS, "LITTLE_ENDIAN", 13 ) == 0 ) {
      if( val.z != 50462976 ) {
          ak_error_message( ak_error_wrong_endian, __func__, "incorrect endiannnes - "
                              "library runs on big endian, but compiled for little endian platform");
@@ -75,7 +75,7 @@
        }
 
   } else {
-     if( strcmp( AK_ENDIANNESS, "BIG_ENDIAN" ) == 0 ) {
+     if( strncmp( AK_ENDIANNESS, "BIG_ENDIAN", 10 ) == 0 ) {
          if( val.z != 66051 ) {
              ak_error_message( ak_error_wrong_endian, __func__, "incorrect endianness - "
                              "library runs on little endian, but compiled for big endian platform");
@@ -145,7 +145,7 @@
    }
 
  /* выводим значения установленных параметров библиотеки */
-// TODO:   if( ak_log_get_level() > ak_log_standard ) ak_libakrypt_log_options();
+   if( ak_log_get_level() > ak_log_standard ) ak_libakrypt_log_options();
 
  if( ak_log_get_level() > ak_log_none )
    ak_error_message( ak_error_ok, __func__ , "creation of libakrypt is Ok" );

@@ -85,6 +85,7 @@
 
  set( AKRYPT_SOURCES
    source/ak_tools.c
+   source/ak_options.c
    source/ak_libakrypt.c
  )
 
