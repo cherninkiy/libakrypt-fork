@@ -1,4 +1,8 @@
 # -------------------------------------------------------------------------------------------------- #
+# Copyright (c) 2014 - 2025 by Axel Kenzo, axelkenzo@mail.ru
+#
+# DetectIntrinsics.cmake
+# -------------------------------------------------------------------------------------------------- #
 include(CheckCSourceCompiles)
 
 # -------------------------------------------------------------------------------------------------- #
@@ -15,10 +19,6 @@ check_c_source_compiles("
     #endif
   }" AK_HAVE_BUILTIN_MULQ_GCC )
 
-if( AK_HAVE_BUILTIN_MULQ_GCC )
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAK_HAVE_BUILTIN_MULQ_GCC" )
-endif()
-
 # -------------------------------------------------------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------- #
 check_c_source_compiles("
@@ -31,11 +31,6 @@ check_c_source_compiles("
   return 0;
  }" AK_HAVE_BUILTIN_CLMULEPI64 )
 
-if( AK_HAVE_BUILTIN_CLMULEPI64 )
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAK_HAVE_BUILTIN_CLMULEPI64" )
-endif()
-
-# -------------------------------------------------------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------- #
 check_c_source_compiles("
   #include <immintrin.h>
@@ -50,6 +45,6 @@ check_c_source_compiles("
   return 0;
  }" AK_HAVE_BUILTIN_MM256_SLL )
 
-if( AK_HAVE_BUILTIN_MM256_SLL )
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAK_HAVE_BUILTIN_MM256_SLL" )
-endif()
+# -------------------------------------------------------------------------------------------------- #
+#                                                                            DetectIntrinsics.cmake
+# -------------------------------------------------------------------------------------------------- #
