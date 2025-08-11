@@ -28,7 +28,7 @@ do
 # выполняем проверку корректности криптографических тестов
 #                ./aktool test --crypto --audit 2 --audit-file stderr
 
-# выполняем запуск тестов в окружении vslgrind
+# выполняем запуск тестов в окружении valgrind
 #                valgrind --version >> /dev/null 2>>/dev/null
 #                if [ $? = 0 ];
 #                then

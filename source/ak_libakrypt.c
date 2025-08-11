@@ -57,14 +57,8 @@
      ak_error_message_int( ak_error_ok, __func__, "size of pointer is", sizeof( ak_pointer ));
 
  /* определяем тип платформы: little-endian или big-endian */
- #ifndef AK_ENDIANNESS
-    ak_error_message( ak_error_undefined_value, __func__ ,
-                              "undefined value of AK_ENDIANNESS macros, check libakrypt-config.h" );
-    return ak_false;
- #endif
-
   val.x[0] = 0; val.x[1] = 1; val.x[2] = 2; val.x[3] = 3;
-  if( strncmp( AK_ENDIANNESS, "LITTLE_ENDIAN", 13 ) == 0 ) {
+ #ifdef AK_LITTLE_ENDIAN
      if( val.z != 50462976 ) {
          ak_error_message( ak_error_wrong_endian, __func__, "incorrect endiannnes - "
                              "library runs on big endian, but compiled for little endian platform");
@@ -73,23 +67,21 @@
          if( ak_log_get_level() > ak_log_standard ) {
            ak_error_message( ak_error_ok, __func__ , "library runs on little endian platform" );
        }
-
-  } else {
-     if( strncmp( AK_ENDIANNESS, "BIG_ENDIAN", 10 ) == 0 ) {
-         if( val.z != 66051 ) {
-             ak_error_message( ak_error_wrong_endian, __func__, "incorrect endianness - "
+ #else
+  #if AK_BIG_ENDIAN
+     if( val.z != 66051 ) {
+         ak_error_message( ak_error_wrong_endian, __func__, "incorrect endianness - "
                              "library runs on little endian, but compiled for big endian platform");
-             return ak_false;
-         } else
-             if( ak_log_get_level() > ak_log_standard ) {
-                  ak_error_message( ak_error_ok, __func__ , "library runs on big endian platform" );
-           }
-     } else {
-         ak_error_message( ak_error_undefined_value, __func__, "library runs "
-                       "with unsupported value of AK_ENDIANNES macros, , check libakrypt-config.h");
-             return ak_false;
-       }
-  }
+         return ak_false;
+     } else
+         if( ak_log_get_level() > ak_log_standard ) {
+             ak_error_message( ak_error_ok, __func__ , "library runs on big endian platform" );
+         }
+  #else
+     return ak_error_message( ak_error_undefined_value, __func__, "library runs "
+                               "with unsupported value of endian macros, check libakrypt-config.h");
+  #endif
+ #endif
 
   #ifdef AK_HAVE_BUILTIN_MULQ_GCC
    if( ak_log_get_level() > ak_log_standard ) {
@@ -140,7 +132,8 @@
 
  /* проверяем длины фиксированных типов данных */
    if( ak_libakrypt_test_types() != ak_true ) {
-     ak_error_message( ak_error_get_value(), __func__ , "sizes of predefined types is wrong" );
+     ak_error_message( ak_error_get_value(), __func__ ,
+                                "processor architecture or data types are not defined correctly" );
      return ak_false;
    }
 

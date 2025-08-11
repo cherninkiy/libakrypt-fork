@@ -120,6 +120,8 @@
  set( EXAMPLES_LIST
       audit-01
       hello-01
+      options-01
+      convert-01
     )
 
  if( AK_EXAMPLES )

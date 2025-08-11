@@ -9,8 +9,8 @@
 
 /* Базовые определения */
  #define AK_VERSION ("0.10.1")
- #define AK_ENDIANNESS ("LITTLE_ENDIAN")
- #define AK_DEFAULT_STATIC_BUFFER_SIZE 256
+ #define AK_LITTLE_ENDIAN
+ #define AK_DEFAULT_STATIC_BUFFER_SIZE 128
 
 /* Оставляем только поддержку типов данных */
  #define AK_HAVE_STDDEF_H

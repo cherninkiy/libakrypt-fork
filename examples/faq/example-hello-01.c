@@ -14,7 +14,7 @@
   ak_log_set_level( ak_log_maximum );
 
  /* инициализируем библиотеку, явно указывая функцию для вывода сообщений аудита */
-  if( ak_libakrypt_create( ak_function_log_syslog ) != ak_true ) {
+  if( ak_libakrypt_create( ak_function_log_stderr ) != ak_true ) {
    /* инициализация выполнена не успешно, следовательно, выходим из программы */
     ak_libakrypt_destroy();
     return EXIT_FAILURE;

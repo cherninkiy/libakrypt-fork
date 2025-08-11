@@ -38,7 +38,18 @@
      ak_log_set_level( ak_log_maximum );
      ak_libakrypt_create( ak_function_log_write );
 
-     /* .... здесь код программы .... */
+     /* .... здесь код программы .... 
+
+                      например, такой */
+
+      ak_uint8 data[8] = { 0xab, 0x13, 0xA5, 0xE7, 0x12, 0x9D };
+
+      ak_error_message( ak_error_ok, __func__, ak_ptr_to_hexstr( data, sizeof(data), direct ));
+      ak_error_message( ak_error_ok, __func__, ak_ptr_to_hexstr( data, sizeof(data), reverse ));
+      ak_error_message( ak_error_ok, __func__, ak_ptr_to_hexstr( data, sizeof(data), Direct ));
+      ak_error_message( ak_error_ok, __func__, ak_ptr_to_hexstr( data, sizeof(data), Reverse ));
+      ak_error_message( ak_error_ok, __func__, ak_ptr_to_hexstr( data, sizeof(data), BlankDirect ));
+      ak_error_message( ak_error_ok, __func__, ak_ptr_to_hexstr( data, sizeof(data), BlankReverse ));
 
   return ak_libakrypt_destroy();
 }
