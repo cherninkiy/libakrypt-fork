@@ -87,6 +87,8 @@
    source/ak_tools.c
    source/ak_options.c
    source/ak_libakrypt.c
+   source/ak_mac.c
+   source/ak_hash.c
  )
 
 # -------------------------------------------------------------------------------------------------- #
@@ -122,6 +124,8 @@
       hello-01
       options-01
       convert-01
+      hash-01
+      hash-02
     )
 
  if( AK_EXAMPLES )
