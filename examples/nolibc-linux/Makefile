@@ -25,9 +25,10 @@ hash: $(HASH_SOURCES)
 	gcc $(INCLUDE) $(HASH_SOURCES) -o hash-libc
 	gcc $(INCLUDE) $(HASH_SOURCES) ../../source/ak_string.c -nostdlib -Wl,-e,startup -o hash-nolibc
 	gcc $(INCLUDE) $(HASH_SOURCES) ../../source/ak_string.c $(CFLAGS) -Wl,-e,startup -o hash-nolibc-strip
+	gcc $(INCLUDE) $(HASH_SOURCES) ../../source/ak_string.c -DAK_HAVE_SLOW_HASH $(CFLAGS) -Wl,-e,startup -o hash-nolibc-strip-slow
 
 
 # служба очистки
 clean:
-	rm -f *-libc *-nolibc *-nolibc-strip
+	rm -f *-libc *-nolibc *-nolibc-strip *-nolibc-strip-slow
 
