@@ -1,26 +1,33 @@
-CFLAGS = -nostdlib -no-pie -Wl,--build-id=none,--strip-all -fcf-protection=none -fno-stack-protector -fno-asynchronous-unwind-tables -fno-unwind-tables -fomit-frame-pointer -ffunction-sections -Wl,--gc-sections
+CFLAGS = -nostdlib \
+	-no-pie \
+	-fcf-protection=none \
+	-fno-stack-protector \
+	-fno-asynchronous-unwind-tables \
+	-fno-unwind-tables \
+	-fomit-frame-pointer \
+	-ffunction-sections \
+	-Wl,--build-id=none,--strip-all,--gc-sections \
+	-Os
 
-HASH_SOURCE_01 = example-hash-01.c ../../source/ak_tools.c ../../source/ak_hash.c ../../source/ak_mac.c
-HASH_SOURCE_02 = example-hash-02.c ../../source/ak_tools.c ../../source/ak_hash.c ../../source/ak_mac.c
+INCLUDE = -I../../source -I.
 
-all: akrypt hello hash
+HELLO_SOURCES = nolibc-hello.c ../../source/ak_tools.c ../../source/ak_options.c ../../source/ak_libakrypt.c
 
-akrypt:
-	mkdir -p build
-	cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS="${CFLAGS}" -DAK_SHARED_LIB=OFF -DAK_STATIC_LIB=ON -S ../.. -B build
-	cp libakrypt-config.h build
-	cat build/libakrypt-config.h
-	cd build; make; cd ..
+hello: $(HELLO_SOURCES)
+	gcc $(INCLUDE) $(HELLO_SOURCES) -o hello-libc
+	gcc $(INCLUDE) $(HELLO_SOURCES) ../../source/ak_string.c -nostdlib -Wl,-e,startup -Os -o hello-nolibc
+	gcc $(INCLUDE) $(HELLO_SOURCES) ../../source/ak_string.c $(CFLAGS) -Wl,-e,startup -o hello-nolibc-strip
 
-hello: example-hello.c
-	gcc ${CFLAGS} -Wl,-e,startup -I../../source -I. example-hello.c -o hello -lakrypt -Lbuild
 
-hash: ${HASH_SOURCE_01}
-	gcc ${CFLAGS} -Wl,-e,startup -I../../source -I. ${HASH_SOURCE_01} -o hash-01
-	gcc ${CFLAGS} -Wl,-e,startup -I../../source -I. ${HASH_SOURCE_02} -o hash-02
+HASH_SOURCES = nolibc-hash.c ../../source/ak_tools.c ../../source/ak_mac.c ../../source/ak_hash.c 
 
+hash: $(HASH_SOURCES)
+	gcc $(INCLUDE) $(HASH_SOURCES) -o hash-libc
+	gcc $(INCLUDE) $(HASH_SOURCES) ../../source/ak_string.c -nostdlib -Wl,-e,startup -o hash-nolibc
+	gcc $(INCLUDE) $(HASH_SOURCES) ../../source/ak_string.c $(CFLAGS) -Wl,-e,startup -o hash-nolibc-strip
+
+
+# служба очистки
 clean:
-	rm -f hello hash-01 hash-02
-	find build -type f | xargs rm -f
-	find build -type d | xargs rmdir --ignore-fail-on-non-empty -p
+	rm -f *-libc *-nolibc *-nolibc-strip
 
