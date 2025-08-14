@@ -636,12 +636,14 @@
     случае возвращается @ref ak_false (ложь).                                                      */
  dll_export bool_t ak_libakrypt_test_streebog512( void );
 
+#ifdef AK_HAVE_CRC64
 /*! @brief Проверка корректной работы некриптографической функции хеширования crc64.
     Для проверки вырабатываемых значений, используется следующий
     [калькулятор](https://www.sunshine2k.de/coding/javascript/crc/crc_js.html).
     @return Если тестирование прошло успешно возвращается @ref ak_true (истина). В противном
     случае возвращается @ref ak_false (ложь).                                                      */
  dll_export bool_t ak_libakrypt_test_crc64( void );
+#endif
 
 /*! \brief Функция проверяет корректность реализации алгоритмов хэширования.
     @return Если тестирование прошло успешно возвращается @ref ak_true (истина). В противном
@@ -737,11 +739,13 @@
     @return Функция возвращает код ошибки или @ref ak_error_ok (в случае успеха)                   */
  dll_export int ak_hash_create_streebog512( ak_hash );
 
+#ifdef AK_HAVE_CRC64
 /*! @brief Инициализация контекста некриптографической функции хеширования crc64,
     в соответствии со стандартом ECMA-286 (нормальная форма с многочленом `0x42F0E1EBA9EA3693`).
     @param hctx Контекст функции хеширования.
     @return Функция возвращает код ошибки или @ref ak_error_ok (в случае успеха)                   */
  dll_export int ak_hash_create_crc64( ak_hash hctx );
+#endif
 
 /*! @brief Уничтожение контекста функции хеширования.
     @param hctx Контекст функции хеширования

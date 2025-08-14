@@ -24,6 +24,12 @@
  option( AK_EXAMPLES "Build examples for libakrypt" OFF )
 
 # -------------------------------------------------------------------------------------------------- #
+# Перечень опций, определяющих состав криптобиблиотеки
+ option( AK_HAVE_SLOW_HASH
+                     "Enable slow but memory efficient realization of Streebog hash functions" OFF )
+ option( AK_HAVE_CRC64 "Enable crc64 algorithm " ON )
+
+# -------------------------------------------------------------------------------------------------- #
 # Проверка архитектуры
  message( STATUS "Using endianness: ${CMAKE_C_BYTE_ORDER}" )
 
@@ -82,21 +88,29 @@
   ${CMAKE_CURRENT_BINARY_DIR}/libakrypt-config.h
   source/libakrypt.h
  )
-
  set( AKRYPT_SOURCES
    source/ak_tools.c
    source/ak_options.c
    source/ak_libakrypt.c
    source/ak_mac.c
    source/ak_hash.c
-   source/ak_crc.c
  )
+ if( AK_HAVE_CRC64 )
+     set( AKRYPT_SOURCES ${AKRYPT_SOURCES} source/ak_crc.c )
+ endif()
 
 # Добавляем ручную реализацию функций, входящих в состав libc
  if( AK_HAVE_STRING_H )
  else()
      set( AKRYPT_SOURCES ${AKRYPT_SOURCES} source/ak_string.c )
  endif()
+
+# -------------------------------------------------------------------------------------------------- #
+# Выводим список исходных текстов для компиляции
+ message( STATUS "libakrypt sources:" )
+ foreach( file ${AKRYPT_SOURCES} )
+     message( NOTICE "      ${file}" )
+ endforeach()
 
 # -------------------------------------------------------------------------------------------------- #
 # формируем команды для сборки библиотеки
@@ -133,8 +147,11 @@
       convert
       hash-01
       hash-02
-      crc64
     )
+# добавляем опциональные примеры
+ if( AK_HAVE_CRC64 )
+     set( EXAMPLES_LIST ${EXAMPLES_LIST} crc64 )
+ endif()
 
  if( AK_EXAMPLES )
    message( STATUS "libakrypt examples:  (now \"make test\" enabled):" )

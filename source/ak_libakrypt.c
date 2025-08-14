@@ -121,11 +121,13 @@
          return ak_false;
      }
 
+   #ifdef AK_HAVE_CRC64
    /* тестируем функцию crc64 */
      if( ak_libakrypt_test_crc64() != ak_true ) {
          ak_error_message( ak_error_get_value(), __func__, "incorrect crc64 testing" );
          return ak_false;
      }
+   #endif
 
      if( audit >= ak_log_maximum )
          ak_error_message( ak_error_ok, __func__ , "testing hash functions ended successfully" );
