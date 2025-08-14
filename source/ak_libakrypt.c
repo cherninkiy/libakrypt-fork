@@ -103,6 +103,37 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
+ bool_t ak_libakrypt_test_hash_functions( void )
+{
+     int audit = ak_log_get_level();
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "testing hash functions started" );
+
+   /* тестируем функцию Стрибог256 */
+     if( ak_libakrypt_test_streebog256() != ak_true ) {
+         ak_error_message( ak_error_get_value(), __func__, "incorrect streebog256 testing" );
+         return ak_false;
+     }
+
+   /* тестируем функцию Стрибог512 */
+     if( ak_libakrypt_test_streebog512() != ak_true ) {
+         ak_error_message( ak_error_get_value(), __func__, "incorrect streebog512 testing" );
+         return ak_false;
+     }
+
+   /* тестируем функцию crc64 */
+     if( ak_libakrypt_test_crc64() != ak_true ) {
+         ak_error_message( ak_error_get_value(), __func__, "incorrect crc64 testing" );
+         return ak_false;
+     }
+
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "testing hash functions ended successfully" );
+
+ return ak_true;
+}
+
+/* ----------------------------------------------------------------------------------------------- */
  bool_t ak_libakrypt_create( ak_function_log *logger )
 {
    int error;
@@ -160,7 +191,7 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! @example faq/example-hello-01.c                                                                */
+/*! @example faq/example-hello.c                                                                   */
 /* ----------------------------------------------------------------------------------------------- */
 /*                                                                                 ak_libakrypt.c  */
 /* ----------------------------------------------------------------------------------------------- */

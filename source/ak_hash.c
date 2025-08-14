@@ -7,6 +7,24 @@
  #include <libakrypt-internal.h>
 
 /* ----------------------------------------------------------------------------------------------- */
+/** @addtogroup hash-doc
+ @{
+     Библиотека содержит единый контекст (структура @ref hash) для реализации различных алгоритмов
+     бесключевого хеширования. В настоящее время
+    с помощью класса @ref hash реализованы следующие алгоритмы хеширования
+     - Стрибог256,
+     - Стрибог512,
+     - а также алгоритм вычисления контрольных сумм `crc64`.
+
+    Перед началом работы контекст функции хэширования должен быть инициализирован
+    вызовом одной из функций инициализации, например, @ref ak_hash_create_streebog256()
+    или @ref ak_hash_create_streebog512().
+
+    После завершения вычислений контекст должен быть освобожден с помощью функции
+    @ref ak_hash_destroy().
+ @}                                                                                                */
+
+/* ----------------------------------------------------------------------------------------------- */
 /*! @brief Итерационные константы для алгоритма Стрибог (ГОСТ Р 34.11-2012).                       */
  static const ak_uint64 streebog_c[12][8] = {
 #ifdef AK_LITTLE_ENDIAN
@@ -1577,11 +1595,6 @@
          return 0;
      }
 
-   /* костыль! */
-   #ifdef AK_HAVE_OID
-     if( strncmp( hctx->oid->name[0], "crc64", 5 ) == 0 ) return 8;
-   #endif
-
  return hctx->data.sctx.hsize;
 }
 
@@ -1592,11 +1605,6 @@
          ak_error_message( ak_error_null_pointer, __func__, "using null pointer to hash context" );
          return 0;
      }
-
-   /* костыль! */
-   #ifdef AK_HAVE_OID
-     if( strncmp( hctx->oid->name[0], "crc64", 5 ) == 0 ) return 1;
-   #endif
 
  return hctx->mctx.bsize;
 }
@@ -1806,30 +1814,8 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
- bool_t ak_libakrypt_test_hash_functions( void )
-{
-     int audit = ak_log_get_level();
-     if( audit >= ak_log_maximum )
-         ak_error_message( ak_error_ok, __func__ , "testing hash functions started" );
-
-   /* тестируем функцию Стрибог256 */
-     if( ak_libakrypt_test_streebog256() != ak_true ) {
-         ak_error_message( ak_error_get_value(), __func__, "incorrect streebog256 testing" );
-         return ak_false;
-     }
-
-   /* тестируем функцию Стрибог512 */
-     if( ak_libakrypt_test_streebog512() != ak_true ) {
-         ak_error_message( ak_error_get_value(), __func__, "incorrect streebog512 testing" );
-         return ak_false;
-     }
-
-     if( audit >= ak_log_maximum )
-         ak_error_message( ak_error_ok, __func__ , "testing hash functions ended successfully" );
-
- return ak_true;
-}
-
+/*! @example faq/example-hash-01.c                                                                 */
+/*! @example faq/example-hash-02.c                                                                 */
 /* ----------------------------------------------------------------------------------------------- */
 /*                                                                                      ak_hash.c  */
 /* ----------------------------------------------------------------------------------------------- */

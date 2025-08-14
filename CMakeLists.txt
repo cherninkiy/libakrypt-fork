@@ -89,6 +89,7 @@
    source/ak_libakrypt.c
    source/ak_mac.c
    source/ak_hash.c
+   source/ak_crc.c
  )
 
 # Добавляем ручную реализацию функций, входящих в состав libc
@@ -126,12 +127,13 @@
 # -------------------------------------------------------------------------------------------------- #
 # определяем перечень примеров из FAQ
  set( EXAMPLES_LIST
-      audit-01
-      hello-01
-      options-01
-      convert-01
+      audit
+      hello
+      options
+      convert
       hash-01
       hash-02
+      crc64
     )
 
  if( AK_EXAMPLES )
