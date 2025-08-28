@@ -868,10 +868,10 @@
     /* обрабатываем хвост сообщения */
     if( tail ) {
       int i;
-      bkey->encrypt( &bkey->key, bkey->ivector, yaout );
+      bkey->encrypt( &bkey->key, bkey->ivector + counter*bkey->bsize, yaout );
       for( i = 0; i < tail; i++ )
           ( (ak_uint8*)outptr)[i] =
-              ( (ak_uint8*)inptr )[i]^( (ak_uint8 *)yaout)[i];
+              ( (ak_uint8*)inptr )[i]^( (ak_uint8 *)yaout)[bkey->bsize - (size_t)(tail-i)];
 
     /* запрещаем дальнейшее использование функции на данном значении синхропосылки,
                                             поскольку обрабатываемые данные не кратны длине блока. */
