@@ -27,7 +27,8 @@
 # Перечень опций, определяющих состав криптобиблиотеки
  option( AK_HAVE_SLOW_HASH
                      "Enable slow but memory efficient realization of Streebog hash functions" OFF )
- option( AK_HAVE_CRC64 "Enable crc64 algorithm " ON )
+ option( AK_HAVE_CRC64 "Enable the crc64 algorithm" ON )
+ option( AK_HAVE_RANDOM "Enable random number generators" ON )
 
 # -------------------------------------------------------------------------------------------------- #
 # Проверка архитектуры
@@ -98,6 +99,10 @@
  if( AK_HAVE_CRC64 )
      set( AKRYPT_SOURCES ${AKRYPT_SOURCES} source/ak_crc.c )
  endif()
+ if( AK_HAVE_RANDOM )
+     set( AKRYPT_SOURCES ${AKRYPT_SOURCES} source/ak_random.c )
+ endif()
+
 
 # Добавляем ручную реализацию функций, входящих в состав libc
  if( AK_HAVE_STRING_H )
@@ -151,6 +156,9 @@
 # добавляем опциональные примеры
  if( AK_HAVE_CRC64 )
      set( EXAMPLES_LIST ${EXAMPLES_LIST} crc64 )
+ endif()
+ if( AK_HAVE_RANDOM )
+     set( EXAMPLES_LIST ${EXAMPLES_LIST} random-01 )
  endif()
 
  if( AK_EXAMPLES )
