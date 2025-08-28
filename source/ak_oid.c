@@ -179,6 +179,17 @@
                                              "ctr-nmac-kuznyechik", NULL };
  static const char *asn1_ctr_nmac_kuznechik_i[] =
                                            { "1.2.643.2.52.1.6.2.2.3", NULL };
+                                           
+                                           
+ static const char *asn1_dec_magma_n[] = { "dec-magma",
+                                             "id-recomendation-2018-magma-dec", NULL };
+ static const char *asn1_dec_magma_i[] = { "1.2.643.7.1.2.7.3.1", NULL};
+ static const char *asn1_dec_kuznechik_n[] =
+                                           { "dec-kuznechik", "dec-kuznyechik",
+                                             "id-recomendation-2018-kuznechik-dec", NULL };
+ static const char *asn1_dec_kuznechik_i[] =
+                                           { "1.2.643.7.1.1.7.3.2", NULL };
+
 /*
  static const char *asn1_xtsmac_magma_n[] =
                                            { "xtsmac-magma", NULL };
@@ -614,6 +625,16 @@ static struct oid libakrypt_oids[] =
   { ak_object_bckey_kuznechik, ak_object_undefined,
                                                 ( ak_function_run_object *) ak_bckey_encrypt_cbc,
                                                ( ak_function_run_object *) ak_bckey_decrypt_cbc }},
+                                               
+
+  { block_cipher, encrypt_mode, asn1_dec_magma_i, asn1_dec_magma_n, NULL,
+  { ak_object_bckey_magma, ak_object_undefined, ( ak_function_run_object *) ak_bckey_encrypt_dec,
+                                                 ( ak_function_run_object *) ak_bckey_decrypt_dec }},
+ { block_cipher, encrypt_mode, asn1_dec_kuznechik_i, asn1_dec_kuznechik_n, NULL,
+  { ak_object_bckey_kuznechik, ak_object_undefined,
+                                                  ( ak_function_run_object *) ak_bckey_encrypt_dec,
+                                                 ( ak_function_run_object *) ak_bckey_decrypt_dec }},
+
 
  { block_cipher, encrypt2k_mode, asn1_xts_magma_i, asn1_xts_magma_n, NULL,
   { ak_object_bckey_magma, ak_object_bckey_magma,

@@ -221,6 +221,8 @@ extern "C" {
 /*! \brief Тестирование корректной работы режима блочного шифрования с одновременной
     выработкой имитовставки. */
  dll_export bool_t ak_libakrypt_test_mgm( void );
+ /*! \brief Тестирование корректной работы режима блочного шифрования DEC. */
+ dll_export bool_t ak_libakrypt_test_dec( void );
 /*! \brief Тестирование корректной работы режима шифрования `ACPKM`, регламентируемого Р 1323565.1.017—2018. */
  dll_export bool_t ak_libakrypt_test_acpkm( void );
 /*! \brief Выполнение тестовых примеров для алгоритмов выработки и проверки электронной подписи */
@@ -839,6 +841,17 @@ extern "C" {
 /*! \brief Расшифрование данных в режиме `XTS`. */
  dll_export int ak_bckey_decrypt_xts( ak_bckey ,  ak_bckey , ak_pointer , ak_pointer , size_t ,
                                                                              ak_pointer , size_t );
+
+/*! \brief Зашифрование данных в режиме `DEC`. */
+ dll_export int ak_bckey_encrypt_dec(ak_bckey, ak_pointer, ak_pointer, size_t, ak_uint64, ak_uint64, ak_uint64,
+                    ak_uint64, ak_pointer, ak_pointer);
+/*! \brief Расшифрование данных в режиме `DEC`. */
+ dll_export int ak_bckey_decrypt_dec(ak_bckey, ak_pointer, ak_pointer, size_t, ak_uint64, ak_uint64, ak_uint64,
+                    ak_uint64, ak_pointer, ak_pointer);
+                    
+/*! \brief Перешифрование данных в режиме `DEC`. */
+ dll_export int ak_bckey_re_encrypt_dec(ak_bckey, ak_pointer, ak_pointer, size_t, ak_uint64, ak_uint64, ak_uint64,
+                       ak_uint64, ak_pointer, ak_pointer, ak_uint64);
 /** @}*/
 
 /* ----------------------------------------------------------------------------------------------- */

@@ -189,6 +189,14 @@
                                                "incorrect testing of mgm mode for block ciphers" );
     return ak_false;
   }
+  
+    if( ak_libakrypt_test_dec()  != ak_true ) {
+    ak_error_message( ak_error_get_value(), __func__ ,
+                                  "incorrect testing of dec mode for block ciphers" );
+    return ak_false;
+  }
+
+  
 
   if( audit >= ak_log_maximum )
     ak_error_message( ak_error_ok, __func__ , "testing block ciphers ended successfully" );
