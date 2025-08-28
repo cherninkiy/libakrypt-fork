@@ -105,6 +105,7 @@ set( AKRYPT_SOURCES
    source/ak_blom.c
    source/ak_kdf.c
    source/ak_encrypt.c
+   source/ak_belt_hash.c
 )
 
 # -------------------------------------------------------------------------------------------------- #
@@ -353,6 +354,7 @@ set ( ARITHMETIC_TESTS_LIST
       hash02
       kuznechik01
       mac-offset
+      belt-hash
     )
 
 if( AK_TESTS_GMP )
