@@ -82,6 +82,8 @@
  static const char *asn1_magma_i[] =       { "1.2.643.7.1.1.5.1", NULL };
  static const char *asn1_kuznechik_n[] =   { "kuznechik", "kuznyechik", "grasshopper", NULL };
  static const char *asn1_kuznechik_i[] =   { "1.2.643.7.1.1.5.2", NULL };
+ static const char *asn1_belt_n[] =       { "belt", NULL };
+ static const char *asn1_belt_i[] =       { "1.2.643.7.1.1.5.4", NULL };
 
  static const char *asn1_ctr_magma_n[] =   { "ctr-magma", NULL };
  static const char *asn1_ctr_magma_i[] =   { "1.2.643.2.52.1.5.1.1", NULL };
@@ -466,6 +468,13 @@
                            ( ak_function_set_key_object *)ak_bckey_set_key, \
                            ( ak_function_set_key_random_object *)ak_bckey_set_key_random, \
                       ( ak_function_set_key_from_password_object *)ak_bckey_set_key_from_password }
+ 
+ #define ak_object_bckey_belt { sizeof( struct bckey ), \
+                           ( ak_function_create_object *) ak_bckey_create_belt, \
+                           ( ak_function_destroy_object *) ak_bckey_destroy, \
+                           ( ak_function_set_key_object *)ak_bckey_set_key, \
+                           ( ak_function_set_key_random_object *)ak_bckey_set_key_random, \
+                      ( ak_function_set_key_from_password_object *)ak_bckey_set_key_from_password }
 
  #define ak_object_hmac_streebog256 { sizeof( struct hmac ), \
                            ( ak_function_create_object *) ak_hmac_create_streebog256, \
@@ -579,6 +588,9 @@ static struct oid libakrypt_oids[] =
 
  { block_cipher, algorithm, asn1_kuznechik_i, asn1_kuznechik_n, NULL,
                                    { ak_object_bckey_kuznechik, ak_object_undefined, NULL, NULL }},
+                                   
+ { block_cipher, algorithm, asn1_belt_i, asn1_belt_n, NULL,
+                                   { ak_object_bckey_belt, ak_object_undefined, NULL, NULL }},
 
 /* базовые режимы блочного шифрования */
  { block_cipher, encrypt_mode, asn1_ctr_magma_i, asn1_ctr_magma_n, NULL,
