@@ -1,0 +1,30 @@
+# <type>(<scope>): <subject>
+# <subject> — short description (up to 50 chars, imperative mood)
+
+# <body> — details with bullet points (-), each line up to 72 chars
+
+# <footer> — references to issues, breaking changes
+
+
+# Examples for this project:
+# docs(readme): describe fork, install, and test workflow
+# - Mark the repository as a fork of libakrypt
+# - Document build and install steps with CMake presets
+# - Add test run examples for ctest and aktool
+#
+# build(cmake): add default presets for local builds
+# - Add configure, build, and test presets for build/
+# - Enable AK_TESTS in the default preset
+# - Simplify local configure/build/test commands
+#
+# test(aktool): extend CLI coverage for crypto checks
+# - Add or update aktool-based crypto test scenarios
+# - Keep ctest targets available for regression checks
+# - Document focused test commands for local runs
+#
+# fix(asn1): correct key import/export edge cases
+# - Fix ASN.1 parsing for problematic key containers
+# - Preserve compatibility with existing test vectors
+# - Add regression coverage for the failing path
+
+# Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build
