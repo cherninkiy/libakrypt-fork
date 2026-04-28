@@ -3,7 +3,7 @@
 /*                                                                                                 */
 /*  Файл ak_hash.c                                                                                 */
 /*  - содержит реализацию некоторых алгоритмов семейства crc                                       */
-/*  базируется на коде https://github.com/torvalds/linux/blob/master/lib/gen_crc64table.c          */
+/*    базируется на коде https://github.com/torvalds/linux/blob/master/lib/gen_crc64table.c        */
 /* ----------------------------------------------------------------------------------------------- */
  #include <libakrypt-internal.h>
 
@@ -181,28 +181,129 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! Функция инициализирует контекст алгоритма некриптографического хеширования crc64,
-    регламентируемого стандартом ECMA-286 (нормальная форма с многочленом `0x42F0E1EBA9EA3693`).
-
-    @param hctx Контекст функции хеширования
-    @return Функция возвращает код ошибки или \ref ak_error_ok (в случае успеха)                   */
-/* ----------------------------------------------------------------------------------------------- */
  int ak_hash_create_crc64( ak_hash hctx )
 {
-  int error = ak_error_ok;
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+     int error = ak_error_ok;
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                             "using null pointer to hash context" );
-
-  if(( hctx->oid = ak_oid_find_by_name( "crc64" )) == NULL )
-    return ak_error_message( ak_error_wrong_oid, __func__,
+   #ifdef AK_HAVE_OID
+     if(( hctx->oid = ak_oid_find_by_name( "crc64" )) == NULL )
+         return ak_error_message( ak_error_wrong_oid, __func__,
                                                  "incorrect internal search of crc64 identifier" );
-  if(( error = ak_mac_create( &hctx->mctx, 1, &hctx->data.b64,
+   #endif
+
+     if(( error = ak_mac_create( &hctx->mctx, 1, &hctx->data.b64,
                                                 ak_hash_context_crc64_clean,
                                                 ak_hash_context_crc64_update,
                                                 ak_hash_context_crc64_finalize )) != ak_error_ok )
     return ak_error_message( error, __func__, "incorrect initialization of internal mac context" );
 
+   /* устанавливаем размер вырабатывамого хэш-кода */
+     hctx->data.sctx.hsize = 8;
+
   return ak_hash_context_crc64_clean( &hctx->data.b64 );
 }
 
+// 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39
+
+/* ----------------------------------------------------------------------------------------------- */
+ bool_t ak_libakrypt_test_crc64( void )
+{
+     struct hash ctx;
+     ak_uint8 out[8], data[16] = {
+         0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+         0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40 };
+     char *str = "The crc64 algorithm is very fast";
+
+     ak_uint8 result_1b[8]  = { 0xA2, 0xB8, 0xC8, 0x18, 0xEB, 0x68, 0xB7, 0xE8 };
+     ak_uint8 result_8b[8]  = { 0x2B, 0x5A, 0x4A, 0x47, 0xB6, 0xF4, 0x32, 0x37 };
+     ak_uint8 result_16b[8] = { 0x9B, 0x4D, 0x22, 0x09, 0x9A, 0x9A, 0x53, 0xE8 };
+     ak_uint8 result_sb[8]  = { 0x4D, 0xEB, 0xAD, 0x3C, 0x75, 0x93, 0x4D, 0xD0 };
+
+     int error = ak_error_ok, audit = ak_log_get_level();
+
+   /* инициализируем контекст функции хешиирования */
+     if(( error = ak_hash_create_crc64( &ctx )) != ak_error_ok ) {
+         ak_error_message( error, __func__ , "wrong initialization of streenbog256 context" );
+         return ak_false;
+     }
+
+     if( ak_hash_get_tag_size( &ctx ) != 8 ) {
+         error = ak_error_message( ak_error_not_equal_data, __func__ ,
+                                                                "wrong tag size of crc64 context" );
+         goto lab_exit;
+
+     }
+
+   /* первый пример - короткие данные в 1 байт */
+     if(( error = ak_hash_ptr( &ctx, data, 1, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of crc64 code" );
+         goto lab_exit;
+     }
+
+     if( ak_ptr_is_equal_with_log( out, result_1b, 8 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ , "the \"one byte\" test is wrong" );
+         goto lab_exit;
+     }
+
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the \"one byte\" test is Ok" );
+
+   /* второй пример - данные в 8 байт */
+     if(( error = ak_hash_ptr( &ctx, data, 8, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of crc64 code" );
+         goto lab_exit;
+     }
+
+     if( ak_ptr_is_equal_with_log( out, result_8b, 8 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ , "the \"one block\" test is wrong" );
+         goto lab_exit;
+     }
+
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the \"one block\" test is Ok" );
+
+   /* третий пример - длинные данные */
+     if(( error = ak_hash_ptr( &ctx, data, 16, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of crc64 code" );
+         goto lab_exit;
+     }
+
+     if( ak_ptr_is_equal_with_log( out, result_16b, 8 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ , "the long message test is wrong" );
+         goto lab_exit;
+     }
+
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the long message test is Ok" );
+
+   /* четвертый пример - сжимаем строку */
+     if(( error = ak_hash_ptr( &ctx, str, strlen(str), out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of crc64 code" );
+         goto lab_exit;
+     }
+
+     if( ak_ptr_is_equal_with_log( out, result_sb, 8 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ , "the string test is wrong" );
+         goto lab_exit;
+     }
+
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the string test is Ok" );
+
+   /* уничтожаем контекст */
+    lab_exit:
+     ak_hash_destroy( &ctx );
+
+  return ( error == ak_error_ok ) ? ak_true : ak_false;
+}
+
+/* ----------------------------------------------------------------------------------------------- */
+/*! @example faq/example-crc64.c                                                                   */
+/* ----------------------------------------------------------------------------------------------- */
+/*                                                                                       ak_crc.c  */
 /* ----------------------------------------------------------------------------------------------- */

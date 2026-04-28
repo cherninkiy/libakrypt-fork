@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------------------------- */
-/*  Copyright (c) 2014 - 2020 by Axel Kenzo, axelkenzo@mail.ru                                     */
+/*  Copyright (c) 2014 - 2020, 2025 by Axel Kenzo, axelkenzo@mail.ru                               */
 /*                                                                                                 */
 /*  Файл ak_hash.c                                                                                 */
 /*  - содержит реализацию алгоритмов итерационного сжатия                                          */
@@ -7,8 +7,25 @@
  #include <libakrypt-internal.h>
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Итерационные константы для алгоритма Стрибог (ГОСТ Р 34.11-2012). */
-/* ---------------------------------------------------------------------------------------------- */
+/** @addtogroup hash-doc
+ @{
+     Библиотека содержит единый контекст (структура @ref hash) для реализации различных алгоритмов
+     бесключевого хеширования. В настоящее время
+    с помощью класса @ref hash реализованы следующие алгоритмы хеширования
+     - Стрибог256,
+     - Стрибог512,
+     - а также алгоритм вычисления контрольных сумм `crc64`.
+
+    Перед началом работы контекст функции хэширования должен быть инициализирован
+    вызовом одной из функций инициализации, например, @ref ak_hash_create_streebog256()
+    или @ref ak_hash_create_streebog512().
+
+    После завершения вычислений контекст должен быть освобожден с помощью функции
+    @ref ak_hash_destroy().
+ @}                                                                                                */
+
+/* ----------------------------------------------------------------------------------------------- */
+/*! @brief Итерационные константы для алгоритма Стрибог (ГОСТ Р 34.11-2012).                       */
  static const ak_uint64 streebog_c[12][8] = {
 #ifdef AK_LITTLE_ENDIAN
   { 0xdd806559f2a64507ULL, 0x05767436cc744d23ULL, 0xa2422a08a460d315ULL, 0x4b7ce09192676901ULL,
@@ -63,10 +80,10 @@
 #endif
  };
 
+#ifndef AK_HAVE_SLOW_HASH
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Развернутые константы для линейного преобразования из алгоритма
-    Стрибог (ГОСТ Р 34.11-2012). */
-/* ---------------------------------------------------------------------------------------------- */
+/*! @brief Развернутые константы для линейного преобразования из алгоритма
+    Стрибог (ГОСТ Р 34.11-2012).                                                                   */
  const ak_uint64 streebog_Areverse_expand_with_pi[8][256] =
 #ifdef AK_LITTLE_ENDIAN
 {
@@ -1131,34 +1148,107 @@
  }
 };
 #endif
+/* эта часть кода компилируется для медленной реализации алгоритма хеширования */
+#else
+/* ----------------------------------------------------------------------------------------------- */
+/*! @brief Нелинейное биективное преобразование байт, используемое в алгоритмах
+    Стрибог (ГОСТ Р 34.11-2012) и Кузнечик (ГОСТ Р 34.12-2015).                                    */
+ static const unsigned char gost_pi[256]= {
+   252, 238, 221, 17 , 207, 110, 49 , 22 , 251, 196, 250, 218, 35 , 197, 4  , 77 ,
+   233, 119, 240, 219, 147, 46 , 153, 186, 23 , 54 , 241, 187, 20 , 205, 95 , 193,
+   249, 24 , 101, 90 , 226, 92 , 239, 33 , 129, 28 , 60 , 66 , 139, 1  , 142, 79 ,
+   5  , 132, 2  , 174, 227, 106, 143, 160, 6  , 11 , 237, 152, 127, 212, 211, 31 ,
+   235, 52 , 44 , 81 , 234, 200, 72 , 171, 242, 42 , 104, 162, 253, 58 , 206, 204,
+   181, 112, 14 , 86 , 8  , 12 , 118, 18 , 191, 114, 19 , 71 , 156, 183, 93 , 135,
+   21 , 161, 150, 41 , 16 , 123, 154, 199, 243, 145, 120, 111, 157, 158, 178, 177,
+   50 , 117, 25 , 61 , 255, 53 , 138, 126, 109, 84 , 198, 128, 195, 189, 13 , 87 ,
+   223, 245, 36 , 169, 62 , 168, 67 , 201, 215, 121, 214, 246, 124, 34 , 185, 3  ,
+   224, 15 , 236, 222, 122, 148, 176, 188, 220, 232, 40 , 80 , 78 , 51 , 10 , 74 ,
+   167, 151, 96 , 115, 30 , 0  , 98 , 68 , 26 , 184, 56 , 130, 100, 159, 38 , 65 ,
+   173, 69 , 70 , 146, 39 , 94 , 85 , 47 , 140, 163, 165, 125, 105, 213, 149, 59 ,
+   7  , 88 , 179, 64 , 134, 172, 29 , 247, 48 , 55 , 107, 228, 136, 217, 231, 137,
+   225, 27 , 131, 73 , 76 , 63 , 248, 254, 141, 83 , 170, 144, 202, 216, 133, 97 ,
+   32 , 113, 103, 164, 45 , 43 , 9  , 91 , 203, 155, 37 , 208, 190, 229, 108, 82 ,
+   89 , 166, 116, 210, 230, 244, 180, 192, 209, 102, 175, 194, 57 , 75 , 99 , 182
+ };
+
+/* ----------------------------------------------------------------------------------------------- */
+ static const unsigned char tau[64] ={
+                              0 , 8 , 16, 24, 32, 40, 48, 56,
+                              1 , 9 , 17, 25, 33, 41, 49, 57,
+                              2 , 10, 18, 26, 34, 42, 50, 58,
+                              3 , 11, 19, 27, 35, 43, 51, 59,
+                              4 , 12, 20, 28, 36, 44, 52, 60,
+                              5 , 13, 21, 29, 37, 45, 53, 61,
+                              6 , 14, 22, 30, 38, 46, 54, 62,
+                              7 , 15, 23, 31, 39, 47, 55, 63
+ };
+
+/* ----------------------------------------------------------------------------------------------- */
+ static const unsigned long long int A[64] = {
+  0x8e20faa72ba0b470, 0x47107ddd9b505a38, 0xad08b0e0c3282d1c, 0xd8045870ef14980e,
+  0x6c022c38f90a4c07, 0x3601161cf205268d, 0x1b8e0b0e798c13c8, 0x83478b07b2468764,
+  0xa011d380818e8f40, 0x5086e740ce47c920, 0x2843fd2067adea10, 0x14aff010bdd87508,
+  0x0ad97808d06cb404, 0x05e23c0468365a02, 0x8c711e02341b2d01, 0x46b60f011a83988e,
+  0x90dab52a387ae76f, 0x486dd4151c3dfdb9, 0x24b86a840e90f0d2, 0x125c354207487869,
+  0x092e94218d243cba, 0x8a174a9ec8121e5d, 0x4585254f64090fa0, 0xaccc9ca9328a8950,
+  0x9d4df05d5f661451, 0xc0a878a0a1330aa6, 0x60543c50de970553, 0x302a1e286fc58ca7,
+  0x18150f14b9ec46dd, 0x0c84890ad27623e0, 0x0642ca05693b9f70, 0x0321658cba93c138,
+  0x86275df09ce8aaa8, 0x439da0784e745554, 0xafc0503c273aa42a, 0xd960281e9d1d5215,
+  0xe230140fc0802984, 0x71180a8960409a42, 0xb60c05ca30204d21, 0x5b068c651810a89e,
+  0x456c34887a3805b9, 0xac361a443d1c8cd2, 0x561b0d22900e4669, 0x2b838811480723ba,
+  0x9bcf4486248d9f5d, 0xc3e9224312c8c1a0, 0xeffa11af0964ee50, 0xf97d86d98a327728,
+  0xe4fa2054a80b329c, 0x727d102a548b194e, 0x39b008152acb8227, 0x9258048415eb419d,
+  0x492c024284fbaec0, 0xaa16012142f35760, 0x550b8e9e21f7a530, 0xa48b474f9ef5dc18,
+  0x70a6a56e2440598e, 0x3853dc371220a247, 0x1ca76e95091051ad, 0x0edd37c48a08a6d8,
+  0x07e095624504536c, 0x8d70c431ac02a736, 0xc83862965601dd1b, 0x641c314b2b8ee083
+};
+#endif
 
 /* ----------------------------------------------------------------------------------------------- */
 /*                            Реализация функции хеширования Стрибог                               */
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Преобразование LPS.
-    \note Мы предполагаем, что данные содержат 64 байта.                                           */
+/*! @brief Преобразование LPS.
+    @note Мы предполагаем, что данные содержат 64 байта.                                           */
 /* ----------------------------------------------------------------------------------------------- */
- static inline void ak_hash_context_streebog_lps( ak_uint64 *result, const ak_uint64 *data )
+ static inline void ak_streebog_lps( ak_uint64 *result, const ak_uint64 *data )
 {
-  size_t idx = 0, idx2 = 0;
-  const unsigned char *a = ( const unsigned char*) data; /* приводим к массиву байт */
+     size_t idx = 0, idx2 = 0;
+     const unsigned char *a = ( const unsigned char*) data; /* приводим к массиву байт */
 
-  /* Все три преобразования вместе                           */
-  /* (этот очень короткий код был предложен Павлом Лебедевым */
-  for( idx = 0; idx < 8; idx++ ) {
-    ak_uint64 sidx = idx, c = 0;
-    for( idx2 = 0; idx2 < 8; idx2++, sidx += 8 ) {
-      c ^= streebog_Areverse_expand_with_pi[idx2][a[sidx]];
-      }
-    result[idx] = c;
-  }
+   #ifndef AK_HAVE_SLOW_HASH
+   /* Все три преобразования вместе                           */
+   /* (этот очень короткий код был предложен Павлом Лебедевым */
+     for( idx = 0; idx < 8; idx++ ) {
+         ak_uint64 sidx = idx, c = 0;
+         for( idx2 = 0; idx2 < 8; idx2++, sidx += 8 ) {
+             c ^= streebog_Areverse_expand_with_pi[idx2][a[sidx]];
+         }
+         result[idx] = c;
+     }
+   #else
+     unsigned char ax[64], *cp = (unsigned char *)result;
+
+   /* в начале неразвернутые преобразования S и P */
+     for( idx = 0; idx < 64; idx++ ) ax[idx] = gost_pi[a[idx]];
+     for( idx = 0; idx < 64; idx++ ) cp[idx] = ax[tau[idx]];
+
+     for( idx = 0; idx < 8; idx ++ ) {
+         unsigned long long int temp = result[idx];
+         result[idx] = 0;
+         for( idx2 = 0; idx2 < 64; idx2++ ) {
+             if( temp&0x1 ) result[idx] ^= A[ 63-idx2 ];
+             temp >>= 1;
+         }
+     }
+   #endif
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Преобразование X.
-    \note Мы предполагаем, что данные содержат 64 байта.                                           */
+/*! @brief Преобразование X.
+    @note Мы предполагаем, что данные содержат 64 байта.                                           */
 /* ----------------------------------------------------------------------------------------------- */
- static inline void ak_hash_context_streebog_x( ak_uint64 *r, const ak_uint64 *k, const ak_uint64 *a )
+ static inline void ak_streebog_x( ak_uint64 *r, const ak_uint64 *k, const ak_uint64 *a )
 {
   int idx = 0;
   for( idx = 0; idx < 8; idx++ ) r[idx] = k[idx] ^ a[idx];
@@ -1166,31 +1256,31 @@
 
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Преобразование G
-    \note Мы предполагаем, что массивы n и m содержат по 64 байта.                                 */
+/*! @brief Преобразование G
+    @note Мы предполагаем, что массивы n и m содержат по 64 байта.                                 */
 /* ----------------------------------------------------------------------------------------------- */
- static inline void ak_hash_context_streebog_g( ak_streebog ctx, ak_uint64 *n, const ak_uint64 *m )
+ static inline void ak_streebog_g( ak_streebog ctx, ak_uint64 *n, const ak_uint64 *m )
 {
    int idx = 0;
    ak_uint64 K[8], T[8], B[8];
 
        if( n != NULL ) {
-         ak_hash_context_streebog_x( B, ctx->h, n );
-         ak_hash_context_streebog_lps( K, B );
+         ak_streebog_x( B, ctx->h, n );
+         ak_streebog_lps( K, B );
        }
         else {
-         ak_hash_context_streebog_lps( K, ctx->h );
+         ak_streebog_lps( K, ctx->h );
         }
 
        /* K - ключ K1 */
        for( idx = 0; idx < 8; idx++ ) T[idx] = m[idx]; /* memcpy( T, m, 64 ); */
 
        for( idx = 0; idx < 12; idx++ ) {
-          ak_hash_context_streebog_x( B, T, K );
-          ak_hash_context_streebog_lps( T, B ); /* преобразуем текст */
+          ak_streebog_x( B, T, K );
+          ak_streebog_lps( T, B ); /* преобразуем текст */
 
-          ak_hash_context_streebog_x( B, K, streebog_c[idx] );
-          ak_hash_context_streebog_lps( K, B );   /* новый ключ */
+          ak_streebog_x( B, K, streebog_c[idx] );
+          ak_streebog_lps( K, B );   /* новый ключ */
        }
 
        /* изменяем значение переменной h */
@@ -1198,9 +1288,9 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Преобразование Add (увеличение счетчика длины обработаного сообщения).                  */
+/*! @brief Преобразование Add (увеличение счетчика длины обработаного сообщения).                  */
 /* ----------------------------------------------------------------------------------------------- */
- static inline void ak_hash_context_streebog_add( ak_streebog ctx, ak_uint64 size )
+ static inline void ak_streebog_add( ak_streebog ctx, ak_uint64 size )
 {
  #ifdef AK_LITTLE_ENDIAN
    ak_uint64 tmp = size + ctx->n[0];
@@ -1219,9 +1309,9 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! \brief Преобразование SAdd (Прибавление к массиву S вектора по модулю \f$ 2^{512} \f$).        */
+/*! @brief Преобразование SAdd (Прибавление к массиву S вектора по модулю \f$ 2^{512} \f$).        */
 /* ----------------------------------------------------------------------------------------------- */
- static inline void ak_hash_context_streebog_sadd( ak_streebog ctx,  const ak_uint64 *data )
+ static inline void ak_streebog_sadd( ak_streebog ctx,  const ak_uint64 *data )
 {
    int i = 0;
    ak_uint64 xdata[8], carry = 0;
@@ -1251,7 +1341,7 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
- static int ak_hash_context_streebog_clean( ak_pointer sctx )
+ static int ak_streebog_clean( ak_pointer sctx )
 {
   ak_streebog cx = ( ak_streebog ) sctx;
   if( cx == NULL ) return ak_error_null_pointer;
@@ -1265,7 +1355,7 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
- static int ak_hash_context_streebog_update( ak_pointer sctx, const ak_pointer in, const size_t size )
+ static int ak_streebog_update( ak_pointer sctx, const ak_pointer in, const size_t size )
 {
   ak_streebog cx = ( ak_streebog ) sctx;
   ak_uint64 quot = size >> 6, *dt = ( ak_uint64 *) in;
@@ -1276,9 +1366,9 @@
   if(( size - ( quot << 6 )) != 0 ) return ak_error_message( ak_error_wrong_length, __func__,
                                       "data length is not a multiple of the length of the block" );
   do{
-      ak_hash_context_streebog_g( cx, cx->n, dt );
-      ak_hash_context_streebog_add( cx, 512 );
-      ak_hash_context_streebog_sadd( cx, dt );
+      ak_streebog_g( cx, cx->n, dt );
+      ak_streebog_add( cx, 512 );
+      ak_streebog_sadd( cx, dt );
       quot--;
       dt += 8;
   } while( quot > 0 );
@@ -1287,7 +1377,7 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
- static int ak_hash_context_streebog_finalize( ak_pointer sctx,
+ static int ak_streebog_finalize( ak_pointer sctx,
                    const ak_pointer in, const size_t size, ak_pointer out, const size_t out_size )
 {
   ak_uint64 m[8];
@@ -1311,11 +1401,11 @@
 
   /* при финализации мы изменяем копию существующей структуры */
   memcpy( &sx, cx, sizeof( struct streebog ));
-  ak_hash_context_streebog_g( &sx, sx.n, m );
-  ak_hash_context_streebog_add( &sx, size << 3 );
-  ak_hash_context_streebog_sadd( &sx, m );
-  ak_hash_context_streebog_g( &sx, NULL, sx.n );
-  ak_hash_context_streebog_g( &sx, NULL, sx.sigma );
+  ak_streebog_g( &sx, sx.n, m );
+  ak_streebog_add( &sx, size << 3 );
+  ak_streebog_sadd( &sx, m );
+  ak_streebog_g( &sx, NULL, sx.n );
+  ak_streebog_g( &sx, NULL, sx.sigma );
 
  /* копируем нужную часть результирующего массива или выдаем сообщение об ошибке */
     if( cx->hsize == 64 ) memcpy( out, sx.h, ak_min( 64, out_size ));
@@ -1324,7 +1414,7 @@
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! первое тестовое сообщение (см. текст стандарта ГОСТ Р 34.11-2012, прил. А, пример 1) */
+/*! @brief Первое тестовое сообщение (см. текст стандарта ГОСТ Р 34.11-2012, прил. А, пример 1)    */
  static ak_uint8 streebog_M1_message[63] = {
    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
@@ -1334,7 +1424,7 @@
    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
    0x30, 0x31, 0x32 };
 
-/*! второе тестовое сообщение (см. текст стандарта ГОСТ Р 34.11-2012, прил. А, пример 2) */
+/*! @brief Второе тестовое сообщение (см. текст стандарта ГОСТ Р 34.11-2012, прил. А, пример 2)    */
  static ak_uint8 streebog_M2_message[72] = {
    0xd1, 0xe5, 0x20, 0xe2, 0xe5, 0xf2, 0xf0, 0xe8, 0x2c, 0x20, 0xd1, 0xf2, 0xf0, 0xe8,
    0xe1, 0xee, 0xe6, 0xe8, 0x20, 0xe2, 0xed, 0xf3, 0xf6, 0xe8, 0x2c, 0x20, 0xe2, 0xe5,
@@ -1343,31 +1433,37 @@
    0xfb, 0xff, 0x20, 0xef, 0xeb, 0xfa, 0xea, 0xfb, 0x20, 0xc8, 0xe3, 0xee, 0xf0, 0xe5,
    0xe2, 0xfb };
 
+/*! @brief Тестовое сообщение M1                                                                   */
  static ak_uint8 streebog256_testM1[32] = {
    0x9D, 0x15, 0x1E, 0xEF, 0xD8, 0x59, 0x0B, 0x89, 0xDA, 0xA6, 0xBA, 0x6C, 0xB7, 0x4A, 0xF9, 0x27,
    0x5D, 0xD0, 0x51, 0x02, 0x6B, 0xB1, 0x49, 0xA4, 0x52, 0xFD, 0x84, 0xE5, 0xE5, 0x7B, 0x55, 0x00
  };
 
+/*! @brief Тестовое сообщение M2                                                                   */
  static ak_uint8 streebog256_testM2[32] = {
    0x9D, 0xD2, 0xFE, 0x4E, 0x90, 0x40, 0x9E, 0x5D, 0xA8, 0x7F, 0x53, 0x97, 0x6D, 0x74, 0x05, 0xB0,
    0xC0, 0xCA, 0xC6, 0x28, 0xFC, 0x66, 0x9A, 0x74, 0x1D, 0x50, 0x06, 0x3C, 0x55, 0x7E, 0x8F, 0x50
  };
 
+/*! @brief Тестовое сообщение M3                                                                   */
  static ak_uint8 streebog256_testM3[32] = {
    0x3E, 0x7D, 0xEA, 0x7F, 0x23, 0x84, 0xB6, 0xC5, 0xA3, 0xD0, 0xE2, 0x4A, 0xAA, 0x29, 0xC0, 0x5E,
    0x89, 0xDD, 0xD7, 0x62, 0x14, 0x50, 0x30, 0xEC, 0x22, 0xC7, 0x1A, 0x6D, 0xB8, 0xB2, 0xC1, 0xF4
  };
 
+/*! @brief Тестовое сообщение M4                                                                   */
  static ak_uint8 streebog256_testM4[32] = {
    0x36, 0x81, 0x6A, 0x82, 0x4D, 0xCB, 0xE7, 0xD6, 0x17, 0x1A, 0xA5, 0x85, 0x00, 0x74, 0x1F, 0x2E,
    0xA2, 0x75, 0x7A, 0xE2, 0xE1, 0x78, 0x4A, 0xB7, 0x2C, 0x5C, 0x3C, 0x6C, 0x19, 0x8D, 0x71, 0xDA
  };
 
+/*! @brief Тестовое сообщение M5                                                                   */
  static ak_uint8 streebog256_testM5[32] = {
    0x3F, 0x53, 0x9A, 0x21, 0x3E, 0x97, 0xC8, 0x02, 0xCC, 0x22, 0x9D, 0x47, 0x4C, 0x6A, 0xA3, 0x2A,
    0x82, 0x5A, 0x36, 0x0B, 0x2A, 0x93, 0x3A, 0x94, 0x9F, 0xD9, 0x25, 0x20, 0x8D, 0x9C, 0xE1, 0xBB
  };
 
+/*! @brief Тестовое сообщение M1                                                                   */
  static ak_uint8 streebog512_testM1[64] = {
    0x1B, 0x54, 0xD0, 0x1A, 0x4A, 0xF5, 0xB9, 0xD5, 0xCC, 0x3D, 0x86, 0xD6, 0x8D, 0x28, 0x54, 0x62,
    0xB1, 0x9A, 0xBC, 0x24, 0x75, 0x22, 0x2F, 0x35, 0xC0, 0x85, 0x12, 0x2B, 0xE4, 0xBA, 0x1F, 0xFA,
@@ -1375,6 +1471,7 @@
    0xE2, 0xA4, 0x81, 0x33, 0x2B, 0x08, 0xEF, 0x7F, 0x41, 0x79, 0x78, 0x91, 0xC1, 0x64, 0x6F, 0x48
  };
 
+/*! @brief Тестовое сообщение M2                                                                   */
  static ak_uint8 streebog512_testM2[64] = {
    0x1E, 0x88, 0xE6, 0x22, 0x26, 0xBF, 0xCA, 0x6F, 0x99, 0x94, 0xF1, 0xF2, 0xD5, 0x15, 0x69, 0xE0,
    0xDA, 0xF8, 0x47, 0x5A, 0x3B, 0x0F, 0xE6, 0x1A, 0x53, 0x00, 0xEE, 0xE4, 0x6D, 0x96, 0x13, 0x76,
@@ -1382,6 +1479,7 @@
    0x3F, 0x0C, 0xB9, 0xDD, 0xDC, 0x2B, 0x64, 0x60, 0x14, 0x3B, 0x03, 0xDA, 0xBA, 0xC9, 0xFB, 0x28
  };
 
+/*! @brief Тестовое сообщение M3                                                                   */
  static ak_uint8 streebog512_testM3[64] = {
    0x8E, 0x94, 0x5D, 0xA2, 0x09, 0xAA, 0x86, 0x9F, 0x04, 0x55, 0x92, 0x85, 0x29, 0xBC, 0xAE, 0x46,
    0x79, 0xE9, 0x87, 0x3A, 0xB7, 0x07, 0xB5, 0x53, 0x15, 0xF5, 0x6C, 0xEB, 0x98, 0xBE, 0xF0, 0xA7,
@@ -1389,555 +1487,335 @@
    0xBA, 0x3A, 0x71, 0x5C, 0x1B, 0xCD, 0x81, 0xCB, 0x8E, 0x9F, 0x90, 0xBF, 0x4C, 0x1C, 0x1A, 0x8A
  };
 
-
 /* ----------------------------------------------------------------------------------------------- */
-/*                               Реализация функция класса hash                                    */
-/* ----------------------------------------------------------------------------------------------- */
-/*! Функция инициализирует контекст алгоритма бесключевого хеширования, регламентируемого стандартом
-    ГОСТ Р 34.11-2012, с длиной хешкода, равной 256 бит (функция Стрибог256).
-
-    @param hctx Контекст функции хеширования
-    @return Функция возвращает код ошибки или \ref ak_error_ok (в случае успеха)                   */
+/*                               Реализация функций класса hash                                    */
 /* ----------------------------------------------------------------------------------------------- */
  int ak_hash_create_streebog256( ak_hash hctx )
 {
-  ak_uint8 out[32];
-  int error = ak_error_ok;
+   #ifdef AK_OPTION_USE_ADDITIONAL_ALGORITHM_CHECK_CONTEXT
+     ak_uint8 out[32];
+   #endif
+     int error = ak_error_ok;
 
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                             "using null pointer to hash context" );
-  hctx->data.sctx.hsize = 32;
-  if(( hctx->oid = ak_oid_find_by_name( "streebog256" )) == NULL )
-    return ak_error_message( ak_error_wrong_oid, __func__,
+   #ifdef AK_HAVE_OID
+     if(( hctx->oid = ak_oid_find_by_name( "streebog256" )) == NULL )
+         return ak_error_message( ak_error_wrong_oid, __func__,
                                            "incorrect internal search of streebog256 identifier" );
-  if(( error = ak_mac_create( &hctx->mctx, 64, &hctx->data.sctx,
-                                             ak_hash_context_streebog_clean,
-                                             ak_hash_context_streebog_update,
-                                             ak_hash_context_streebog_finalize )) != ak_error_ok )
-    return ak_error_message( error, __func__, "incorrect initialization of internal mac context" );
+   #endif
 
- /* добавочная проверка корректной работы алгоритма хэширования */
-  if( ak_libakrypt_get_option_by_name( "use_additional_algorithm_check_context" ) == ak_true ) {
-    ak_hash_context_streebog_clean( &hctx->data.sctx );
-    if(( error = ak_hash_ptr( hctx, streebog_M1_message, 63, out, sizeof( out ))) != ak_error_ok )
-      return ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+     hctx->data.sctx.hsize = 32;
+     if(( error = ak_mac_create( &hctx->mctx, 64, &hctx->data.sctx,
+                                              ak_streebog_clean,
+                                              ak_streebog_update,
+                                              ak_streebog_finalize )) != ak_error_ok )
+     return ak_error_message( error, __func__, "incorrect initialization of internal mac context" );
 
-    if( ak_ptr_is_equal_with_log( out, streebog256_testM1, sizeof( out )) != ak_true )
-      return ak_error_message( ak_error_not_equal_data, __func__ ,
+   #ifdef AK_OPTION_USE_ADDITIONAL_ALGORITHM_CHECK_CONTEXT
+   /* добавочная проверка корректной работы алгоритма хэширования,
+    тестирование алгоритма выполняется при каждом создании контекста */
+     if( ak_libakrypt_get_option_by_name( "use_additional_algorithm_check_context" ) == ak_true ) {
+         ak_streebog_clean( &hctx->data.sctx );
+         if(( error = ak_streebog_finalize( &hctx->data.sctx,
+                                     streebog_M1_message, 63, out, sizeof( out ))) != ak_error_ok )
+             return ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+
+         if( ak_ptr_is_equal_with_log( out, streebog256_testM1, sizeof( out )) != ak_true )
+             return ak_error_message( ak_error_not_equal_data, __func__ ,
                                              "the 1st test from GOST R 34.11-2012 is wrong" );
-  }
+     }
+   #endif
 
-  return ak_hash_context_streebog_clean( &hctx->data.sctx );
+  return ak_streebog_clean( &hctx->data.sctx );
 }
 
-/* ----------------------------------------------------------------------------------------------- */
-/*! Функция инициализирует контекст алгоритма бесключевого хеширования, регламентируемого стандартом
-    ГОСТ Р 34.11-2012, с длиной хэшкода, равной 512 бит (функция Стрибог512).
-
-    @param hctx Контекст функции хеширования
-    @return Функция возвращает код ошибки или \ref ak_error_ok (в случае успеха)                   */
 /* ----------------------------------------------------------------------------------------------- */
  int ak_hash_create_streebog512( ak_hash hctx )
 {
-  ak_uint8 out[64];
-  int error = ak_error_ok;
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
-                                                            "using null pointer to hash context" );
-  hctx->data.sctx.hsize = 64;
-  if(( hctx->oid = ak_oid_find_by_name( "streebog512" )) == NULL )
-    return ak_error_message( ak_error_wrong_oid, __func__,
-                                           "incorrect internal search of streebog256 identifier" );
-  if(( error = ak_mac_create( &hctx->mctx, 64, &hctx->data.sctx,
-                                             ak_hash_context_streebog_clean,
-                                             ak_hash_context_streebog_update,
-                                             ak_hash_context_streebog_finalize )) != ak_error_ok )
-    return ak_error_message( error, __func__, "incorrect initialization of internal mac context" );
+   #ifdef AK_OPTION_USE_ADDITIONAL_ALGORITHM_CHECK_CONTEXT
+     ak_uint8 out[64];
+   #endif
+     int error = ak_error_ok;
 
- /* добавочная проверка корректной работы алгоритма хэширования */
-  if( ak_libakrypt_get_option_by_name( "use_additional_algorithm_check_context" ) == ak_true ) {
-    ak_hash_context_streebog_clean( &hctx->data.sctx );
-    if(( error = ak_hash_ptr( hctx, streebog_M1_message, 63, out, sizeof( out ))) != ak_error_ok )
-      return ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+                                                             "using null pointer to hash context" );
+   #ifdef AK_HAVE_OID
+     if(( hctx->oid = ak_oid_find_by_name( "streebog512" )) == NULL )
+         return ak_error_message( ak_error_wrong_oid, __func__,
+                                            "incorrect internal search of streebog256 identifier" );
+   #endif
 
-    if( ak_ptr_is_equal_with_log( out, streebog512_testM1, sizeof( out )) != ak_true )
-      return ak_error_message( ak_error_not_equal_data, __func__ ,
-                                             "the 1st test from GOST R 34.11-2012 is wrong" );
-  }
+     hctx->data.sctx.hsize = 64;
+     if(( error = ak_mac_create( &hctx->mctx, 64, &hctx->data.sctx,
+                                              ak_streebog_clean,
+                                              ak_streebog_update,
+                                              ak_streebog_finalize )) != ak_error_ok )
+     return ak_error_message( error, __func__, "incorrect initialization of internal mac context" );
 
-  return ak_hash_context_streebog_clean( &hctx->data.sctx );
+   #ifdef AK_OPTION_USE_ADDITIONAL_ALGORITHM_CHECK_CONTEXT
+   /* добавочная проверка корректной работы алгоритма хэширования,
+    тестирование алгоритма выполняется при каждом создании контекста */
+     if( ak_libakrypt_get_option_by_name( "use_additional_algorithm_check_context" ) == ak_true ) {
+         ak_streebog_clean( &hctx->data.sctx );
+         if(( error = ak_streebog_finalize( &hctx->data.sctx,
+                              streebog_M1_message, 63, out, sizeof( out ))) != ak_error_ok )
+         return ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+
+         if( ak_ptr_is_equal_with_log( out, streebog512_testM1, sizeof( out )) != ak_true )
+             return ak_error_message( ak_error_not_equal_data, __func__ ,
+                                                  "the 1st test from GOST R 34.11-2012 is wrong" );
+     }
+   #endif
+
+  return ak_streebog_clean( &hctx->data.sctx );
 }
 
-/* ----------------------------------------------------------------------------------------------- */
-/*! @param hctx Контекст функции хеширования
-    @param oid OID алгоритма бесключевого хеширования.
-
-    @return В случае успеха возвращается ak_error_ok (ноль). В случае возникновения ошибки
-    возвращается ее код.                                                                           */
-/* ----------------------------------------------------------------------------------------------- */
- int ak_hash_create_oid( ak_hash hctx, ak_oid oid )
-{
-  int error = ak_error_ok;
-
- /* выполняем проверку */
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
-                                                            "using null pointer to hash context" );
-  if( oid == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
-                                                       "using null pointer to hash function OID" );
- /* проверяем, что OID от бесключевой функции хеширования */
-  if( oid->engine != hash_function )
-    return ak_error_message( ak_error_oid_engine, __func__ , "using oid with wrong engine" );
- /* проверяем, что OID от алгоритма, а не от параметров */
-  if( oid->mode != algorithm )
-    return ak_error_message( ak_error_oid_mode, __func__ , "using oid with wrong mode" );
- /* проверяем, что производящая функция определена */
-  if( oid->func.first.create == NULL )
-    return ak_error_message( ak_error_undefined_function, __func__ ,
-                                                          "using oid with undefined constructor" );
- /* инициализируем контекст */
-  if(( error = (( ak_function_hash_create *)oid->func.first.create )( hctx )) != ak_error_ok )
-      return ak_error_message( error, __func__, "invalid creation of hash function context");
-
- return error;
-}
-
-/* ----------------------------------------------------------------------------------------------- */
-/*! Функция очищает значения полей структуры struct hash.
-
-  @param hctx Контекст функции хеширования
-  @return В случае успеха возвращается ak_error_ok (ноль). В случае возникновения ошибки
-  возвращается ее код.                                                                             */
 /* ----------------------------------------------------------------------------------------------- */
  int ak_hash_destroy( ak_hash hctx )
 {
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+     int error = ak_error_ok;
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                        "destroying null pointer to hash context" );
-  hctx->oid = NULL;
-  memset( &hctx->data.sctx, 0, sizeof( struct streebog ));
-  if( ak_mac_destroy( &hctx->mctx ) != ak_error_ok )
-    ak_error_message( ak_error_get_value(), __func__,
-                                                    "incorrect cleaning of internal mac context" );
- return ak_error_ok;
+   #ifdef AK_HAVE_OID
+     hctx->oid = NULL;
+   #endif
+
+     memset( &hctx->data.sctx, 0, sizeof( struct streebog ));
+     if(( error = ak_mac_destroy( &hctx->mctx )) != ak_error_ok )
+         ak_error_message( error, __func__, "incorrect cleaning of internal mac context" );
+  return error;
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! @param hctx Контекст функции хеширования
-    @return Функция возвращает длину хеш-кода в октетах. В случае возникновения ошибки,
-    возвращается ноль. Код ошибки может быть получен с помощью вызова функции ak_error_get_value().*/
-/* ----------------------------------------------------------------------------------------------- */
  size_t ak_hash_get_tag_size( ak_hash hctx )
 {
-  if( hctx == NULL ) {
-    ak_error_message( ak_error_null_pointer, __func__, "using null pointer to hash context" );
-    return 0;
-  }
-
- /* костыль! */
-  if( strncmp( hctx->oid->name[0], "crc64", 5 ) == 0 ) return 8;
+     if( hctx == NULL ) {
+         ak_error_message( ak_error_null_pointer, __func__, "using null pointer to hash context" );
+         return 0;
+     }
 
  return hctx->data.sctx.hsize;
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! @param hctx Контекст функции хеширования
-    @return Функция возвращает длину блока в октетах. В случае возникновения ошибки,
-    возвращается ноль. Код ошибки может быть получен с помощью вызова функции ak_error_get_value().*/
-/* ----------------------------------------------------------------------------------------------- */
  size_t ak_hash_get_block_size( ak_hash hctx )
 {
-  if( hctx == NULL ) {
-    ak_error_message( ak_error_null_pointer, __func__, "using null pointer to hash context" );
-    return 0;
-  }
-
- /* костыль! */
-  if( strncmp( hctx->oid->name[0], "crc64", 5 ) == 0 ) return 1;
+     if( hctx == NULL ) {
+         ak_error_message( ak_error_null_pointer, __func__, "using null pointer to hash context" );
+         return 0;
+     }
 
  return hctx->mctx.bsize;
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*! Конечный результат применения сжимающего отображения помещается в область памяти,
-    на которую указывает out. Если out равен NULL, то возвращается ошибка.
-    \note Внутренняя структура, хранящая промежуточные данные, очищается.
-
-    @param hctx Контекст функции хеширования
-    @param in Указатель на входные данные для которых вычисляется хеш-код.
-    @param size Размер входных данных в байтах.
-    @param out Область памяти, куда будет помещен результат. Память должна быть заранее выделена.
-    Размер выделяемой памяти должен быть не менее значения поля hsize и может
-    быть определен с помощью вызова функции ak_hash_context_get_tag_size().
-    @param out_size Размер области памяти (в октетах), в которую будет помещен результат.
-
-    @return В случае успеха функция возвращает ноль (\ref ak_error_ok). В противном случае
-    возвращается код ошибки.                                                                       */
-/* ----------------------------------------------------------------------------------------------- */
- int ak_hash_ptr( ak_hash hctx, const ak_pointer in,
-                                         const size_t size, ak_pointer out, const size_t out_size )
-{
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
-                                                            "using null pointer to hash context" );
- return ak_mac_ptr( &hctx->mctx, in, size, out, out_size );
-}
-
-/* ----------------------------------------------------------------------------------------------- */
-/*! @param hctx Контекст функции хеширования
-    @param filename Имя файла, для котрого вычисляется хеш-код.
-    @param out Область памяти, куда будет помещен результат. Память должна быть заранее выделена.
-    Размер выделяемой памяти должен быть не менее значения поля hsize и может
-    быть определен с помощью вызова функции ak_hash_context_get_tag_size().
-    @param out_size Размер области памяти (в октетах), в которую будет помещен результат.
-
-    @return В случае успеха функция возвращает ноль (\ref ak_error_ok). В противном случае
-    возвращается код ошибки.                                                                       */
-/* ----------------------------------------------------------------------------------------------- */
- int ak_hash_file( ak_hash hctx, const char *filename, ak_pointer out, const size_t out_size )
-{
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
-                                                            "using null pointer to hash context" );
- return ak_mac_file( &hctx->mctx, filename, out, out_size );
-}
-
-/* ----------------------------------------------------------------------------------------------- */
-/*! @note Специальное значение data_size = -1 может быть использовано для указания того,
-    что сжимаются все данные до конца файла.
-
-    @param hctx Контекст функции хеширования
-    @param filename Имя файла, для котрого вычисляется хеш-код.
-    @param offset смещение от начала файла (в октетах)
-    @param data_size размер фрагмента (в октетах), для которого вычисляется результат
-    сжимающего преобразования.
-    @param out Область памяти, куда будет помещен результат. Память должна быть заранее выделена.
-    Размер выделяемой памяти должен быть не менее значения поля hsize и может
-    быть определен с помощью вызова функции ak_hash_context_get_tag_size().
-    @param out_size Размер области памяти (в октетах), в которую будет помещен результат.
-
-    @return В случае успеха функция возвращает ноль (\ref ak_error_ok). В противном случае
-    возвращается код ошибки.                                                                       */
-/* ----------------------------------------------------------------------------------------------- */
- int ak_hash_file_offset( ak_hash hctx, const char *filename,
-                       ak_int64 offset, ak_int64 data_size, ak_pointer out, const size_t out_size )
-{
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
-                                                            "using null pointer to hash context" );
- return ak_mac_file_offset( &hctx->mctx, filename, offset, data_size, out, out_size );
-}
-
-/* ----------------------------------------------------------------------------------------------- */
-/*! @param hctx Контекст функции хеширования
-    @return В случае успеха функция возвращает ноль (\ref ak_error_ok). В противном случае
-    возвращается код ошибки.                                                                       */
-/* ----------------------------------------------------------------------------------------------- */
  int ak_hash_clean( ak_hash hctx )
 {
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                          "cleaning null pointer to hash context" );
- return ak_mac_clean( &hctx->mctx );
+  return ak_mac_clean( &hctx->mctx );
 }
 
-/* ----------------------------------------------------------------------------------------------- */
-/*! @param hctx Контекст функции хеширования
-    @param in Указатель на входные данные для которых вычисляется хеш-код.
-    @param size Размер входных данных в байтах. Размер может принимать произвольное,
-    натуральное значение.
-
-    @return В случае успеха функция возвращает ноль (\ref ak_error_ok). В противном случае
-    возвращается код ошибки.                                                                       */
 /* ----------------------------------------------------------------------------------------------- */
  int ak_hash_update( ak_hash hctx, const ak_pointer in, const size_t size )
 {
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                          "updating null pointer to hash context" );
- return ak_mac_update( &hctx->mctx, in, size );
+  return ak_mac_update( &hctx->mctx, in, size );
 }
 
-/* ----------------------------------------------------------------------------------------------- */
-/*! @param hctx Контекст функции хеширования
-    @param in Указатель на входные данные для которых вычисляется хеш-код.
-    @param size Размер входных данных в байтах.
-    @param out Область памяти, куда будет помещен результат. Память должна быть заранее выделена.
-    Размер выделяемой памяти должен быть не менее значения поля hsize и может
-    быть определен с помощью вызова функции ak_hash_context_get_tag_size().
-    @param out_size Размер области памяти (в октетах), в которую будет помещен результат.
-
-    @return В случае успеха функция возвращает ноль (\ref ak_error_ok). В противном случае
-    возвращается код ошибки.                                                                       */
 /* ----------------------------------------------------------------------------------------------- */
  int ak_hash_finalize( ak_hash hctx, const ak_pointer in, const size_t size,
                                                            ak_pointer out, const size_t out_size )
 {
-  if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
                                                        "finalizing null pointer to hash context" );
- return ak_mac_finalize( &hctx->mctx, in, size, out, out_size );
+  return ak_mac_finalize( &hctx->mctx, in, size, out, out_size );
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-/*                          Функции тестирования алгоритмов работы                                 */
-/* ----------------------------------------------------------------------------------------------- */
+ int ak_hash_ptr( ak_hash hctx, const ak_pointer in,
+                                         const size_t size, ak_pointer out, const size_t out_size )
+{
+     if( hctx == NULL ) return ak_error_message( ak_error_null_pointer, __func__,
+                                                            "using null pointer to hash context" );
+  return ak_mac_ptr( &hctx->mctx, in, size, out, out_size );
+}
 
 /* ----------------------------------------------------------------------------------------------- */
-/*!  @return Если тестирование прошло успешно возвращается \ref ak_true (истина). В противном
-     случае возвращается \ref ak_false.                                                            */
+/*                 Функции тестирования алгоритмов итерационного сжатия                            */
 /* ----------------------------------------------------------------------------------------------- */
  bool_t ak_libakrypt_test_streebog256( void )
 {
-  ak_uint32 steps;
-  struct hash ctx; /* контекст функции хеширования */
-  struct random rnd;
-  int error = ak_error_ok;
-  bool_t result = ak_true;
-  size_t len, offset;
-  int audit = ak_log_get_level();
+     struct hash ctx; /* контекст функции хеширования */
+     int error = ak_error_ok, audit = ak_log_get_level();
+     ak_uint8 out[32]; /* массивы для вывода результатов вычислений */
 
- /* буффер длиной 32 байта (256 бит) для хранения результата */
-  ak_uint8 buffer[512], out[32], out2[32], *ptr = buffer;
+   /* инициализируем контекст функции хешиирования */
+     if(( error = ak_hash_create_streebog256( &ctx )) != ak_error_ok ) {
+       ak_error_message( error, __func__ , "wrong initialization of streenbog256 context" );
+       return ak_false;
+     }
 
- /* инициализируем контекст функции хешиирования */
-  if(( error = ak_hash_create_streebog256( &ctx )) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "wrong initialization of streenbog256 context" );
-    return ak_false;
-  }
+   /* первый пример из приложения А (ГОСТ Р 34.11-2012) */
+     if(( error = ak_hash_ptr( &ctx, streebog_M1_message, 63, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+         goto lab_exit;
+     }
 
- /* первый пример из приложения А (ГОСТ Р 34.11-2012) */
-  ak_hash_ptr( &ctx, streebog_M1_message, 63, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
-
-  if(( result = ak_ptr_is_equal_with_log( out, streebog256_testM1, 32 )) != ak_true ) {
-    ak_error_message( ak_error_not_equal_data, __func__ ,
+     if( ak_ptr_is_equal_with_log( out, streebog256_testM1, 32 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
                                              "the 1st test from GOST R 34.11-2012 is wrong" );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-    ak_error_message( ak_error_ok, __func__ , "the 1st test from GOST R 34.11-2012 is Ok" );
+         goto lab_exit;
+     }
+
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the 1st test from GOST R 34.11-2012 is Ok" );
 
 
- /* второй пример из приложения А (ГОСТ Р 34.11-2012) */
-  ak_hash_ptr( &ctx, streebog_M2_message, 72, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
+   /* второй пример из приложения А (ГОСТ Р 34.11-2012) */
+     if(( error = ak_hash_ptr( &ctx, streebog_M2_message, 72, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+         goto lab_exit;
+     }
 
-  if(( result = ak_ptr_is_equal_with_log( out, streebog256_testM2, 32 )) != ak_true ) {
-      ak_error_message( ak_error_not_equal_data, __func__ ,
+     if( ak_ptr_is_equal_with_log( out, streebog256_testM2, 32 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
                                              "the 2nd test from GOST R 34.11-2012 is wrong" );
-      goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-    ak_error_message( ak_error_ok, __func__ , "the 2nd test from GOST R 34.11-2012 is Ok" );
+         goto lab_exit;
+     }
 
- /* первый пример из Википедии */
-  ak_hash_ptr( &ctx, "The quick brown fox jumps over the lazy dog", 43, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the 2nd test from GOST R 34.11-2012 is Ok" );
 
-  if(( result = ak_ptr_is_equal_with_log( out, streebog256_testM3, 32 )) != ak_true ) {
-    ak_error_message( ak_error_not_equal_data, __func__ ,
+   /* первый пример из Википедии */
+     if(( error = ak_hash_ptr( &ctx,
+            "The quick brown fox jumps over the lazy dog", 43, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+         goto lab_exit;
+     }
+
+     if( ak_ptr_is_equal_with_log( out, streebog256_testM3, 32 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
                                              "the \"lazy dog\" test from Wikipedia is wrong" );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-      ak_error_message( ak_error_ok, __func__ , "the \"lazy dog\" test from Wikipedia is Ok" );
+         goto lab_exit;
+     }
 
- /* второй пример из Википедии */
-  ak_hash_ptr( &ctx, "The quick brown fox jumps over the lazy dog.", 44, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the \"lazy dog\" test from Wikipedia is Ok" );
 
-  if(( result = ak_ptr_is_equal_with_log( out, streebog256_testM4, 32 )) != ak_true ) {
-    ak_error_message( ak_error_not_equal_data, __func__ ,
+   /* второй пример из Википедии */
+     if(( error = ak_hash_ptr( &ctx,
+           "The quick brown fox jumps over the lazy dog.", 44, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+         goto lab_exit;
+     }
+
+     if( ak_ptr_is_equal_with_log( out, streebog256_testM4, 32 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
                                         "the \"lazy dog with point\" test from Wikipedia is wrong" );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-      ak_error_message( ak_error_ok, __func__ ,
+         goto lab_exit;
+     }
+
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ ,
                                            "the \"lazy dog with point\" test from Wikipedia is Ok" );
 
- /* хеширование пустого вектора */
-  ak_hash_ptr( &ctx, "", 0, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
+   /* хеширование пустого вектора */
+     if(( error = ak_hash_ptr( &ctx, "", 0, out, sizeof( out ))) != ak_error_ok ) {
+         ak_error_message( error, __func__ , "invalid calculation of streebog256 code" );
+         goto lab_exit;
+     }
 
-  if(( result = ak_ptr_is_equal( out, streebog256_testM5, 32 )) != ak_true ) {
-    ak_error_message( ak_error_not_equal_data, __func__ , "the zero length vector test is wrong" );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-    ak_error_message( ak_error_ok, __func__ , "the zero length vector test is Ok" );
+     if( ak_ptr_is_equal_with_log( out, streebog256_testM5, 32 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
+                                                            "the zero length vector test is wrong" );
+         goto lab_exit;
+     }
 
- /* тестирование алгоритма хеширования фрагментами произвольной длины */
-  ak_random_create_lcg( &rnd );
-  ak_random_ptr( &rnd, buffer, sizeof( buffer ));
-  if(( error = ak_hash_ptr( &ctx, buffer, sizeof( buffer ), out, sizeof( out ))) != ak_error_ok ) {
-    ak_error_message_fmt( error, __func__,
-                          "incorrect hashing of random %u octets", (unsigned int) sizeof( buffer ));
-    result = ak_false;
-    goto lab_exit;
-  }
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the zero length vector test is Ok" );
 
-  steps = 0;
-  offset = sizeof( buffer );
-  ak_hash_clean( &ctx );
-  do{
-      ak_random_ptr( &rnd, &len, sizeof( len )); len = ak_min( len%16, offset );
-      if( len > 0 ) {
-        if(( error = ak_hash_update( &ctx, ptr, len )) != ak_error_ok ) {
-           ak_error_message( error, __func__, "incorrect updating of hash context" );
-           result = ak_false;
-           goto lab_exit;
-        }
-        ptr += len;
-        offset -= len;
-        ++steps;
-      }
-  } while( offset );
-  memset( out2, 0, sizeof( out2 ));
-  ak_hash_finalize( &ctx, NULL, 0, out2, sizeof( out2 ));
+   /* уничтожаем контекст */
+    lab_exit:
+     ak_hash_destroy( &ctx );
 
-  if(( result = ak_ptr_is_equal_with_log( out, out2, 32 )) != ak_true ) {
-    ak_error_message_fmt( ak_error_not_equal_data, __func__ ,
-                                            "the random walk test with %u steps is wrong", steps );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-      ak_error_message_fmt( ak_error_ok, __func__ ,
-                                               "the random walk test with %u steps is Ok", steps );
- /* уничтожаем контекст */
- lab_exit:
-   ak_random_destroy( &rnd );
-   ak_hash_destroy( &ctx );
- return result;
+  return ( error == ak_error_ok ) ? ak_true : ak_false;
 }
 
-/* ----------------------------------------------------------------------------------------------- */
-/*!  @return Если тестирование прошло успешно возвращается \ref ak_true (истина). В противном
-     случае возвращается \ref ak_false.                                                            */
 /* ----------------------------------------------------------------------------------------------- */
  bool_t ak_libakrypt_test_streebog512( void )
 {
-  ak_uint32 steps;
-  struct hash ctx; /* контекст функции хеширования */
-  struct random rnd;
-  size_t len, offset;
-  int error = ak_error_ok;
-  bool_t result = ak_true;
-  int audit = ak_log_get_level();
+     struct hash ctx; /* контекст функции хеширования */
+     int error = ak_error_ok, audit = ak_log_get_level();
+     ak_uint8 out[64]; /* массивы для вывода результатов вычислений */
 
- /* буффер длиной 64 байта (512 бит) для получения результата */
-  ak_uint8 out[64], out2[64], buffer[512], *ptr = buffer;
+   /* инициализируем контекст функции хешиирования */
+     if(( error = ak_hash_create_streebog512( &ctx )) != ak_error_ok )
+     {
+        ak_error_message( error, __func__ , "wrong initialization of streenbog512 context" );
+        return ak_false;
+     }
 
- /* инициализируем контекст функции хешиирования */
-  if(( error = ak_hash_create_streebog512( &ctx )) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "wrong initialization of streenbog512 context" );
-    return ak_false;
-  }
+   /* первый пример из приложения А (ГОСТ Р 34.11-2012) */
+     if(( error = ak_hash_ptr( &ctx, streebog_M1_message, 63, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of streebog512 code" );
+         goto lab_exit;
+     }
+     if( ak_ptr_is_equal_with_log( out, streebog512_testM1, 64 ) != ak_true )
+     {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
+                                                   "the 1st test from GOST R 34.11-2012 is wrong" );
+         goto lab_exit;
+     }
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the 1st test from GOST R 34.11-2012 is Ok" );
 
- /* первый пример из приложения А (ГОСТ Р 34.11-2012) */
-  ak_hash_ptr( &ctx, streebog_M1_message, 63, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog512 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
-
-  if(( result = ak_ptr_is_equal_with_log( out, streebog512_testM1, 64 )) != ak_true ) {
-    ak_error_message( ak_error_not_equal_data, __func__ ,
-                                             "the 1st test from GOST R 34.11-2012 is wrong" );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-    ak_error_message( ak_error_ok, __func__ , "the 1st test from GOST R 34.11-2012 is Ok" );
-
- /* второй пример из приложения А (ГОСТ Р 34.11-2012) */
-  ak_hash_ptr( &ctx, streebog_M2_message, 72, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog512 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
-
-  if(( result = ak_ptr_is_equal_with_log( out, streebog512_testM2, 64 )) != ak_true ) {
-    ak_error_message( ak_error_not_equal_data, __func__ ,
+   /* второй пример из приложения А (ГОСТ Р 34.11-2012) */
+     if(( error = ak_hash_ptr( &ctx, streebog_M2_message, 72, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of streebog512 code" );
+         goto lab_exit;
+     }
+     if( ak_ptr_is_equal_with_log( out, streebog512_testM2, 64 ) != ak_true ) {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
                                              "the 2nd test from GOST R 34.11-2012 is wrong" );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-      ak_error_message( ak_error_ok, __func__ , "the 2nd test from GOST R 34.11-2012 is Ok" );
+         goto lab_exit;
+     }
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the 2nd test from GOST R 34.11-2012 is Ok" );
 
- /* хеширование пустого вектора */
-  ak_hash_ptr( &ctx, "", 0, out, sizeof( out ));
-  if(( error = ak_error_get_value()) != ak_error_ok ) {
-    ak_error_message( error, __func__ , "invalid calculation of streebog512 code" );
-    result = ak_false;
-    goto lab_exit;
-  }
+   /* хеширование пустого вектора */
+     if(( error = ak_hash_ptr( &ctx, "", 0, out, sizeof( out ))) != ak_error_ok )
+     {
+         ak_error_message( error, __func__ , "invalid calculation of streebog512 code" );
+         goto lab_exit;
+     }
+     if( ak_ptr_is_equal_with_log( out, streebog512_testM3, 64 ) != ak_true )
+     {
+         ak_error_message( ak_error_not_equal_data, __func__ ,
+                                                            "the zero length vector test is wrong" );
+         goto lab_exit;
+     }
+     if( audit >= ak_log_maximum )
+         ak_error_message( ak_error_ok, __func__ , "the zero length vector test is Ok" );
 
-  if(( result = ak_ptr_is_equal_with_log( out, streebog512_testM3, 64 )) != ak_true ) {
-    ak_error_message( ak_error_not_equal_data, __func__ , "the zero length vector test is wrong" );
-    goto lab_exit;
-  }
-  if( audit >= ak_log_maximum )
-      ak_error_message( ak_error_ok, __func__ , "the zero length vector test is Ok" );
+   /* уничтожаем контекст */
+    lab_exit:
+     ak_hash_destroy( &ctx );
 
- /* тестирование алгоритма хеширования фрагментами произвольной длины */
-  ak_random_create_lcg( &rnd );
-  ak_random_ptr( &rnd, buffer, sizeof( buffer ));
-  if(( error = ak_hash_ptr( &ctx, buffer, sizeof( buffer ), out, sizeof( out ))) != ak_error_ok ) {
-    ak_error_message_fmt( error, __func__,
-                          "incorrect hashing of random %u octets", (unsigned int) sizeof( buffer ));
-    result = ak_false;
-    goto lab_ex;
-  }
-
-  steps = 0;
-  offset = sizeof( buffer );
-  ak_hash_clean( &ctx );
-  do{
-      ak_random_ptr( &rnd, &len, sizeof( len ));
-      len = ak_min( len%16, offset );
-      if( len > 0 ) {
-        if(( error = ak_hash_update( &ctx, ptr, len )) != ak_error_ok ) {
-           ak_error_message( error, __func__, "incorrect updating of hash context" );
-           result = ak_false;
-           goto lab_ex;
-        }
-        ptr += len;
-        offset -= len;
-        ++steps;
-      }
-  } while( offset );
-  memset( out2, 0, sizeof( out2 ));
-  ak_hash_finalize( &ctx, NULL, 0, out2, sizeof( out2 ));
-
-  if(( result = ak_ptr_is_equal_with_log( out, out2, 64 )) != ak_true ) {
-    ak_error_message_fmt( ak_error_not_equal_data, __func__ ,
-                                            "the random walk test with %u steps is wrong", steps );
-    goto lab_ex;
-  }
-  if( audit >= ak_log_maximum )
-    ak_error_message_fmt( ak_error_ok, __func__ ,
-                                               "the random walk test with %u steps is Ok", steps );
- /* уничтожаем контекст */
- lab_ex:
-   ak_random_destroy( &rnd );
- lab_exit:
-   ak_hash_destroy( &ctx );
- return result;
+  return ( error == ak_error_ok ) ? ak_true : ak_false;
 }
 
+/* ----------------------------------------------------------------------------------------------- */
+/*! @example faq/example-hash-01.c                                                                 */
+/*! @example faq/example-hash-02.c                                                                 */
 /* ----------------------------------------------------------------------------------------------- */
 /*                                                                                      ak_hash.c  */
 /* ----------------------------------------------------------------------------------------------- */

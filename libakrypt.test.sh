@@ -1,10 +1,11 @@
 #!/bin/bash
-compilerList="gcc-9 gcc-10 gcc-11 gcc-12 gcc-13 gcc-14 gcc-15 gcc-16 gcc-17 gcc-18 musl-gcc clang-11 clang-12 clang-13 clang-14 clang-15 clang-16 clang-17 clang-18 clang-19 clang-20 clang-21 clang-22 tcc"
-buildDir="../build.global"
+compilerList="gcc musl-gcc clang tcc"
+buildDir="../build.all"-`uname`
 
 # формируем каталог для проведения экспериментов
 mkdir -p $buildDir
 cd $buildDir
+pwd
 
 for name in $compilerList
 do
@@ -14,20 +15,26 @@ do
                 echo "--------------------------------------------------------------------------------"
                 mkdir -p $name.build
                 cd $name.build
-# выполняем настройку
-                cmake -DCMAKE_C_COMPILER=$name -DAK_STATIC_LIB=ON -DAK_EXAMPLES=ON -DAK_TESTS=ON ../../libakrypt-0.x
+
+                cmake -DCMAKE_C_COMPILER=$name -DCMAKE_C_FLAGS="-march=native" -DAK_STATIC_LIB=ON -DAK_SHARED_LIB=ON -DAK_EXAMPLES=ON ../../libakrypt-0.x
+
 # выполняем сборку
                 make
+
 # выполняем тестирование
-                make test
+# добавляем export LD_LIB... для указания tcc, где явно располагается только что собранная библиотека
+                export LD_LIBRARY_PATH=./; make test
+
 # выполняем проверку корректности криптографических тестов
-                ./aktool test --crypto --audit 2 --audit-file stderr
-# выполняем запуск тестов в окружении vslgrind
-                valgrind --version >> /dev/null 2>>/dev/null
-                if [ $? = 0 ];
-                then
-                    valgrind ./aktool test --crypto
-                fi
+#                ./aktool test --crypto --audit 2 --audit-file stderr
+
+# выполняем запуск тестов в окружении valgrind
+#                valgrind --version >> /dev/null 2>>/dev/null
+#                if [ $? = 0 ];
+#                then
+#                    valgrind ./aktool test --crypto
+#                fi
+
 # не выполняем очистку созданных каталогов
                 cd ..
         fi

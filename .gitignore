@@ -5,11 +5,6 @@ libakrypt.rc
 scratch*
 *.kdev4
 tags
-doc/conf.py
-
 build*/
-
 .vscode
 
-# auto-generated 
-libakrypt-config.h
