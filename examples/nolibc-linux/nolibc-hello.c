@@ -19,7 +19,8 @@
  static int ak_function_log_write( const char *message )
 {
     size_t count = 0;
-    char *str = (char *)message;
+    const char *str = message;
+    if( str == NULL ) return 0;
     for( ; *str != '\0'; ++count, ++str ); /* вычисляем длину строки */
 
     asm volatile (
@@ -28,8 +29,9 @@
         "syscall"
         :
         : "S" (message), "d" (count)
-        : "%rax", "%rdi"
+        : "rax", "rdi", "rcx", "r11", "memory"
     );
+    return 0;
 }
 
 /* Тело основной программы, реализующей необходимый пользовательский функционал */

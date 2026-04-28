@@ -114,7 +114,7 @@
 # Выводим список исходных текстов для компиляции
  message( STATUS "libakrypt sources:" )
  foreach( file ${AKRYPT_SOURCES} )
-     message( NOTICE "      ${file}" )
+     message( STATUS "      ${file}" )
  endforeach()
 
 # -------------------------------------------------------------------------------------------------- #
@@ -122,8 +122,8 @@
  if( AK_SHARED_LIB )
     add_library( akrypt-shared SHARED ${MAIN_HEADERS} ${AKRYPT_SOURCES} )
     set_target_properties( akrypt-shared PROPERTIES
-                           VERSION ${MAJOR_VERSION}
-                           SOVERSION ${FULL_VERSION}
+                           VERSION ${FULL_VERSION}
+                           SOVERSION ${MAJOR_VERSION}
                            OUTPUT_NAME akrypt
                            CLEAN_DIRECT_CUSTOM 1
     )
@@ -183,10 +183,6 @@
 # -------------------------------------------------------------------------------------------------- #
 # Сборка документации и завершающие настройки
  include( MakeDoc )
- set( AK_DOCUMENTATION
-     ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
-     ${CMAKE_CURRENT_SOURCE_DIR}/Changelog.md
-)
 
 # -------------------------------------------------------------------------------------------------- #
 #                                                                                    CMakeLists.txt
